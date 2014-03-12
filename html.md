@@ -15,7 +15,7 @@
 <a name="opening-a-form"></a>
 ## Form Açmak
 
-**Form Açmak**
+#### Form Açmak
 
 	{{ Form::open(array('url' => 'falan/filan')) }}
 		//
@@ -27,11 +27,17 @@ Varsayılan olarak, `POST` metodu kullanılır; ancak, istediğiniz bir metodu d
 
 > **Not:** HTML formları, sadece `POST` ve `GET` metotlarını desteklediği için, `PUT` ve `DELETE` metotları formunuza otomatik olarak bir `_method` gizli alanı eklenmek suretiyle taklit edilecektir.
 
-Ayrıca, isimlendirilmiş rotalar veya denetçi aksiyonlarına yönlendirilen formlar da açabilirsiniz:
+You may also open forms that point to named routes or controller actions:
 
 	echo Form::open(array('route' => 'route.name'))
 
 	echo Form::open(array('action' => 'Controller@method'))
+
+Ayrıca, isimlendirilmiş rotalar veya denetçi aksiyonlarına yönlendirilen formlar da açabilirsiniz:
+
+	echo Form::open(array('route' => 'route.name'))
+
+	echo Form::open(array('action' => array('Controller@method', $user->id)))
 
 Formunuz dosya yüklemelerini kabul edecekse, diziye `files` seçeneğini ekleyin:
 
@@ -42,11 +48,11 @@ Formunuz dosya yüklemelerini kabul edecekse, diziye `files` seçeneğini ekleyi
 
 Laravel, uygulamanızı siteler arası istek sahtekarlıklarından korumak için kolay bir metot sunar. Öncelikle, kullanıcının oturumuna rastgele bir değer yerleştirilir. Merak etmeyin, bu otomatik olarak yapılır. CSRF değeri, formlarınıza gizli bir alan olarak otomatik olarak yerleştirilir. Yine de, gizli alan için HTML kodunu oluşturmak isterseniz, `token` metodunu kullanabilirsiniz:
 
-**Bir Forma CSRF Değeri Eklemek**
+#### Bir Forma CSRF Değeri Eklemek
 
 	echo Form::token();
 
-**Bir Rotaya CSRF Filtresi Eklemek**
+#### Bir Rotaya CSRF Filtresi Eklemek
 
 	Route::post('profil', array('before' => 'csrf', function()
 	{
@@ -58,7 +64,7 @@ Laravel, uygulamanızı siteler arası istek sahtekarlıklarından korumak için
 
 Sıklıkla, bir modelin içeriğine dayanan bir form oluşturmak isteyebilirsiniz. Bunu yapmak için, `Form::model` metodunu kullanın:
 
-**Bir Model Formu Açmak**
+#### Bir Model Formu Açmak
 
 	echo Form::model($user, array('route' => array('user.update', $user->id)))
 
@@ -75,11 +81,11 @@ Bu size model değerlerine bağlanan formları sadece çabukça oluşturmanıza 
 <a name="labels"></a>
 ## Label
 
-**Bir Label Elementi Üretilmesi**
+#### Bir Label Elementi Üretilmesi
 
 	echo Form::label('email', 'E-Mail Adresi');
 
-**Ek HTML Nitelikleri Belirtme**
+#### Ek HTML Nitelikleri Belirtme
 
 	echo Form::label('email', 'E-Mail Adresi', array('class' => 'awesome'));
 
@@ -88,30 +94,35 @@ Bu size model değerlerine bağlanan formları sadece çabukça oluşturmanıza 
 <a name="text"></a>
 ## Text, Textarea, Password & Hidden Alanlar
 
-**Bir Text Inputu Üretilmesi**
+#### Bir Text Inputu Üretilmesi**
 
 	echo Form::text('uyeadi');
 
-**Ön Tanımlı Bir Değer Belirtilmesi**
+#### Ön Tanımlı Bir Değer Belirtilmesi**
 
 	echo Form::text('email', 'ornek@gmail.com');
 
 > **Not:** *hidden* ve *textarea* metodları *text* metodu ile aynı şekilde yazılır.
 
-**Bir Password Inputu Üretilmesi**
+#### Bir Password Inputu Üretilmesi
 
 	echo Form::password('parola');
+
+#### Generating Other Inputs
+
+	echo Form::email($name, $value = null, $attributes = array());
+	echo Form::file($name, $attributes = array());
 
 <a name="checkboxes-and-radio-buttons"></a>
 ## Onay Kutuları ve Seçenek Düğmeleri
 
-**Bir Checkbox Veya Radio Inputu Üretilmesi**
+#### Bir Checkbox Veya Radio Inputu Üretilmesi**
 
 	echo Form::checkbox('isim', 'deger');
 
 	echo Form::radio('isim', 'deger');
 
-**Seçilmiş Bir Checkbox Veya Radio Inputu Üretilmesi**
+#### Seçilmiş Bir Checkbox Veya Radio Inputu Üretilmesi**
 
 	echo Form::checkbox('isim', 'deger', true);
 
@@ -120,32 +131,40 @@ Bu size model değerlerine bağlanan formları sadece çabukça oluşturmanıza 
 <a name="file-input"></a>
 ## File Inputu
 
-**Bir File Inputu Üretilmesi**
+#### Bir File Inputu Üretilmesi
 
 	echo Form::file('resim');
 
 <a name="drop-down-lists"></a>
 ## Aşağı Açılır Listeler
 
-**Aşağı Açılır Bir Liste Üretilmesi**
+#### Aşağı Açılır Bir Liste Üretilmesi**
 
 	echo Form::select('boyut', array('B' => 'Büyük', 'K' => 'Küçük'));
 
-**Ön Tanımlı Seçilmiş Bir Aşağı Açılır Liste Üretilmesi**
+#### Ön Tanımlı Seçilmiş Bir Aşağı Açılır Liste Üretilmesi**
 
 	echo Form::select('size', array('B' => 'Büyük', 'K' => 'Küçük''), 'K');
 
-**Gruplanmış Bir Liste Üretilmesi**
+#### Gruplanmış Bir Liste Üretilmesi**
 
 	echo Form::select('hayvan', array(
 		'Kediler' => array('tekir' => 'Tekir'),
 		'Köpekler' => array('kangal' => 'Kangal'),
 	));
 
+#### Generating A Drop-Down List With A Range
+
+    echo Form::selectRange('number', 10, 20);
+
+#### Generating A List With Month Names
+
+    echo Form::selectMonth('month');
+
 <a name="buttons"></a>
 ## Düğmeler
 
-**Bir Submit Düğmesinin Üretilmesi**
+#### Bir Submit Düğmesinin Üretilmesi**
 
 	echo Form::submit('Tıkla beni!');
 
@@ -156,18 +175,18 @@ Bu size model değerlerine bağlanan formları sadece çabukça oluşturmanıza 
 
 "Makrolar" denen kendi özel Form sınıf yardımcılarınızı tanımlamak kolaydır. Nasıl çalıştığını görün: Önce belli bir isim ve Closure fonksiyonu ile makroyu kayda geçirin:
 
-**Bir Form Makrosunun Kayda Geçirilmesi**
+#### Bir Form Makrosunun Kayda Geçirilmesi####
 
-	Form::macro('makAlan', function()
+	Form::macro('makroAlan', function()
 	{
 		return '<input type="awesome">';
 	});
 
 Şimdi adını kullanarak makronuzu çağırabilirsiniz:
 
-**Özel Bir Form Makrosunun Çağırılması**
+**Özel Bir Form Makrosunun Çağırılması####
 
-	echo Form::makAlan();
+	echo Form::makroAlan();
 
 <a name="generating-urls"></a>
 ## URL Oluşturma
