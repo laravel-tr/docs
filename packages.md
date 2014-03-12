@@ -4,10 +4,12 @@
 - [Bir Paket Oluşturma](#creating-a-package)
 - [Paket Yapısı](#package-structure)
 - [Hizmet Sağlayıcıları](#service-providers)
+- [Deferred Providers](#deferred-providers)
 - [Paket Gelenekleri](#package-conventions)
 - [Geliştirme İş Akışı](#development-workflow)
 - [Paket Yönlendirme (Routing)](#package-routing)
 - [Paket Yapılandırması](#package-configuration)
+- [Package Views](#package-views)
 - [Paket Migrasyonları](#package-migrations)
 - [Paket Varlıkları](#package-assets)
 - [Paketlerin Yayımlanması](#publishing-packages)
@@ -28,7 +30,7 @@ Tüm Laravel paketleri [Packagist](http://packagist.org) ve [Composer](http://ge
 
 Laravel'le kullanmak üzere yeni bir paket oluşturmanın en kolay yolu `workbench` Artisan komutudur. Öncelikle, `app/config/workbench.php` dosyasında birkaç seçeneği ayarlamanız gerekiyor. Bu dosyada, bir `name` ve `email` seçeneği bulacaksınız. Bu değerler sizin yeni paketiniz için bir `composer.json` dosyası üretmekte kullanılacaktır. Bu değerleri girdikten sonra, bir tezgah (workbench) paketi oluşturmaya hazırsınız!
 
-**Workbench Artisan Komutunun Verilmesi**
+#### Workbench Artisan Komutunun Verilmesi
 
 	php artisan workbench satıcıadı/paketadı --resources
 
@@ -45,7 +47,7 @@ Sağlayıcıyı kayda geçirdikten sonra artık paketinizi geliştirmeye başlay
 
 `workbench` komutu kullanılırken, paketiniz, paketinizin Laravel frameworkün diğer kısımlarıyla iyi bütünleşmesine imkan veren geleneklerle kurulur:
 
-**Temel Paket Dizin Yapısı**
+#### Temel Paket Dizin Yapısı
 
 	/src
 		/Satici
@@ -73,18 +75,46 @@ Bunlardan `register` metodu, hizmet sağlayıcı kayıt edilir edilmez çağrıl
 
 Bu metod Laravel'in uygulamanız için görünüm, konfigürasyon ve diğer kaynakları nasıl düzgünce yükleyeceğini bilmesine imkan verir. Genelde, paket kurulumunu workbench gelenekleri kullanarak yapacağı için bu kod satırını değiştirmenin bir gereği yoktur.
 
+By default, after registering a package, its resources will be available using the "package" half of `vendor/package`. However, you may pass a second argument into the `package` method to override this behavior. For example:
+
+	// Passing custom namespace to package method
+	$this->package('vendor/package', 'custom-namespace');
+
+	// Package resources now accessed via custom-namespace
+	$view = View::make('custom-namespace::foo');
+
 Servis sağlayıcı sınıfları için "varsayılan yer" mevcut değildir. Bunları istediğiniz yere konumlandırabilirsiniz, belki bunları `app` dizini içinde `Providers` aduzayı ile organize edersiniz. Dosya, Composer'ın [otomatik-yükleme olanakları](http://getcomposer.org/doc/01-basic-usage.md#autoloading) sınıfı yükleyebilmek için dosyanın nerede bulunduğunu bildiği sürece istediğiniz yere konumlandırılabilir.
+
+If you have changed the location of your package's resources, such as configuration files or views, you should pass a third argument to the `package` method which specifies the location of your resources:
+
+	$this->package('vendor/package', null, '/path/to/resources');
+
+<a name="deferred-providers"></a>
+## Deferred Providers
+
+If you are writing a service provider that does not register any resources such as configuration or views, you may choose to make your provider "deferred". A deferred service provider is only loaded and registered when one of the services it provides is actually needed by the application IoC container. If none of the provider's services are needed for a given request cycle, the provider is never loaded.
+
+To defer the execution of your service provider, set the `defer` property on the provider to `true`:
+
+	protected $defer = true;
+
+Next you should override the `provides` method from the base `Illuminate\Support\ServiceProvider` class and return an array of all of the bindings that your provider adds to the IoC container. For example, if your provider registers `package.service` and `package.another-service` in the IoC container, your `provides` method should look like this:
+
+	public function provides()
+	{
+		return array('package.service', 'package.another-service');
+	}
 
 <a name="package-conventions"></a>
 ## Paket Gelenekleri
 
 Bir paketten gelen kaynaklar kullanılırken, örneğin yapılandırma öğeleri veya görünümler için genelde çift iki nokta üst üste söz dizimi kullanılır:
 
-**Bir Paketteki Bir Görünümü Yükleme**
+#### Bir Paketteki Bir Görünümü Yükleme
 
 	return View::make('package::gorunum.isim');
 
-**Bir Paket Yapılandırma Öğesinin Öğrenilmesi**
+#### Bir Paket Yapılandırma Öğesinin Öğrenilmesi
 
 	return Config::get('package::grup.secenek');
 
@@ -101,7 +131,7 @@ Sizin paketleriniz `workbench` dizininde olduğundan, Composer'in sizin paketini
 
 Eğer paketinizin autoload dosyalarını tekrar üretmeniz gerekirse, `php artisan dump-autoload` komutunu kullanabilirsiniz. Bu komut, sizin kök projenizdekiler yanında, oluşturmuş olduğunuz workbench'lerdeki autoload dosyalarını da tekrardan üretecektir.
 
-**Artisan Autoload Komutunun Çalıştırılması**
+#### Artisan Autoload Komutunun Çalıştırılması
 
 	php artisan dump-autoload
 
@@ -110,7 +140,7 @@ Eğer paketinizin autoload dosyalarını tekrar üretmeniz gerekirse, `php artis
 
 Laravel'in önceki sürümlerinde, bir paketin hangi URI'lere cevap vereceğini belirtmek için `handles` cümleciği kullanılırdı. Ancak, Laravel 4'te, bir paket her URI'ye cevap verebilir. Paketiniz için bir rota dosyasını yüklemek için, hizmet sağlayıcınızın `boot` metodu içerisinde onu `include` etmeniz yeterlidir.
 
-**Bir Hizmet Sağlayıcısından Bir Rota Dosyasının Dahil Edilmesi**
+#### Bir Hizmet Sağlayıcısından Bir Rota Dosyasının Dahil Edilmesi
 
 	public function boot()
 	{
@@ -126,19 +156,19 @@ Laravel'in önceki sürümlerinde, bir paketin hangi URI'lere cevap vereceğini 
 
 Bazı paketler yapılandırma dosyaları gerektirebilir. Bu dosyalar tipik uygulama yapılandırma dosyalarıyla aynı şekilde tanımlanmalıdır. Ve, hizmet sağlayıcınızda kaynakları kayda geçirmede ön tanımlı `$this->package` metodunu kullanıyorken, olağan "çift iki nokta üst üste" söz dizimini kullanarak erişebilirsiniz:
 
-**Paket Yapılandırma Dosyalarına Erişme**
+#### Paket Yapılandırma Dosyalarına Erişme
 
 	Config::get('paket::dosya.secenek');
 
 Ancak eğer paketiniz tek bir yapılandırma dosyası içeriyorsa, adına sadece `config.php` diyebilirsiniz. Böyle yapmışsanız, dosya adını belirtmenize gerek kalmadan seçeneklere doğrudan erişebilirsiniz:
 
-**Tek Dosyalı Paket Yapılandırmasına Erişme**
+#### Tek Dosyalı Paket Yapılandırmasına Erişme
 
 	Config::get('paket::secenek');
 
 Bazen, görünümler gibi paket kaynaklarınızı tipik `$this->package` metodundan başka türlü kayda geçirmek isteyebilirsiniz. Tipik olarak bu sadece kaynaklar konvansiyonel bir yerleşimde olmadıkları takdirde yapılacaktır. Bu kaynakları elle kayda geçirmek için `View`, `Lang` ve `Config` sınıflarının `addNamespace` metodunu kullanabilirsiniz:
 
-**Bir Kaynak Aduzayının Elle Kayda Geçirilmesi**
+#### Bir Kaynak Aduzayının Elle Kayda Geçirilmesi
 
 	View::addNamespace('paket', __DIR__.'/path/to/views');
 
@@ -152,30 +182,39 @@ Aduzayı kayda geçirildikten sonra, kaynağa erişmek için aduzayının adın�
 
 Diğer geliştiriciler sizin paketlerinizi yükledikleri zaman yapılandırma seçeneklerinden bir kısmını geçersiz kılmak ve değiştirmek isteyebilirler. Ancak, eğer sizin paket kaynak kodunuzdaki değerleri değiştirirlerse, Composer'in daha sonraki paket güncellemesinde bunun üzerine yazılacaktır, tekrar sizin yazdığınız hale gelecektir. O yüzden, bunun yerine `config:publish` artisan komutu kullanılmalıdır:
 
-**Config Publish Komutunun Çalıştırılması**
+#### Config Publish Komutunun Çalıştırılması
 
 	php artisan config:publish satici/paket
 
 Bu komut çalıştırıldığında, sizin uygulamanız için olan konfigürasyon dosyaları `app/config/packages/satici/paket` dizinine kopyalanacak, burada geliştiriciler tarafından güvenle değiştirilebilecektir!
 
-> **Not:** Geliştiriciler ayrıca onları `app/config/packages/satici/paket/environment`'e koyarak sizin paketiniz için ortama özgü yapılandırma dosyaları da oluşturabilirler.
+> **Not:**  Geliştiriciler ayrıca onları `app/config/packages/satici/paket/environment`'e koyarak sizin paketiniz için ortama özgü yapılandırma dosyaları da oluşturabilirler.
+
+<a name="package-views"></a>
+## Package Views
+
+If you are using a package in your application, you may occasionally wish to customize the package's views. You can easily export the package views to your own `app/views` directory using the `view:publish` Artisan command:
+
+	php artisan view:publish vendor/package
+
+This command will move the package's views into the `app/views/packages` directory. If this directory doesn't already exist, it will be created when you run the command. Once the views have been published, you may tweak them to your liking! The exported views will automatically take precendence over the package's own view files.
 
 <a name="package-migrations"></a>
 ## Paket Migrasyonları
 
 Paketleriniz için kolayca migrasyon oluşturabilir ve çalıştırabilirsiniz. workbench'de bir paket için bir migrasyon oluşturmak için `--bench` seçeneğini kullanın:
 
-**Workbench Paketleri İçin Migrasyon Oluşturulması**
+#### Workbench Paketleri İçin Migrasyon Oluşturulması
 
 	php artisan migrate:make create_users_table --bench="satici/paket"
 
-**Workbench Paketleri İçin Migrasyonların Çalıştırılması**
+#### Workbench Paketleri İçin Migrasyonların Çalıştırılması
 
 	php artisan migrate --bench="satici/paket"
 
 `vendor` dizinine Composer tarafından yüklenmiş bitmiş bir paket için migrasyonlar çalıştırmak için `--package` yönergesini kullanabilirsiniz:
 
-**Yüklenmiş Bir Paket İçin Migrasyonların Çalıştırılması**
+#### Yüklenmiş Bir Paket İçin Migrasyonların Çalıştırılması
 
 	php artisan migrate --package="satici/paket"
 
@@ -184,7 +223,7 @@ Paketleriniz için kolayca migrasyon oluşturabilir ve çalıştırabilirsiniz. 
 
 Bazı paketlerde JavaScript, CSS ve resimler gibi varlıklar olabilir. Ancak biz `satici` veya `workbench` dizinlerinde varlıklara bağlanamayız, öyleyse bu varlıkları uygulamamızın `public` dizinine taşıyacak bir yola ihtiyacımız var. Sizin için bununla `asset:publish` komutu ilgilenecektir:
 
-**Paket Varlıklarının Public Dizinine Taşınması**
+#### Paket Varlıklarının Public Dizinine Taşınması
 
 	php artisan asset:publish
 
