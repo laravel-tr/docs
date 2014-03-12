@@ -16,7 +16,7 @@ Migrasyonlar veritabanı için bir sürüm kontrol türüdür. Bir ekibin verita
 
 Bir migrasyon oluşturmak için, Artisan KSA'da (Artisan Komut Satırı Arayüzü) `migrate:make` komutunu kullanabilirsiniz:
 
-**Bir Migrasyon Oluşturulması**
+#### Bir Migrasyon Oluşturulması
 
 	php artisan migrate:make kullanicilar_tablosunu_olustur
 
@@ -28,20 +28,22 @@ Migrasyonu oluştururken bir patika `--path` seçeneği de belirtebilirsiniz. Pa
 
 Tablo ismini ve yeni bir tablonun oluşturulacağını da, tablo `--table` ve oluştur `--create` seçeneklerini kullanarak belirtebilirsiniz:
 
-	php artisan migrate:make kullanicilar_tablosunu_olustur --table=kullanicilar --create
+	php artisan migrate:make kullanicilar_tablosunu_olustur --table=users
+
+	php artisan migrate:make kullanicilar_tablosuna_oy_verenler_ekle --create=users
 
 <a name="running-migrations"></a>
 ## Migrasyonların Çalıştırılması
 
-**Bekleyen Migrasyonların Hepsinin Birden Çalıştırılması**
+#### Bekleyen Migrasyonların Hepsinin Birden Çalıştırılması
 
 	php artisan migrate
 
-**Bir Patikadaki Migrasyonların Çalıştırılması**
+#### Bir Patikadaki Migrasyonların Çalıştırılması
 
 	php artisan migrate --path=app/falancaDizin/migrations
 
-**Bir Paketin Tüm Bekleyen Migrasyonlarının Çalıştırılması**
+#### Bir Paketin Tüm Bekleyen Migrasyonlarının Çalıştırılması
 
 	php artisan migrate --package=vendor/package
 
@@ -50,15 +52,15 @@ Tablo ismini ve yeni bir tablonun oluşturulacağını da, tablo `--table` ve ol
 <a name="rolling-back-migrations"></a>
 ## Migrasyonların Geriye Döndürülmesi
 
-**Son Migrasyon İşleminin Geriye Döndürülmesi**
+#### Son Migrasyon İşleminin Geriye Döndürülmesi
 
 	php artisan migrate:rollback
 
-**Tüm Migrasyon İşlemlerinin Geriye Döndürülmesi**
+#### Tüm Migrasyon İşlemlerinin Geriye Döndürülmesi
 
 	php artisan migrate:reset
 
-**Tüm Migrasyon İşlemlerinin Geriye Döndürülmesi ve Hepsinin Tekrardan Çalıştırılması**
+#### Tüm Migrasyon İşlemlerinin Geriye Döndürülmesi ve Hepsinin Tekrardan Çalıştırılması
 
 	php artisan migrate:refresh		//Veri ekmeler dahil edilmeden
 
@@ -69,7 +71,7 @@ Tablo ismini ve yeni bir tablonun oluşturulacağını da, tablo `--table` ve ol
 
 Veri Ekme (seeding), migrasyon ile oluşturulacak veritabanı tablosunda gerekli olacak ilk veri kayıtlarının (seed data) oluşturulması işlemidir(:çevirenin notu). Laravel, veritabanınızın deneme verisi ile veri ekme için kolaylık sağlayacak olan veri ekme (seed) sınıflarını bulundurur. Bütün veri ekme sınıfları `app/database/seeds` dizininde konumlandırılır. Veri ekme sınıflarına istediğiniz isimleri verebilirsiniz. Fakat isimlendirirken anlaşılacak belli bir düzene (convention) uyulması lehinizedir, örneğin `KullanicilarTablosunaVeriEkme`, vb. Ön tanımlı olarak, sizin için bir DatabaseSeeder sınıfı tanımlanmıştır. Veri ekme sırasını denetlemenize imkan verecek olan, bu sınıfın 'çağır' `call` metodunu kullanarak diğer veri ekme sınıflarınızı çalıştırabilirsiniz.
 
-**Veritabanı Veri Ekme Sınıfı Örneği**
+#### Veritabanı Veri Ekme Sınıfı Örneği
 
 	class DatabaseSeeder extends Seeder {
 
@@ -96,6 +98,10 @@ Veri Ekme (seeding), migrasyon ile oluşturulacak veritabanı tablosunda gerekli
 Veritabanına veri ekmek için, Artisan KSA'da `db:seed` (veri ek) komutunu kullanabilirsiniz:
 
 	php artisan db:seed
+
+By default, the `db:seed` command runs the `DatabaseSeeder` class, which may be used to call other seed classes. However, you may use the `--class` option to specify a specific seeder class to run individually:
+
+	php artisan db:seed --class=UserTableSeeder
 
 Veritabanına `migrate:refresh` (yenile) komutunu kullanarak da veri ekebilirsiniz, bu komut aynı zamanda bütün migrasyonları geriye döndürüp, hepsini tekrardan çalıştıracaktır:
 
