@@ -46,16 +46,20 @@ PHP'nin önemli hatalarını (fatal error) izlemek için, `App::fatal` metodunu 
 		//
 	});
 
+If you have several exception handlers, they should be defined from most generic to most specific. So, for example, a handler that handles all exceptions of type `Exception` should be defined before a custom exception type such as `Illuminate\Encryption\DecryptException`.
+
+### Where To Place Error Handlers
+
+There is no default "home" for error handler registrations. Laravel offers you freedom in this area. One option is to define the handlers in your `start/global.php` file. In general, this is a convenient location to place any "bootstrapping" code. If that file is getting crowded, you could create an `app/errors.php` file, and `require` that file from your `start/global.php` script. A third option is to create a [service provider](/docs/ioc#service-providers) that registers the handlers. Again, there is no single "correct" answer. Choose a location that you are comfortable with.
+
 <a name="http-exceptions"></a>
 ## HTTP İstisnaları
 
 HTTP istisnaları bir istemci isteği sırasında oluşabilecek hatalar demektir. Bu bir sayfa bulunamadı hatası (404), bir yetkisizlik hatası (401), hatta genel 500 hatası olabilir. Böyle bir cevap döndürmek için aşağıdaki biçimi kullanın:
 
-	App::abort(404, 'Sayfa bulunamadı');
+	App::abort(404);
 
-Buradaki ilk parametre HTTP durum kodu, ikinci parametre ise bu hata durumunda göstermek istediğiniz özel bir mesajdır.
-
-401 Yetkisizlik istisnası çıkarmak için tek yapacağınız şudur:
+Optionally, you may provide a response:
 
 	App::abort(401, 'Yetkili değilsiniz.');
 
@@ -84,13 +88,17 @@ Laravel'in günlüğe ekleme imkanlanları güçlü [Monolog](http://github.com/
 
 Günlük tutucu, [RFC 5424](http://tools.ietf.org/html/rfc5424)'de tanımlanmış yedi günlük ekleme düzeyi sağlamaktadır: **debug**, **info**, **notice**, **warning**, **error**, **critical** ve **alert**.
 
+An array of contextual data may also be passed to the log methods:
+
+	Log::info('Log message', array('context' => 'Other helpful information'));
+
 Monolog, günlüğe ekleme için kullanabileceğiniz bir takım başka işleyicilere de sahiptir. Gerektiğinde, Laravel tarafından kullanılan Monolog olgusuna şu şekilde ulaşabilirsiniz:
 
 	$monolog = Log::getMonolog();
 
 Ayrıca, günlüğe geçirilen tüm mesajları yakalamak için bir olay kaydı da yapabilirsiniz:
 
-**Bir günlük izleyici kaydı yapılması**
+#### Bir günlük izleyici kaydı yapılması
 
 	Log::listen(function($level, $message, $context)
 	{
