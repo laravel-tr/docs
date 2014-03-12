@@ -16,32 +16,40 @@ Laravel, çeşitli önbellekleme sistemleri için tümleşik bir API sağlar. Ö
 <a name="cache-usage"></a>
 ## Önbellekleme Kullanımı
 
-**Bir Öğeyi Önbelleğe Koymak**
+#### Bir Öğeyi Önbelleğe Koymak
 
 	Cache::put('key', 'value', $minutes);
 
-**Eğer Öğe Önbellekte Yoksa, Öğeyi Önbelleğe Koymak**
+#### Using Carbon Objects To Set Expire Time
+
+	$expiresAt = Carbon::now()->addMinutes(10);
+
+	Cache::put('key', 'value', $expiresAt);
+
+#### Eğer Öğe Önbellekte Yoksa, Öğeyi Önbelleğe Koymak
 
 	Cache::add('key', 'value', $minutes);
 
-**Öğenin Önbellekte Var Olup Olmadığını Kontrol Etmek**
+The `add` method will return `true` if the item is actually **added** to the cache. Otherwise, the method will return `false`.
+
+#### Öğenin Önbellekte Var Olup Olmadığını Kontrol Etmek
 
 	if (Cache::has('key'))
 	{
 		//
 	}
 
-**Önbellekten Bir Öğeyi Almak**
+#### Önbellekten Bir Öğeyi Almak
 
 	$value = Cache::get('key');
 
-**Bir Önbellek Değeri Almak Veya Varsayılan Bir Değer Döndürmek**
+#### Bir Önbellek Değeri Almak Veya Varsayılan Bir Değer Döndürmek
 
 	$value = Cache::get('key', 'varsayılanDeğer');
 
 	$value = Cache::get('key', function() { return 'varsayılanDeğer'; });
 
-**Bir Öğeyi Kalıcı Olarak Önbelleğe Koymak**
+#### Bir Öğeyi Kalıcı Olarak Önbelleğe Koymak
 
 	Cache::forever('key', 'value');
 
@@ -61,7 +69,7 @@ Ayrıca, `remember` ve `forever` methodlarını birlikte kullanabilirsiniz.
 
 Önbellekte bütün öğelerin sıralanmış şekilde saklandığını unutmayın, yani her türlü veriyi saklayabilirsiniz.
 
-**Önbellekten Bir Öğeyi Silmek**
+#### Önbellekten Bir Öğeyi Silmek
 
 	Cache::forget('key');
 
@@ -70,13 +78,13 @@ Ayrıca, `remember` ve `forever` methodlarını birlikte kullanabilirsiniz.
 
 `file` ve `database` hariç tüm sürücüler `increment` (artma) ve `decrement` (azalma) işlemlerini destekler:
 
-**Bir Değeri Arttırmak**
+#### Bir Değeri Arttırmak
 
 	Cache::increment('key');
 
 	Cache::increment('key', $miktar);
 
-**Bir Değeri Azaltmak**
+#### Bir Değeri Azaltmak
 
 	Cache::decrement('key');
 
@@ -87,29 +95,38 @@ Ayrıca, `remember` ve `forever` methodlarını birlikte kullanabilirsiniz.
 
 > **Not:** Önbellek bölümleri `dosya` ve `veritabanı` önbellekleme sürücüleri kullanılırken desteklenmemektedir.
 
-Önbellek bölümleri, önbellekteki ilişkili öğeleri gruplamanıza ve tüm bölümü temizlemenize olanak sağlar.
-Bölüme erişim için `section` metodu kullanılır:
+Önbellek bölümleri, önbellekteki ilişkili öğeleri gruplamanıza ve tüm bölümü temizlemenize olanak sağlar. Bölüme erişim için `section` metodu kullanılır:
 
-**Bir Önbellek Bölümününe Erişim**
+#### Bir Önbellek Bölümününe Erişim
+
+You may store a tagged cache by passing in an ordered list of tag names as arguments, or as an ordered array of tag names.
 
 	Cache::section('insanlar')->put('Mehmet', $mehmet, $dakika);
 
 	Cache::section('insanlar')->put('Şeyma', $ayse, $dakika);
 
-Ayrıca bölümlerde önbelleklenmiş öğelere, diğer önbellek metodlarında olduğu gibi `increment` ve `decrement` ile de erişebilirsiniz.
+You may use any cache storage method in combination with tags, including `remember`, `forever`, and `rememberForever`. Ayrıca bölümlerde önbelleklenmiş öğelere, diğer önbellek metodlarında olduğu gibi `increment` ve `decrement` ile de erişebilirsiniz.
 
-**Önbellek Bölümündeki Öğelere Erişmek**
+#### Önbellek Bölümündeki Öğelere Erişmek
 
-	$anne = Cache::section('insanlar')->get('Mehmet');
+To access a tagged cache, pass the same ordered list of tags used to save it.
 
-Önbellek bölümünü bu şekilde temizleyebilirsiniz:
+	$anne = Cache::section('insanlar')->get('Tuana Şeyma');
 
-	Cache::section('insanlar')->flush();
+	$mehmet = Cache::tags(array('insanlar', 'yazarlar'))->get('Mehmet');
+
+You may flush all items tagged with a name or list of names. For example, this statement would remove all caches tagged with either `insanlar`, `yazarlar`, or both. So, both "Tuana Şeyma" and "Mehmet" would be removed from the cache:
+
+	Cache::tags('insanlar', 'yazarlar')->flush();
+
+In contrast, this statement would remove only caches tagged with `yazarlar`, so "Mehmet" would be removed, but not "Tuana Şeyma".
+
+	Cache::tags('yazarlar')->flush();
 
 <a name="database-cache"></a>
 ## Veritabanı Önbelleği
 
-Veritabanı önbellek sürücüsü kullanırken, önbellek öğelerini içeren bir tablo kurulumu gerekir. Bu tablo için örnek bir şema aşağıda gösterilmiştir:
+`Veritabanı` önbellek sürücüsü kullanırken, önbellek öğelerini içeren bir tablo kurulumu gerekir. Bu tablo için örnek bir `şema` aşağıda gösterilmiştir:
 
 	Schema::create('cache', function($table)
 	{

@@ -17,13 +17,17 @@ Artisan'da mevcut olan komutlara ilaveten,  uygulamanız ile çalışacak olan k
 
 Yeni bir komut oluşturmak için, `command:make` Artisan komutunu kullanabilirsiniz. Bu komut, başlamanızda size yardımcı olmak için yeni bir komut taslağı oluşturacaktır.
 
-**Yeni bir Komut Sınıfının Oluşturulması**
+#### Yeni bir Komut Sınıfının Oluşturulması
 
 	php artisan command:make FalancaKomut
 
 Ön tanımlı olarak, oluşturulan komutlar `app/commands` dizininde depolanırlar. Fakat, siz başka bir dizin veya bir 'namespace' de belirleyebilirsiniz.
 
 	php artisan command:make FalancaKomut --path=app/classes --namespace=Siniflar
+
+When creating the command, the `--command` option may be used to assign the terminal command name:
+
+	php artisan command:make AssignUsers --command=users:assign
 
 ### Komutun Yazılışı
 
@@ -59,19 +63,19 @@ Seçenekler için, modu argümanı `mode` şunlardan biri olabilir: `InputOption
 
 Komutunuz çalışırken, uygulamanızın kabul edeceği argüman ve seçenek değerlerine ulaşabilmeniz gerekecektir. Bunu yapabilmek için argüman `argument` ve seçenek `option` metodlarını kullanabilirsiniz:
 
-**Bir Komut Argüman Değerinin Çağırılması**
+#### Bir Komut Argüman Değerinin Çağırılması
 
 	$value = $this->argument('ismi');
 
-**Tüm Argümanların Birden Çağırılması**
+#### Tüm Argümanların Birden Çağırılması
 
 	$arguments = $this->argument();
 
-**Bir Komut Seçeneği Değerinin Çağırılması**
+#### Bir Komut Seçeneği Değerinin Çağırılması
 
 	$value = $this->option('ismi');
 
-**Tüm Seçeneklerin Birden Çağırılması**
+#### Tüm Seçeneklerin Birden Çağırılması
 
 	$options = $this->option();
 
@@ -79,11 +83,11 @@ Komutunuz çalışırken, uygulamanızın kabul edeceği argüman ve seçenek de
 
 Çıktının konsola gönderilmesi için, `info` (bilgi), `comment` (not), `question` (soru) ve `error` (hata) metodlarını kullanabilirsiniz. Bu metodların her biri, kendi amaçlarına uygun olan ANSI renklerini kullanacaktır.
 
-**Konsola Bilgi Gönderilmesi**
+#### Konsola Bilgi Gönderilmesi
 
 	$this->info('Bunu ekranda göster');
 
-**Konsola Bir Hata Mesajı Gönderilmesi**
+#### Konsola Bir Hata Mesajı Gönderilmesi
 
 	$this->error('Bir hata oluştu!');
 
@@ -91,15 +95,15 @@ Komutunuz çalışırken, uygulamanızın kabul edeceği argüman ve seçenek de
 
 Kullanıcıdan bir girdi talep etmek için, `ask` (sor) ve `confirm` (onayla) metodlarını kullanabilirsiniz.
 
-**Kullanıcıya Girdi Bilgisinin Soruluşu**
+#### Kullanıcıya Girdi Bilgisinin Soruluşu
 
 	$name = $this->ask('İsminiz nedir?');
 
-**Kullanıcıya Gizli Şifre Bilgisinin Soruluşu**
+#### Kullanıcıya Gizli Şifre Bilgisinin Soruluşu
 
 	$password = $this->secret('Lütfen şifrenizi giriniz!');
 
-**Kullanıcıya Onayının Soruluşu**
+#### Kullanıcıya Onayının Soruluşu
 
 	if ($this->confirm('Devam etmek istiyor musunuz? [evet|hayır]'))
 	{
@@ -115,13 +119,13 @@ Kullanıcıdan bir girdi talep etmek için, `ask` (sor) ve `confirm` (onayla) me
 
 Komutunuzun inşa edilmesi tamamlandığında, kullanılmaya hazır olabilmesi için, Artisan'da kayıt ettirmeniz gerekir. Bu, genelde `app/start/artisan.php` dosyası içerisinde yapılır. Bu dosya içerisinde, kayıt ettirmek için `Artisan::add` (Artisan::ekle) metodunu kullanabilirsiniz.
 
-**Bir Artisan Komutunun Kayıt Ettirilişi**
+#### Bir Artisan Komutunun Kayıt Ettirilişi
 
 	Artisan::add(new FalancaKomut);
 
 Eğer komutunuz [IoC container](/docs/ioc) uygulamasında kayıtlı ise, Artisan'da da kullanılabilir olması için `Artisan::resolve` metodunu kullanabilirsiniz.
 
-**IoC Container'da Olan Bir Komutun Kayıt Ettirilişi**
+#### IoC Container'da Olan Bir Komutun Kayıt Ettirilişi
 
 	Artisan::resolve('binding.ismi');
 
@@ -130,6 +134,6 @@ Eğer komutunuz [IoC container](/docs/ioc) uygulamasında kayıtlı ise, Artisan
 
 Bazı durumlarda, komtunuzun içerisinden diğer başka bir komutu çağırmak isteyebilirsiniz. Bunu, `call` (çağır) metodunu kullanarak yapabilirsiniz:
 
-**Başka Bir Komutun Çağırılışı**
+#### Başka Bir Komutun Çağırılışı
 
 	$this->call('command.ismi', array('argument' => 'falan', '--option' => 'filan'));
