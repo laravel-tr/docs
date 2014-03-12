@@ -29,13 +29,15 @@ Basit bir denetçi (controller) sınıfı örneği şöyledir:
 
 	}
 
-Bütün denetçilerin `BaseController` sınıfından türetilmiş olması gerekir.  `BaseController` ın kendisi de `app/controllers` dizininde bulunur ve bütün denetçiler için geçerli olacak ortak mantığın içine yerleştirilmesinde kullanılabilir. `BaseController` sınıfı, çerçevenin `Controller` sınıfının uzantısıdır. Bu durumda, oluşturmuş olduğumuz denetçi fonksiyonuna rotalandırmayı şu şekilde yapabiliriz:
+Bütün denetçilerin `BaseController` sınıfından türetilmiş olması gerekir. `BaseController` ın kendisi de `app/controllers` dizininde bulunur ve bütün denetçiler için geçerli olacak ortak mantığın içine yerleştirilmesinde kullanılabilir. `BaseController` sınıfı, framework'ün `Controller` sınıfının uzantısıdır. Bu durumda, oluşturmuş olduğumuz denetçi fonksiyonuna rotalandırmayı şu şekilde yapabiliriz:
 
 	Route::get('kullanici/{id}', 'KullaniciController@showProfile');
 
 Eğer bir denetçinizi, dizin içerisinde yuvalandırarak (nest) veya PHP isim-alanları (namespaces) kullanarak organize etmek isterseniz, bu durumda rotayı tanımlarken, tam nitelendirilmiş (fully qualified) sınıf adını kullanınız:
 
 	Route::get('falanca', 'Namespace\FalancaController@yontemAdi');
+
+> **Note:** Since we're using [Composer](http://getcomposer.org) to auto-load our PHP classes, controllers may live anywhere on the file system, as long as composer knows how to load them. The controller directory does not enforce any folder structure for your application. Routing to controllers is entirely de-coupled from the file system.
 
 Denetçi rotalarına isimler de verebilirsiniz:
 
@@ -45,6 +47,8 @@ Denetçi rotalarına isimler de verebilirsiniz:
 Herhangi bir denetçi eylemine ait bir URL üretmek için, `URL::action` metodunu kullanabilirsiniz:
 
 	$url = URL::action('FalancaController@yontemAdi');
+
+	$url = action('FalancaController@yontemAdi');
 
 Çalıştırılmakta olan bir denetçi eyleminin ismine `currentRouteAction` metodu ile erişebilirsiniz:
 
@@ -90,6 +94,28 @@ Controller filtrelerini bir Closure kullanarak da belirtebilirsiniz:
 			{
 				//
 			});
+		}
+
+	}
+
+If you would like to use another method on the controller as a filter, you may use `@` syntax to define the filter:
+
+	class UserController extends BaseController {
+
+		/**
+		 * Instantiate a new UserController instance.
+		 */
+		public function __construct()
+		{
+			$this->beforeFilter('@filterRequests');
+		}
+
+		/**
+		 * Filter the incoming requests.
+		 */
+		public function filterRequests($route, $request)
+		{
+			//
 		}
 
 	}
@@ -140,17 +166,17 @@ Bu denetçinin TEDA-uyumlu rotasını (routes.php) dosyasında kayıt ettiriniz:
 
 Bu tek bir rota deklarasyonu, foto kaynağınız üzerinde çalıştıracağınız çeşitli TEDA-uyumlu eylem metodlarına erişeceğiniz rotalar oluşturur. Aynı zamanda, oluşturulmuş olan denetçide, bu eylemlerin her biri için metodları hazır olarak oluşturulmuş ve hangi URI'ı ve eylemi yönettikleri yanlarına not olarak yazılmış olacaktır.
 
-**Kaynak Denetçisinin Yöneteceği Eylemler**
+#### Kaynak Denetçisinin Yöneteceği Eylemler
 
-	HTTP Fiili | Patika                | Eylem            | Rota İsmi
-	-----------|-----------------------|------------------|---------------
-	GET        | /kaynak               | index            | kaynak.index
-	GET        | /kaynak/create        | create (oluştur) | kaynak.create
-	POST       | /kaynak               | store (kaydet)   | kaynak.store
-	GET        | /kaynak/{id}          | show (göster)    | kaynak.show
-	GET        | /kaynak/{id}/edit     | edit (düzenle)   | kaynak.edit
-	PUT/PATCH  | /kaynak/{id}          | update (güncelle)| kaynak.update
-	DELETE     | /kaynak/{id}          | destroy (imha et)| kaynak.destroy
+HTTP Fiili | Patika                | Eylem            | Rota İsmi
+-----------|-----------------------|------------------|---------------
+GET        | /kaynak               | index            | kaynak.index
+GET        | /kaynak/create        | create (oluştur) | kaynak.create
+POST       | /kaynak               | store (kaydet)   | kaynak.store
+GET        | /kaynak/{id}          | show (göster)    | kaynak.show
+GET        | /kaynak/{id}/edit     | edit (düzenle)   | kaynak.edit
+PUT/PATCH  | /kaynak/{id}          | update (güncelle)| kaynak.update
+DELETE     | /kaynak/{id}          | destroy (imha et)| kaynak.destroy
 
 Bazen bu eylemlerin sadece bazılarına ihtiyaç duyabilirsiniz:
 
@@ -164,7 +190,12 @@ Ve, rotasında da eylemlerin sadece bazılarını yönetmesini belirleyebilirsin
 			array('only' => array('index', 'show')));
 
 	Route::resource('photo', 'PhotoController',
-			array('except' => array('create', 'store', 'update', delete')));
+			array('except' => array('create', 'store', 'update', 'destroy')));
+
+By default, all resource controller actions have a route name; however, you can override these names by passing a `names` array with your options:
+
+	Route::resource('photo', 'PhotoController',
+					array('names' => array('create' => 'photo.build'));
 
 <a name="handling-missing-methods"></a>
 ## Eksik Olan Metodların Yönetilmesi
