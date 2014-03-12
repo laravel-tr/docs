@@ -69,7 +69,7 @@ Komutlarınızı sadece "default" bağlantıda çalıştıracağınız zaman, di
 
 Bir operasyonda sunucuya birçok komut göndermeniz gerektiğinde pipeline kullanılmalıdır. Bunu yapmak için `pipeline` komutunu kullanın:
 
-**Sunucularınıza Birden Çok Komutun Döşenmesi**
+#### Sunucularınıza Birden Çok Komutun Döşenmesi
 
 	Redis::pipeline(function($pipe)
 	{

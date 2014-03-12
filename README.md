@@ -13,7 +13,7 @@ Laravel büyük ve kapsamlı uygulamalar için gereken araçları içeren erişi
 
 [Laravel 4 Türkçe Dokümantasyonu](http://laravel.gen.tr/docs), İngilizce bilmeyen kullanıcıların da istifade edebilmesi amacıyla [Laravel Türkiye Forumları](http://forum.laravel.gen.tr/) kullanıcılarından oluşan gönüllü çeviri ekibi tarafından yapılmış çevirileri içermektedir.
 
-**Çeviri Ekibi**
+#### Çeviri Ekibi
 
 Katılım Sırasına Göre
 
@@ -27,9 +27,8 @@ Katılım Sırasına Göre
 * [candelibas](https://github.com/candelibas)
 * [ersinkandemir](https://github.com/ersinkandemir)
 * [ekrembk](https://github.com/ekrembk)
-* [harunyasar] (https://github.com/harunyasar)
+* [harunyasar](https://github.com/harunyasar)
 
 Çeviriye katkıda bulunmak isterseniz bu repo'yu fork edip, değişiklikleri yaptıktan sonra pull-request edebilirsiniz.
-
 
 [Çeviri bilgi forumu](http://forum.laravel.gen.tr/viewtopic.php?id=125)
