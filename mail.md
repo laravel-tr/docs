@@ -41,7 +41,7 @@ E-posta mesajınızda bunlar yanında, karbon kopyalar veya ataşmanlar gibi ba�
 
 		$message->to('falan@numune.com')->cc('filan@numune.com');
 
-		$message->attach($eklenecekDosya);
+		$message->attach($eklenecekDosyaVeriYolu);
 	});
 
 Bir mesaja dosya eklediğinizde, bir MIME tipi ve / veya ne adla görüneceğini de belirleyebilirsiniz:
@@ -55,7 +55,7 @@ Bir mesaja dosya eklediğinizde, bir MIME tipi ve / veya ne adla görüneceğini
 
 Ataşmanların yazı içine gömülmesi tipik olarak zahmetlidir; ama Laravel size e-postalarınıza resimler eklemek ve uygun CID elde etmeniz için pratik bir yol sağlar.
 
-**Bir E-Posta Görünümüne Bir Resim Gömülmesi**
+#### EBir E-Posta Görünümüne Bir Resim Gömülmesi
 
 	<body>
 		İşte bir resim:
@@ -63,7 +63,7 @@ Ataşmanların yazı içine gömülmesi tipik olarak zahmetlidir; ama Laravel si
 		<img src="<?php echo $message->embed($resimDosyaYolu); ?>">
 	</body>
 
-**Bir E-Posta Görünümüne Ham Veri Gömülmesi**
+#### Bir E-Posta Görünümüne Ham Veri Gömülmesi
 
 	<body>
 		Burada ise ham veriden elde edilen resim görüyoruz:
