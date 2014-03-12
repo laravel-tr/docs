@@ -2,6 +2,7 @@
 
 - [Giriş](#introduction)
 - [Manager'lar & Factory'ler](#managers-and-factories)
+- [Where To Extend](#where-to-extend)
 - [Cache](#cache)
 - [Session](#session)
 - [Authentication](#authentication)
@@ -25,6 +26,11 @@ Laravel sürücü temelli bileşenlerin oluşturulmasını yöneten birkaç `Man
 Bu managerlerin her birisinde, managere kolaylıkla yeni sürücü çözünürlük işlevselliği enjekte edilmesi için kullanılabilen bir `extend` metodu bulunmaktadır. Aşağıda, bu managerlerin her birini, onların her birine özel bir sürücü desteğinin nasıl enjekte edildiğinin örnekleriyle birlikte göreceğiz.
 
 > **Not:** Laravel'le gelen `CacheManager` ve `SessionManager` gibi çeşitli `Manager` sınıflarını keşfetmek için biraz zaman ayırın. Bu sınıfların baştan sona okunması Laravel'in örtü altında nasıl çalıştığı konusunda size daha kapsamlı bir anlayış verecektir. Tüm manager sınıfları `Illuminate\Support\Manager` taban sınıfını genişletir, bu taban sınıf her manager için yararlı, ortak bazı işlevsellik sağlar.
+
+<a name="where-to-extend"></a>
+## Where To Extend
+
+This documentation covers how to extend a variety of Laravel's components, but you may be wondering where to place your extension code. Like most other bootstrapping code, you are free to place some extensions in your `start` files. Cache and Auth extensions are good candidates for this approach. Other extensions, like `Session`, must be placed in the `register` method of a service provider since they are needed very early in the request life-cycle.
 
 <a name="cache"></a>
 ## Cache
@@ -76,6 +82,12 @@ Laravel'i özel bir session sürücüsü ile genişletmek, tıpkı cache sistemi
 	{
 		// SessionHandlerInterface'in implementasyonunu döndür
 	});
+
+### Where To Extend The Session
+
+Session extensions need to be registered differently than other extensions like Cache and Auth. Since sessions are started very early in the request-lifecycle, registering the extensions in a `start` file will happen be too late. Instead, a [service provider](/docs/ioc#service-providers) will be needed. You should place your session extension code in the `register` method of your service provider, and the provider should be placed **below** the default `Illuminate\Session\SessionServiceProvider` in the `providers` configuration array.
+
+### Writing The Session Extension
 
 Dikkat ederseniz bizim özel session sürücümüz `SessionHandlerInterface`i implemente edecektir. Bu interface PHP 5.4+ çekirdeğine dahil edilmiştir. Eğer siz PHP 5.3 kullanıyorsanız, ileriye yönelik uyumluluğa sahip olmanız için bu interface Laravel tarafından sizin için tanımlanmış olacaktır. Bu interface, implemente etmemiz gereken sadece birkaç basit metod içermektedir. Bir MongoDB implementation kalıbı şöyle bir şeydir:
 
@@ -163,25 +175,15 @@ Sürücüyü `extend` metodu ile register ettikten sonra, `app/config/auth.php` 
 
 Laravel frameworke dahil edilen hemen her hizmet sağlayıcı IoC konteynerine nesneler bağlar. Uygulamanızın hizmet sağlayıcılarının bir listesini `app/config/app.php` yapılandırma dosyasında bulabilirsiniz. Vaktiniz oldukça bu sağlayıcıların her birinin kaynak koduna baştan sona göz gezdiriniz. Bunu yapmakla, her bir sağlayıcının frameworke neler eklediğini çok daha iyi anlayacaksınız, bunun yanı sıra IoC konteynerine çeşitli hizmetleri bağlamak için hangi anahtarların kullanıldığını da öğreneceksiniz.
 
-Örneğin, `PaginationServiceProvider` IoC konteynerine bir `paginator` anahtarı bağlamaktadır ve bu anahtar bir `Illuminate\Pagination\Environment` olgusuna çözümlenmektedir. Bu IoC bağlamasını override etmek suretiyle kendi uygulamanızda bu sınıfı kolaylıkla genişletebilir ve override edebilirsiniz. Örneğin, taban `Environment` sınıfını genişleten bir sınıf oluşturabilirsiniz:
+For example, the `HashServiceProvider` binds a `hash` key into the IoC container, which resolves into a `Illuminate\Hashing\BcryptHasher` instance. You can easily extend and override this class within your own application by overriding this IoC binding. For example:
 
-	namespace Snappy\Extensions\Pagination;
-
-	class Environment extends \Illuminate\Pagination\Environment {
-
-		//
-
-	}
-
-Sınıf genişletmenizi oluşturduktan sonra, yeni bir `SnappyPaginationProvider` hizmet sağlayıcı sınıfı oluşturarak bunun `boot` metodunda paginator'u override edebilirsiniz:
-
-	class SnappyPaginationProvider extends PaginationServiceProvider {
+	class SnappyPaginationProvider extends Illuminate\Hashing\HashServiceProvider {
 
 		public function boot()
 		{
-			App::bind('paginator', function()
+			App::bindShared('hash', function()
 			{
-				return new Snappy\Extensions\Pagination\Environment;
+				return new Snappy\Hashing\ScryptHasher;
 			});
 
 			parent::boot();
@@ -189,7 +191,7 @@ Sınıf genişletmenizi oluşturduktan sonra, yeni bir `SnappyPaginationProvider
 
 	}
 
-Bu sınıfın ön tanımlı `ServiceProvider` taban sınıfını değil `PaginationServiceProvider` sınıfını genişlettiğine dikkat ediniz. Service providerinizi genişlettikten sonra, `app/config/app.php` yapılandırma dosyanızdaki `PaginationServiceProvider`ı sizin genişletilmiş providerin ismi ile takas edin.
+Note that this class extends the `HashServiceProvider`, not the default `ServiceProvider` base class. Once you have extended the service provider, swap out the `HashServiceProvider` in your `app/config/app.php` configuration file with the name of your extended provider.
 
 Konteynerde bağlanan herhangi bir çekirdek sınıfın genişletilmesi için genel yöntem budur. Esasında, her çekirdek sınıf konteynerde bu tarzda bağlanır ve override edilebilir. Tekrar ifade edeyim, frameworkte yer alan hizmet sağlayıcılarının baştan sona okunması çeşitli sınıfların konteynerde nerede bağlandığı ve onu bağlamak için hangi anahtarın kullanıldığı konusunda sizi bilgilendirecektir. Laravelin nasıl biraraya getirildiğini daha çok öğrenmek için harika bir yoldur.
 
