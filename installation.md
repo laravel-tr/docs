@@ -14,6 +14,10 @@ Laravel bağımlılıklarını yönetmek için [Composer](http://getcomposer.org
 <a name="install-laravel"></a>
 ## Laravel Yükleme
 
+### Via Laravel Installer
+
+First, download the [Laravel installer PHAR archive](http://laravel.com/laravel.phar). For convenience, rename the file to `laravel` and move it to `/usr/local/bin`. Once installed, the simple `laravel new` command will create a fresh Laravel installation in the directory you specify. For instance, `laravel new blog` would create a directory named `blog` containing a fresh Laravel installation with all dependencies installed. This method of installation is much faster than installing via Composer.
+
 ### Composer'ın Create-Project Komutuyla
 
 Terminalinizde Composer create-project komutunu yayınlayarak Laravel'i yükleyebilirsiniz:
@@ -26,9 +30,6 @@ Composer yüklendikten sonra, Laravel framework'ün [son sürümü](https://gith
 
 Laravel'i güncellemek isterseniz `php composer.phar update` komutunu yayınlayabilirsiniz.
 
-- Composer kurulumu için Türkçe kaynak: [Composer’ı Evrensel Olarak Kuralım](http://www.sinaneldem.com.tr/composeri-evrensel-olarak-kuralim/)
-- Laravel 4 kurulumu için Türkçe kaynak: [Laravel Framework Kurulumu](http://www.sinaneldem.com.tr/laravel-framework-kurulumu/)
-
 <a name="server-requirements"></a>
 ## Sunucu Gereksinimleri
 
@@ -36,6 +37,8 @@ Laravel framework'un birkaç sistem gereksinimi bulunmaktadır:
 
 - PHP >= 5.3.7
 - MCrypt PHP Eklentisi
+
+As of PHP 5.5, some OS distributions may require you to manually install the PHP JSON extension. When using Ubuntu, this can be done via `apt-get install php5-json`.
 
 <a name="configuration"></a>
 ## Yapılandırma
@@ -51,10 +54,10 @@ Laravel `app/storage` dizin içeriğinin web sunucu tarafından yazılabilir olm
 
 Framework dizin yollarının birkaçı yapılandırılabilirdir. Bu dizin yollarını değiştirebilmek için `bootstrap/paths.php` dosyasını gözden geçiriniz.
 
-> **Not:** Laravel, public klasörüne sadece public olması zorunlu dosyaları koymak suretiyle, uygulama kodunuzu ve lokal depolamanızı koruyacak şekilde tasarlanmıştır. Ya public klasörünü sitenizin documentRoot (web root olarak da bilinmektedir)'u olarak ayarlamanız, ya da public klasörünün içeriğini sitenizin kök dizinine koymanız ve Laravelin diğer tüm dosyalarını kök dizini dışına koymanız önerilir.
-
 <a name="pretty-urls"></a>
 ## Zarif URL'ler
+
+### Apache
 
 Framework ile beraber gelen `public/.htaccess` dosyası URL'lerin `index.php` olmadan kullanımına olanak sağlamaktadır. Laravel uygulamanızın sunumu için Apache kullanıyorsanız `mod_rewrite` modülünün etkin olduğundan emin olunuz.
 
@@ -66,3 +69,11 @@ Eğer Laravel ile birlikte gelen `.htaccess` dosyası Apache kurulumunuz ile iş
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteRule ^ index.php [L]
+
+### Nginx
+
+On Nginx, the following directive in your site configuration will allow "pretty" URLs:
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
