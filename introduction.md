@@ -1,9 +1,22 @@
 # Tanıtım
 
+- [Where To Start](#where-to-start)
 - [Laravel Felsefesi](#laravel-philosophy)
-- [Laravel'i Öğrenmek](#learning-laravel)
+- [Additional Resources](#additional-resources)
 - [Geliştirme Ekibi](#development-team)
-- [Çatı Sponsorları](#framework-sponsors)
+
+<a name="where-to-start"></a>
+## Where To Start
+
+Learning a new framework can be daunting, but it's also exciting. To smooth your transition, we've attempted to create very clear, concise documentation for Laravel. Here are some recommendations for what to read first:
+
+- [Installation](/docs/installation) and [Configuration](/docs/configuration)
+- [Routing](/docs/routing)
+- [Requests & Input](/docs/requests)
+- [Views & Responses](/docs/responses)
+- [Controllers](/docs/controllers)
+
+After reading through these documents, you should have a good grasp on basic request / response handling in Laravel. Next, you may wish to read about [configuring your database](/docs/database), the [fluent query builder](/docs/queries), and the [Eloquent ORM](/docs/eloquent). Or, you may wish to read about [authentication and security](/docs/security) so you can start signing people into your application.
 
 <a name="laravel-philosophy"></a>
 ## Laravel Felsefesi
@@ -14,34 +27,23 @@ Laravel, geliştiriciler için, uygulama işlevselliğinden ödün vermeden geli
 
 Laravel büyük, kapsamlı uygulamalar için gereken araçları içeren erişilebilir, aynı zamanda güçlü bir çatıdır. Mükemmel ters kontrol kapsayıcısı, etkileyici göç sistemi ve sağlam yerleşik ünite test desteği size geliştirmeyi amaçladığınız uygulama için gerekli araçları sağlayacaktır.
 
-<a name="learning-laravel"></a>
-## Laravel'i Öğrenmek
+<a name="additional-resources"></a>
+## Additional Resources
 
 Laravel öğrenmenin en iyi yollarından biri tüm dokümantasyonunu dikkatlice okumaktır. Bu kılavuz size çatının çehresi ve uygulamanızda nasıl kullanacağınız konusunda rehber olur.
 
 Bu kılavuza ek olarak [Laravel kitapları](http://wiki.laravel.io/Books)'na gözatabilirsiniz. Laravel topluluğunun yazdığı bu kitaplar çatıyı öğrenmek için çok iyi tamamlayıcı kaynaklar olarak hizmet edecektir:
 
+- [Laravel 4 Türkçe Dokümantasyon (Bu Kitap)](https://leanpub.com/laravel4-tr), yazar: Türkiye Forumları Çeviri Ekibi
 - [Code Bright (Türkçe Çeviri)](https://leanpub.com/codebright-tr), yazar: Dayle Rees ve Sinan Eldem
-- [Implementing Laravel (Türkçe Çeviri)](https://leanpub.com/implementinglaravel-tr), yazar: Chris Fidao ve Sinan Eldem
-- [Laravel: From Apprentice To Artisan (Türkçe Çeviri)](https://leanpub.com/laravel-4-tr), yazar: Taylor Otwell ve Sinan Eldem
-- [Laravel 4 Türkçe Dokümantasyon (Bu Kitap)](https://leanpub.com/laravel4-tr), yazarlar: Türkiye Forumları Çeviri Ekibi
 - [Laravel Testing Decoded (İngilizce)](https://leanpub.com/laravel-testing-decoded), yazar: Jeffrey Way
-- [Getting Stuff Done With Laravel 4 (İngilizce)](https://leanpub.com/gettingstuffdonelaravel) yazar Chuck Heintzelman
-- [Laravel 4 Cookbook (İngilizce)](https://leanpub.com/laravel4cookbook) yazar Christopher Pitt and Taylor Otwell
+- [Laravel: From Apprentice To Artisan (Türkçe Çeviri)](https://leanpub.com/laravel-4-tr), yazar: Taylor Otwell ve Sinan Eldem
+- [Implementing Laravel (Türkçe Çeviri)](https://leanpub.com/implementinglaravel-tr), yazar: Chris Fidao ve Sinan Eldem
+- [Getting Stuff Done With Laravel 4 (Türkçe Çeviri)](https://leanpub.com/gsd-laravel-tr) yazar: Chuck Heintzelman ve Sinan Eldem
+- [Laravel 4 Cookbook (Türkçe Çeviri)](https://leanpub.com/laravel4cookbook-tr) yazar: Christopher Pitt, Taylor Otwell ve Sinan Eldem
+- [Laravel in Action (İngilizce)](http://www.manning.com/surguy/) by Maks Surguy
 
 <a name="development-team"></a>
 ## Geliştirme Ekibi
 
 Laravel, çatının geliştirilmesi liderliğini sürdüren [Taylor Otwell](https://github.com/taylorotwell) tarafından oluşturuldu. Önde gelen diğer topluluk üyeleri ve katkıda bulunan kişiler [Dayle Rees](https://github.com/daylerees), [Shawn McCool](https://github.com/ShawnMcCool), [Jeffrey Way](https://github.com/JeffreyWay), [Jason Lewis](https://github.com/jasonlewis), [Ben Corlett](https://github.com/bencorlett), [Franz Liedke](https://github.com/franzliedke), [Dries Vints](https://github.com/driesvints), [Mior Muhammed Zaki](https://github.com/crynobone) ve [Phil Sturgeon](https://github.com/philsturgeon)'dır.
-
-<a name="framework-sponsors"></a>
-## Çatı Sponsorları
-
-Aşağıdaki kuruluşlar Laravel framework geliştirilmesine mali katkılarda bulunmuştur:
-
-- [UserScape](http://userscape.com)
-- [Cartalyst](http://cartalyst.com)
-- [Elli Davis - Toronto Realtor](http://ellidavis.com)
-- [Jay Banks - Vancouver Lofts & Condos](http://jaybanks.ca/vancouver-lofts-condos)
-- [Julie Kinnear - Toronto MLS](http://juliekinnear.com/toronto-mls-listings)
-- [Jamie Sarner - Toronto Real Estate](http://jamiesarner.com)
