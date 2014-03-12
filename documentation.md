@@ -1,7 +1,8 @@
 - Önsöz
     - [Tanıtım](/docs/introduction)
     - [Hızlı Başlangıç](/docs/quick)
-    - [Katkıda Bulunun](/docs/contributing)
+    - [Sürüm Notları](/docs/releases)
+    - [Yükseltme Rehberi](/docs/upgrade)
 - Başlangıç
     - [Kurulum](/docs/installation)
     - [Yapılandırma](/docs/configuration)
@@ -12,8 +13,9 @@
     - [Denetçiler (Controllers)](/docs/controllers)
     - [Hatalar ve Günlüğe Ekleme](/docs/errors)
 - Detaylı Öğrenim
+    - [Kimlik Doğrulama](/docs/security)
     - [Önbellekleme (Cache)](/docs/cache)
-    - [Frameworkün Genişletilmesi (Core Extension)](/docs/extending)
+    - [Framework'ün Genişletilmesi](/docs/extending)
     - [Olaylar (Events)](/docs/events)
     - [Cepheler (Facades)](/docs/facades)
     - [Formlar & HTML](/docs/html)
@@ -22,10 +24,11 @@
     - [Yerelleştirme](/docs/localization)
     - [Posta](/docs/mail)
     - [Paket Geliştirme](/docs/packages)
-    - [Sayfalandırma](/docs/pagination)
+    - [Sayfalama](/docs/pagination)
     - [Kuyruklar](/docs/queues)
     - [Güvenlik](/docs/security)
     - [Oturum](/docs/session)
+    - [SSH](/docs/ssh)
     - [Şablonlar](/docs/templates)
     - [Unit Test](/docs/testing)
     - [Geçerlilik Denetimi (Validation)](/docs/validation)
