@@ -156,7 +156,7 @@ Yukardaki örneğe göre `id` ve `parola` nitelikleri toplu atana **mayacaktır*
 
 Veritabanında bir modelden yeni bir kayıt oluşturmak için, yeni bir model olgusu oluşturun ve `save` metodunu çağırın.
 
-**Yeni Bir Modelin Kaydedilmesi**
+#### Yeni Bir Modelin Kaydedilmesi
 
 	$uye = new Uye;
 
@@ -213,13 +213,13 @@ Ayrıca, bir modeller kümesinde güncelleme sorguları da çalıştırabilirsin
 
 Bir modeli silmek için olgu üzerinde `delete` metodunu çağırın:
 
-#### Mevcut Bir Modelin Silinmesi**
+#### Mevcut Bir Modelin Silinmesi
 
 	$uye = Uye::find(1);
 
 	$uye->delete();
 
-#### Mevcut Bir Modelin Key Aracılığıyla Silinmesi**
+#### Mevcut Bir Modelin Key Aracılığıyla Silinmesi
 
 	Uye::destroy(1);
 
@@ -350,7 +350,7 @@ Kapsamlar size sorgu mantığınızı modellerinizde tekrar tekrar kullanma imka
 
 	$uyeler = Uye::popular()->kadin()->orderBy('created_at')->get();
 
-#### Dinamik Kapsamlar**
+#### Dinamik Kapsamlar
 
 Bazen parametreler kabul eden kapsam tanımlamak isteyebilirsiniz. Yapmanız gereken kapsam metoduna parametrelerinizi eklemek:
 
@@ -384,7 +384,7 @@ Pek tabii, veritabanı tablolarınız büyük ihtimalle bir diğeriyle ilişkili
 
 Birden bire şeklindeki bir ilişki çok basit bir ilişikidir. Örneğin, bir `Uye` modelinin bir `Telefon`'u olabilir. Eloquent'de bu ilişkiiyi şöyle tanımlayabiliriz:
 
-#### Birden Bire Tarzı İlişki Tanımlama**
+#### Birden Bire Tarzı İlişki Tanımlama
 
 	class Uye extends Eloquent {
 
@@ -601,7 +601,7 @@ If you would like to manually specify the keys of the relationship, you may pass
 
 Artık bir personel ya da siparişe ait fotoları elde edebiliriz:
 
-#### Çokbiçimli Bir İlişkinin Getirilmesi**
+#### Çokbiçimli Bir İlişkinin Getirilmesi
 
 	$personel = Personel::find(1);
 
@@ -1012,7 +1012,7 @@ Verilen dönüş (callback) [array_filter()](http://php.net/manual/en/function.a
 
 Bazen de, kendi eklediğiniz metodları olan özel bir koleksiyon nesnesi döndürmek isteyebilirsiniz. Bunu, Eloquent modeliniz üzerinde `newCollection` metodunu ezerek yapabilirsiniz:
 
-#### Özel Bir Koleksiyon Tipinin Döndürülmesi**
+#### Özel Bir Koleksiyon Tipinin Döndürülmesi
 
 	class Uye extends Eloquent {
 
@@ -1084,7 +1084,7 @@ Whenever a new item is saved for the first time, the `creating` and `created` ev
 
 If `false` is returned from the `creating`, `updating`, `saving`, or `deleting` events, the action will be cancelled:
 
-#### Saklama Operasyonlarının Olaylar Aracığıyla İptal Edilmesi**
+#### Saklama Operasyonlarının Olaylar Aracığıyla İptal Edilmesi
 
 	Uye::creating(function($uye)
 	{
