@@ -23,18 +23,18 @@ Laravel, kimlik doğrulanması işlerini çok basit hale getirmeyi amaçlamaktad
 
 Laravel'deki `Hash` sınıfı güvenli Bcrypt karıştırması (hashing) sağlar:
 
-**Bcrypt Kullanılarak Bir Şifrenin Karıştırılması**
+#### Bcrypt Kullanılarak Bir Şifrenin Karıştırılması
 
 	$parola = Hash::make('secret');
 
-**Bir Şifrenin Karıştırılmışa Göre Doğrulanması**
+#### Bir Şifrenin Karıştırılmışa Göre Doğrulanması
 
 	if (Hash::check('secret', $karistirilmisParola))
 	{
 		// Parola doğrulanmıştır...
 	}
 
-**Bir Şifrenin Yeniden Karıştırılması Gerekip Gerekmediğinin Yoklanması**
+#### Bir Şifrenin Yeniden Karıştırılması Gerekip Gerekmediğinin Yoklanması
 
 	if (Hash::needsRehash($karistirilmis))
 	{
@@ -57,7 +57,7 @@ Buradaki `email`'in gerekli bir seçenek değil, sadece örnek olsun diye kullan
 
 Bir kullanıcının uygulamanıza zaten giriş yapmış olduğunu tayin etmek için `check` metodunu kullanabilirsiniz:
 
-**Bir Kullanıcının Doğrulanmış Olup Olmadığının Tayin Edilmesi**
+#### Bir Kullanıcının Doğrulanmış Olup Olmadığının Tayin Edilmesi
 
 	if (Auth::check())
 	{
@@ -66,7 +66,7 @@ Bir kullanıcının uygulamanıza zaten giriş yapmış olduğunu tayin etmek i�
 
 Şayet uygulamanıza "beni hatırla" işlevselliği vermek istiyorsanız, `attempt` metoduna ikinci parametre olarak `true` geçebilirsiniz, böylece bu kullanıcı süresiz olarak "doğrulanmış" tutulacaktır (yada manuel olarak çıkış işlemi yapıncaya kadar):
 
-**Bir Kullanıcının Kimliğinin Doğrulanması ve "Hatırlanması"**
+#### Bir Kullanıcının Kimliğinin Doğrulanması ve "Hatırlanması"
 
 	if (Auth::attempt(array('email' => $email, 'password' => $parola), true))
 	{
@@ -75,18 +75,28 @@ Bir kullanıcının uygulamanıza zaten giriş yapmış olduğunu tayin etmek i�
 
 **Not:** `attempt` metodu `true` döndürürse, kullanıcı uygulamanıza girmiş kabul edilir.
 
+#### Determining If User Authed Via Remember
+If you are "remembering" user logins, you may use the `viaRemember` method to determine if the user was authenticated using the "remember me" cookie:
+
+	if (Auth::viaRemember())
+	{
+		//
+	}
+
 Kimlik doğrulama sorgusuna ekstra şartlar da ekleyebilirsiniz:
 
-**Bir Kullanıcının Ek Şartlara Göre Doğrulanması**
+#### Bir Kullanıcının Ek Şartlara Göre Doğrulanması
 
     if (Auth::attempt(array('email' => $email, 'password' => $parola, 'aktif' => 1)))
     {
         // Bu kullanıcı aktiftir, üyeliği askıya alınmış değildir ve mevcuttur.
     }
 
+> **Note:** For added protection against session fixation, the user's session ID will automatically be regenerated after authenticating.
+
 Bir kullanıcının kimliği doğrulandıktan sonra, bu kullanıcının model / kaydına ulaşabilirsiniz:
 
-**Login Yapmış Kullanıcıya Erişme**
+#### Login Yapmış Kullanıcıya Erişme
 
 	$email = Auth::user()->email;
 
@@ -96,7 +106,7 @@ Bir kullanıcıyı sadece ID'i ile uygulamanıza giriş yaptırtmak için `login
 
 `validate` metodu gerçekte uygulamaya giriş yapılmaksızın bir kullanıcının kimlik bilgilerinin geçerlilik denetiminden geçirilmesine imkan verir:
 
-**Login Olmaksızın Kullanıcı Bilgilerinin Geçerlilik Denetimi**
+#### Login Olmaksızın Kullanıcı Bilgilerinin Geçerlilik Denetimi
 
 	if (Auth::validate($kimlikbilgileri))
 	{
@@ -105,14 +115,14 @@ Bir kullanıcıyı sadece ID'i ile uygulamanıza giriş yaptırtmak için `login
 
 Bir kullanıcıyı uygulamanıza tek bir istek için giriş yapmak için de `once` metodunu kullanabilirsiniz. Bu durumda oturum veya çerezler kullanılmayacaktır.
 
-**Bir Kullanıca Tek Bir İstek İçin Giriş Yapma**
+#### Bir Kullanıca Tek Bir İstek İçin Giriş Yapma
 
 	if (Auth::once($kimlikbilgileri))
 	{
 		//
 	}
 
-**Bir Kullanıcıya Uygulamadan Çıkış Yapma**
+#### Bir Kullanıcıya Uygulamadan Çıkış Yapma
 
 	Auth::logout();
 
@@ -132,7 +142,7 @@ Bu metod, bir kullanıcıyı `attempt` metodu kullanarak kimlik bilgileri ile gi
 
 Belli bir rotaya sadece kimliği doğrulanmış kullanıcıların erişebilmesini sağlamak amacıyla rota filtreleri kullanılabilir. Laravel ön tanımlı olarak `auth` filtresi sağlamıştır ve `app/filters.php` içinde tanımlanmıştır.
 
-**Bir Rotanın Korunması**
+#### Bir Rotanın Korunması
 
 	Route::get('profil', array('before' => 'auth', function()
 	{
@@ -143,11 +153,11 @@ Belli bir rotaya sadece kimliği doğrulanmış kullanıcıların erişebilmesin
 
 Laravel, uygulamanızı siteler arası istek sahtekarlıklarından (cross-site request forgeries [CSRF]) korumak için kolay bir metod sağlamaktadır.
 
-**Forma CSRF Jetonunun Eklenmesi**
+#### Forma CSRF Jetonunun Eklenmesi
 
     <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
 
-**Gönderilmiş CSRF Jetonunun Geçerlilik Yoklaması**
+#### Gönderilmiş CSRF Jetonunun Geçerlilik Yoklaması
 
     Route::post('register', array('before' => 'csrf', function()
     {
@@ -159,7 +169,7 @@ Laravel, uygulamanızı siteler arası istek sahtekarlıklarından (cross-site r
 
 HTTP Temel Kimlik Doğrulaması, kullanıcıları özel bir "giriş" sayfası açmadan uygulamanıza giriş yapabilmeleri için hızlı bir yoldur. Bunun için, rotanıza `auth.basic` filtresi tutturun:
 
-**HTTP Temel İle Bir Rotanın Korunması**
+#### HTTP Temel İle Bir Rotanın Korunması
 
 	Route::get('profil', array('before' => 'auth.basic', function()
 	{
@@ -168,25 +178,33 @@ HTTP Temel Kimlik Doğrulaması, kullanıcıları özel bir "giriş" sayfası a�
 
 Ön tanımlı olarak, bu `basic` filtresi kimlik doğrulaması yaparken kullanıcı kaydındaki `email` sütununu kullanacaktır. Siz başka bir sütunu kullanmak istiyorsanız, `basic` metoduna birinci parametre olarak bu sütunun adını geçirin:
 
-	return Auth::basic('uyeismi');
+	Route::filter('auth.basic', function()
+	{
+		return Auth::basic('username');
+	});
 
 HTTP Basit Kimlik Doğrulamasını oturumda kullanıcı tanıtıcı bir çerez ayarlamadan da kullanabilirsiniz, bu daha çok API kimlik doğrulamalarında işe yarayacaktır. Bunu yapmak için, `onceBasic` metodu döndüren bir filtre tanımlayın:
 
-**Durum Bilgisi Olmaksızın Bir HTTP Basit Filtresi Ayarlanması**
+#### Durum Bilgisi Olmaksızın Bir HTTP Basit Filtresi Ayarlanması
 
 	Route::filter('basic.once', function()
 	{
 		return Auth::onceBasic();
 	});
 
+If you are using PHP FastCGI, HTTP Basic authentication will not work correctly by default. The following lines should be added to your `.htaccess` file:
+
+	RewriteCond %{HTTP:Authorization} ^(.+)$
+	RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
 <a name="password-reminders-and-reset"></a>
 ## Şifre Hatırlatıcıları & Sıfırlama
 
-### Şifre Hatırlatıcı Göndermek
+### Model & Table
 
 Çoğu web uygulaması, kullanıcılarına unutulmuş şifrelerini sıfırlayacak bir yol verir. Her uygulamada bunu tekrar tekrar  yapmaya zorlamak yerine Laravel size şifre hatırlatıcı mektup gönderme ve şifre sıfırlaması yapılması için pratik metodlar sağlar. Başlamak için sizin `User` modelinizin `Illuminate\Auth\Reminders\RemindableInterface` sözleşmesini yerine getirdiğini doğrulayın. Tabii ki, Laravel'le gelen `User` modeli bu arayüz kontratını zaten yerine getirmektedir.
 
-**RemindableInterface Yürütme İşlemi**
+#### RemindableInterface Implementasyonu
 
 	class User extends Eloquent implements RemindableInterface {
 
@@ -199,103 +217,81 @@ HTTP Basit Kimlik Doğrulamasını oturumda kullanıcı tanıtıcı bir çerez a
 
 Daha sonra, şifre sıfırlama jetonlarının saklanacağı bir tablo oluşturulmalıdır. Bu tablo için bir migrasyon üretmek için yapacağınız tek şey `auth:reminders` Artisan komutunu çalıştırmaktır:
 
-**Hatırlatıcı Tablo Migrasyonunun Üretilmesi**
+#### Hatırlatıcı Tablo Migrasyonunun Üretilmesi
 
-	php artisan auth:reminders
+	php artisan auth:reminders-table
 
 	php artisan migrate
 
-Bir şifre hatırlatıcı göndermek için, `Password::remind` metodunu kullanabiliriz:
+### Password Reminder Controller
 
-**Bir Şifre Hatırlatıcı Gönderme**
+Now we're ready to generate the password reminder controller. To automatically generate a controller, you may use the `auth:reminders-controller` Artisan command, which will create a `RemindersController.php` file in your `app/controllers` directory.
 
-	Route::post('password/remind', function()
+	php artisan auth:reminders-controller
+
+The generated controller will already have a `getRemind` method that handles showing your password reminder form. All you need to do is create a `password.remind` [view](/docs/responses#views). This view should have a basic form with an `email` field. The form should POST to the `RemindersController@postRemind` action.
+
+A simple form on the `password.remind` view might look like this:
+
+	<form action="{{ action('RemindersController@postRemind') }}" method="POST">
+		<input type="email" name="email">
+		<input type="submit" value="Send Reminder">
+	</form>
+
+In addition to `getRemind`, the generated controller will already have a `postRemind` method that handles sending the password reminder e-mails to your users. This method expects the `email` field to be present in the `POST` variables. If the reminder e-mail is successfully sent to the user, a `status` message will be flashed to the session. If the reminder fails, an `error` message will be flashed instead.
+
+Within the `postRemind` controller method you may modify the message instance before it is sent to the user:
+
+	Password::remind(Input::only('email'), function($message)
 	{
-		$kimlikbilgileri = array('email' => Input::get('email'));
-
-		return Password::remind($kimlikbilgileri);
+		$message->subject('Password Reminder');
 	});
 
-`Password::remind` metoduna geçirilen parametrelerin `Auth::attempt` metoduna geçirilenle aynı olduğuna dikkat edin. Bu metod `User`'ı getirecek ve e-mail aracılığı ile ona bir şifre sıfırlama linki gönderecektir. Bu e-mail görünümüne, şifre sıfırlama formuna link oluşturmakta kullanılabilcek bir `token` değişkeni geçilecektir. Bu görünüme `user` nesnesi de geçilecektir.
+Your user will receive an e-mail with a link that points to the `getReset` method of the controller. The password reminder token, which is used to identify a given password reminder attempt, will also be passed to the controller method. The action is already configured to return a `password.reset` view which you should build. The `token` will be passed to the view, and you should place this token in a hidden form field named `token`. In addition to the `token`, your password reset form should contain `email`, `password`, and `password_confirmation` fields. The form should POST to the `RemindersController@postReset` method.
 
-> **Not:** `auth.reminder.email` yapılandırma seçeneğini değiştirmek suretiyle e-mail mesajı olarak hangi görünümün kullanılacağını belirleyebilirsiniz. Tabii ki, ön tanımlı bir görünüm mevcuttur.
+A simple form on the `password.reset` view might look like this:
 
-`remind` metoduna ikinci bir parametre olarak bir bitirme fonksiyonu (Closure) geçerek, kullanıcıya gönderilecek mesaj olgusunu değiştirebilirsiniz:
+	<form action="{{ action('RemindersController@postReset') }}" method="POST">
+		<input type="hidden" name="token" value="{{ $token }}">
+		<input type="email" name="email">
+		<input type="password" name="password">
+		<input type="password" name="password_confirmation">
+		<input type="submit" value="Reset Password">
+	</form>
 
-	return Password::remind($kimlikbilgileri, function($mesaj, $uye)
+Finally, the `postReset` method is responsible for actually changing the password in storage. In this controller action, the Closure passed to the `Password::reset` method sets the `password` attribute on the `User` and calls the `save` method. Of course, this Closure is assuming your `User` model is an [Eloquent model](/docs/eloquent); however, you are free to change this Closure as needed to be compatible with your application's database storage system.
+
+If the password is successfully reset, the user will be redirected to the root of your application. Again, you are free to change this redirect URL. If the password reset fails, the user will be redirect back to the reset form, and an `error` message will be flashed to the session.
+
+### Password Validation
+
+By default, the `Password::reset` method will verify that the passwords match and are >= six characters. You may customize these rules using the `Password::validator` method, which accepts a Closure. Within this Closure, you may do any password validation you wish. Note that you are not required to verify that the passwords match, as this will be done automatically by the framework.
+
+	Password::validator(function($credentials)
 	{
-		$mesaj->subject('Şifre Hatırlatıcınız');
+		return strlen($credentials['password']) >= 8;
 	});
 
-Ayrıca, `remind` metodunun sonuçlarını doğrudan bir rotadan döndürdüğümüze dikkat ediniz. Ön tanımlı olarak, `remind` metodu mevcut URI'ye bir `Redirect` döndürecektir. Şifre sıfırlamaya çalışılırken eğer bir hata oluşursa, oturuma bir `error` değişkeni, bir de `reminders` dil dosyasından bir dil satırı çekmekte kullanılabilecek bir `reason` değişkeni flaş tarzında gönderilir. Şifre sıfırlama başarılı olursa bu sefer oturuma bir `success` değişkeni gönderilecektir. Bu durumda şifre sıfırlama form görünümünüz şöyle bir şey olacaktır:
-
-	@if (Session::has('error'))
-		{{ trans(Session::get('reason')) }}
-	@elseif (Session::has('success'))
-		Şifre sıfırlaması olan bir e-mail gönderildi.
-	@endif
-
-	<input type="text" name="email">
-	<input type="submit" value="Hatırlatıcı Gönder">
-
-### Şifrelerin Sıfırlanması
-
-Bir kullanıcı hatırlatma e-mailindeki sıfırlama linkini tıkladıktan sonra, bir `password` ve `password_confirmation` alanı yanında gizli bir `token` alanı da olan bir forma yönlendirilmelidir. Aşağıda şifre sıfırlama formu için bir rota örneği görülüyor:
-
-	Route::get('password/reset/{token}', function($token)
-	{
-		return View::make('auth.reset')->with('token', $token);
-	});
-
-Ve, bir şifre sıfırlama formu görünümü de şuna benzeyebilir:
-
-	@if (Session::has('error'))
-		{{ trans(Session::get('reason')) }}
-	@endif
-
-	<input type="hidden" name="token" value="{{ $token }}">
-	<input type="text" name="email">
-	<input type="password" name="password">
-	<input type="password" name="password_confirmation">
-
-Tekrar hatırlatmakta yarar var, şifre sıfırlaması sırasında Laravel tarafından saptanabilen herhangi bir hatayı göstermek için `Session`'u kullanıyoruz. Artık sıfırlama işini yapacak bir `POST` rotası tanımlayabiliriz:
-
-	Route::post('password/reset/{token}', function()
-	{
-		$kimlikbilgileri = array('email' => Input::get('email'));
-
-		return Password::reset($kimlikbilgileri, function($uye, $password)
-		{
-			$uye->password = Hash::make($password);
-
-			$uye->save();
-
-			return Redirect::to('home');
-		});
-	});
-
-Şifre sıfırlama başarılı olursa `User` (üye) olgunuz ve şifre sizin bitirme fonksiyonunuza geçilecek, böylece burada gerçek save operasyon yapabileceksiniz. Daha sonra, `reset` metodu tarafından döndürülecek olan bitirme fonksiyonundan ya bir `Redirect` döndürebilirsiniz veya başka bir tipte cevap döndürebilirsiniz. Bu `reset` metodunun istekte geçerli bir `token`, geçerli kimlik bilgileri ve birbirine uyan şifreler olup olmadığını otomatik olarak kontrol ettiğini unutmayın.
-
-Ayrıca, `remind` metoduna benzer şeklilde, şifre resetlemesi sırasında bir hata oluşması durumunda `reset` metodu da bir `error` ve bir `reason` eşliğinde mevcut URI'ye bir `Redirect` döndürecektir.
+> **Note:** By default, password reset tokens expire after one hour. You may change this via the `reminder.expire` option of your `app/config/auth.php` file.
 
 <a name="encryption"></a>
 ## Kriptolama
 
 Laravel, mcrypt PHP uzantısı aracılığıyla güçlü AES-256 kriptolama imkanı sağlamaktadır:
 
-**Bir Değerin Kriptolanması**
+#### Bir Değerin Kriptolanması
 
 	$kriptolu = Crypt::encrypt('secret');
 
 > **Not:** `app/config/app.php` dosyasının `key` seçeneğinde 32 karakterli rasgele string ayarladığınızdan emin olun. Aksi Takdirde kriptolanmış değerler güvenli olmayacaktır.
 
-**Kriptolu Bir Değerin Çözülmesi**
+#### Kriptolu Bir Değerin Çözülmesi
 
 	$cozuk = Crypt::decrypt($kriptoluDeger);
 
 Ayrıca, kriptocu tarafından kullanılan cipher ve mod da ayarlayabilirsiniz
 
-**Cipher ve Mod Ayarlanması**
+#### Cipher ve Mod Ayarlanması
 
 	Crypt::setMode('crt');
 
