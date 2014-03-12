@@ -2,6 +2,7 @@
 
 - [Giriş](#introduction)
 - [Temel Kullanım](#basic-usage)
+- [Where To Register Bindings](#where-to-register)
 - [Otomatik Çözümleme](#automatic-resolution)
 - [Pratik Kullanım](#practical-usage)
 - [Hizmet Sağlayıcıları](#service-providers)
@@ -19,14 +20,14 @@ Laravel IoC konteyner'inin anlaşılması hem güçlü, büyük bir uygulama olu
 
 IoC konteyneri bağımlılıkları iki yolla çözebilmektedir: ya Closure geri çağrıları yoluyla ya da otomatik çözülüm yoluyla. Önce Closure geri çağrılarını ele alalım. Birincisi, bir "tip", konteynere bağlanabilir:
 
-**Bir Tipin Konteynere Bağlanması**
+#### Bir Tipin Konteynere Bağlanması
 
 	App::bind('falan', function($app)
 	{
 		return new FalanFilan;
 	});
 
-**Bir Tipin Konteynerden Dönüştürülmesi**
+#### Bir Tipin Konteynerden Dönüştürülmesi
 
 	$deger = App::make('falan');
 
@@ -34,7 +35,7 @@ IoC konteyneri bağımlılıkları iki yolla çözebilmektedir: ya Closure geri 
 
 Bazen, konteyner içine sadece bir kez çözümlenmesi ve aynı olgunun konteynere sonraki çağrılarda döndürülmesi gereken bir şeyler bağlamak isteyebilirsiniz:
 
-**Konteynere "Paylaşılan" Bir Tip Bağlama**
+#### Konteynere "Paylaşılan" Bir Tip Bağlama
 
 	App::singleton('falan', function()
 	{
@@ -43,18 +44,25 @@ Bazen, konteyner içine sadece bir kez çözümlenmesi ve aynı olgunun konteyne
 
 `instance` metodunu kullanarak, konteynere mevcut bir nesne olgusunu da bağlayabilirsiniz:
 
-**Mevcut Bir Olgunun Konteynere Bağlanması**
+#### Mevcut Bir Olgunun Konteynere Bağlanması
 
 	$falan = new Falan;
 
 	App::instance('falan', $falan);
+
+<a name="where-to-register"></a>
+## Where To Register Bindings
+
+IoC bindings, like event handlers or route filters, generally fall under the title of "bootstrap code". In other words, they prepare your application to actually handle requests, and usually need to be executed before a route or controller is actually called. Like most other bootstrap code, the `start` files are always an option for registering IoC bindings. Alternatively, you could create an `app/ioc.php` (filename does not matter) file and require that file from your `start` file.
+
+If your application has a very large number of IoC bindings, or you simply wish to organize your IoC bindings in separate files by category, you may register your bindings in a [service provider](#service-providers).
 
 <a name="automatic-resolution"></a>
 ## Otomatik Çözümleme
 
 IoC konteyneri birçok durumda hiçbir yapılandırmaya gerek kalmadan sınıfları çözümleyecek kadar güçlüdür. Örneğin:
 
-**Bir Sınıfın Çözümlenmesi**
+#### Bir Sınıfın Çözümlenmesi
 
 	class FalanFilan {
 
@@ -73,7 +81,7 @@ Bir tipin konteynerde bağlı olmadığı durumlarda, sınıfı görmek ve sın�
 
 Buna karşın, bazı durumlarda, bir sınıf "somut tipte" olmayıp, arayüz tatbikatına (implementasyonuna) bağımlı olabilir. Böyle olduğu takdirde, hangi arayüz tatbikatının enjekte edileceği konusunda konteyneri bilgilendirmek için `App::bind` metodu kullanılmalıdır:
 
-**Bir Implementasyona Bir Interface Bağlanması**
+#### Bir Implementasyona Bir Interface Bağlanması
 
 	App::bind('UyeRepositoryInterface', 'DbUyeRepository');
 
@@ -95,7 +103,7 @@ Biz `UyeRepositoryInterface`'i somut bir tipe bağladığımız için, `DbUserRe
 
 Laravel uygulamanızın esneklik ve test edilebilirliğini artırmak amacıyla IoC konteyneri kullanmak için çeşitli fırsatlar sağlar. En başta gelen örnek, denetçilerin çözümlenmesidir. Bütün denetçiler IoC kenteyneri tarafından bir kontroller sınıf yapıcısındaki tip ipuçları bağımlılığı ile çözümlenir ve bunlar otomatik olarak enjekte edilecektir.
 
-**Tipe Özgü İpucu Denetçi Bağımlılıkları**
+#### Tipe Özgü İpucu Denetçi Bağımlılıkları
 
 	class SiparisController extends BaseController {
 
@@ -117,7 +125,7 @@ Bu örnekteki `SiparisRepository` sınıfı otomatik olarak kontroller'e enjekte
 
 [Filtreler](/docs/routing#route-filters), [kompozitörler](/docs/responses#view-composers) ve [olay işleyicileri](/docs/events#using-classes-as-listeners) de IoC konteynerinde çözülebilirler . Bunları kayda geçirdiğiniz zaman, sadece kullanılması gereken sınıfın adını vermeniz yeterlidir:
 
-**Diğer IoC Kullanım Örnekleri**
+#### Diğer IoC Kullanım Örnekleri
 
 	Route::filter('falan', 'FalanFilter');
 
@@ -134,7 +142,7 @@ Aslında, çekirdek Laravel bileşenlerinin pek çoğu hizmet sağlayıcıları 
 
 Bir hizmet sağlayıcı oluşturmak için, sadece `Illuminate\Support\ServiceProvider` sınıfını genişletin ve bir `register` metodu tanımlayın:
 
-**Bir Hizmet Sağlayıcı Tanımlanması**
+#### Bir Hizmet Sağlayıcı Tanımlanması
 
 	use Illuminate\Support\ServiceProvider;
 
@@ -154,7 +162,7 @@ Bu `register` metodunda, uygulama IoC konteynerinin `$this->app` özelliği arac
 
 Bir hizmet sağlayıcıyı `App::register` metodunu kullanarak çalışma zamanında da kayda geçirebilirsiniz:
 
-**Bir Hizmet Sağlayıcının Çalışma Zamanında Kayda Geçirilmesi**
+#### Bir Hizmet Sağlayıcının Çalışma Zamanında Kayda Geçirilmesi
 
 	App::register('FalanServiceProvider');
 
@@ -163,7 +171,7 @@ Bir hizmet sağlayıcıyı `App::register` metodunu kullanarak çalışma zaman�
 
 Konteyner ne zaman bir nesne çüzümlese bir olay ateşler. `resolving` metodunu kullanarak bu olayı dinleyebilirsiniz:
 
-**Bir Resolving Dinleyicisinin Kayda Geçirilmesi**
+#### Bir Resolving Dinleyicisinin Kayda Geçirilmesi
 
 	App::resolving(function($nesne)
 	{
