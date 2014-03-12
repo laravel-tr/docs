@@ -2,6 +2,8 @@
 
 - [Giriş](#introduction)
 - [Ortam Yapılandırması](#environment-configuration)
+- [Provider Configuration](#provider-configuration)
+- [Protecting Sensitive Configuration](#protecting-sensitive-configuration)
 - [Bakım Modu](#maintenance-mode)
 
 <a name="introduction"></a>
@@ -52,9 +54,11 @@ Dikkat ederseniz, bu dosyada _bütün_ değerleri yazmanıza gerek yok. Sadece �
 
     $env = $app->detectEnvironment(array(
 
-        'local' => array('your-machine-name'),
+        'local' => array('bilgisayarınızın-ismi'),
 
     ));
+
+In this example, 'local' is the name of the environment and 'bilgisayarınızın-ismi' is the hostname of your server. On Linux and Mac, you may determine your hostname using the `hostname` terminal command.
 
 Dilerseniz, `detectEnvironment` methoduna `Closure` ekleyip ortam algılama özelliğini kendiniz de yazabilirsiniz:
 
@@ -65,9 +69,55 @@ Dilerseniz, `detectEnvironment` methoduna `Closure` ekleyip ortam algılama öze
 
 Şuanki uygulama ortamına `environment` methoduyla erişebilirsiniz:
 
-**Şuanki Uygulama Ortamına Erişmek**
+#### Şuanki Uygulama Ortamına Erişmek
 
 	$environment = App::environment();
+
+You may also pass arguments to the `environment` method to check if the environment matches a given value:
+
+	if (App::environment('local'))
+	{
+		// The environment is local
+	}
+
+	if (App::environment('local', 'staging'))
+	{
+		// The environment is either local OR staging...
+	}
+
+<a name="provider-configuration"></a>
+### Provider Configuration
+
+When using environment configuration, you may want to "append" environment [service providers](/docs/ioc#service-providers) to your primary `app` configuration file. However, if you try this, you will notice the environment `app` providers are overriding the providers in your primary `app` configuration file. To force the providers to be appended, use the `append_config` helper method in your environment `app` configuration file:
+
+	'providers' => append_config(array(
+		'LocalOnlyServiceProvider',
+	))
+
+<a name="protecting-sensitive-configuration"></a>
+## Protecting Sensitive Configuration
+
+For "real" applications, it is advisable to keep all of your sensitive configuration out of your configuration files. Things such as database passwords, Stripe API keys, and encryption keys should be kept out of your configuration files whenever possible. So, where should we place them? Thankfully, Laravel provides a very simple solution to protecting these types of configuration items using "dot" files.
+
+First, [configure your application](/docs/configuration#environment-configuration) to recognize your machine as being in the `local` environment. Next, create a `.env.local.php` file within the root of your project, which is usually the same directory that contains your `composer.json` file. The `.env.local.php` should return an array of key-value pairs, much like a typical Laravel configuration file:
+
+	<?php
+
+	return array(
+
+		'TEST_STRIPE_KEY' => 'super-secret-sauce',
+
+	);
+
+All of the key-value pairs returned by this file will automatically be available via the `$_ENV` and `$_SERVER` PHP "superglobals". You may now reference these globals from within your configuration files:
+
+	'key' => $_ENV['TEST_STRIPE_KEY']
+
+Be sure to add the `.env.local.php` file to your `.gitignore` file. This will allow other developers on your team to create their own local environment configuration, as well as hide your sensitive configuration items from source control.
+
+Now, On your production server, create a `.env.php` file in your project root that contains the corresponding values for your production environment. Like the `.env.local.php` file, the production `.env.php` file should never be included in source control.
+
+> **Note:** You may create a file for each environment supported by your application. For example, the `development` environment will load the `.env.development.php` file if it exists.
 
 <a name="maintenance-mode"></a>
 ## Bakım Modu
@@ -88,3 +138,9 @@ Uygulamanız bakım modundayken kullanıcılara özel bir view göstermek için 
 	{
 		return Response::view('bakim_sayfasi', array(), 503);
 	})
+
+If the Closure passed to the `down` method returns `NULL`, maintenace mode will be ignored for that request.
+
+### Maintenance Mode & Queues
+
+While your application is in maintenance mode, no [queue jobs](/docs/queues) will be handled. The jobs will continue to be handled as normal once the application is out of maintenance mode.
