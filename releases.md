@@ -1,4 +1,4 @@
-# Release Notes
+# Sürüm Notları
 
 - [Laravel 4.1](#laravel-4.1)
 
