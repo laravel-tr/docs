@@ -57,35 +57,39 @@ Mevcut bir tabloda sütun ekleme için `Schema::table` metodunu kullanıyoruz:
 
 Tablo oluşturma zamanında ise tablo oluşturucusunda bulunan çeşitli sütun tiplerini kullanabilirsiniz:
 
-	Komut         | Açıklama
-	------------- | -------------
-	`$table->increments('id');`  |  Giderek artan ID alanı ekler (esas key).
-	`$table->bigIncrements('id');`  |  "big integer" eşdeğeri.
-	`$table->string('email');`  |  VARCHAR eşdeğeri sütun
-	`$table->string('isim', 100);`  |  belli uzunlukta VARCHAR eşdeğeri sütun
-	`$table->integer('puan');`  |  INTEGER eşdeğeri sütun
-	`$table->bigInteger('puan');`  |  BIGINT eşdeğeri sütun
-	`$table->smallInteger('puan');`  |  SMALLINT eşdeğeri sütun
-	`$table->float('miktar');`  |  FLOAT eşdeğeri sütun
-	`$table->decimal('miktar', 5, 2);`  |  basamak ve ondalık basamak
-							sayısı belirlenmiş DECIMAL eşdeğeri sütun
-	`$table->boolean('teyit');`  |  BOOLEAN eşdeğeri sütun
-	`$table->date('created_at');`  |  DATE eşdeğeri sütun
-	`$table->dateTime('created_at');`  |  DATETIME eşdeğeri sütun
-	`$table->time('ikindi');`  |  TIME eşdeğeri sütun
-	`$table->timestamp('eklenme_vakti');`  |  TIMESTAMP eşdeğeri sütun
-	`$table->timestamps();`  |  **created\_at** ve **updated\_at** sütunlarını ekler
-	`$table->softDeletes();`  |  Belirsiz silmeler için **deleted\_at** sütunu ekler
-	`$table->text('izahat');`  |  TEXT eşdeğeri sütun
-	`$table->binary('veri');`  |  BLOB eşdeğeri sütun
-	`$table->enum('tercihler', array('falan', 'filan'));` | ENUM eşdeğeri sütun
-	`->nullable()`  |  İlgili sütunun NULL değerleri olabilir demektir
-	`->default($deger)`  |  Bir sütun için ön tanımlı bir değer tanımlar
-	`->unsigned()`  |  INTEGER'i UNSIGNED olarak ayarlar
+Komut         | Açıklama
+------------- | -------------
+`$table->bigIncrements('id');`  |  "big integer" eşdeğeri.
+`$table->bigInteger('puan');`  |  BIGINT eşdeğeri sütun
+`$table->binary('veri');`  |  BLOB eşdeğeri sütun
+`$table->boolean('teyit');`  |  BOOLEAN eşdeğeri sütun
+`$table->date('created_at');`  |  DATE eşdeğeri sütun
+`$table->dateTime('created_at');`  |  DATETIME eşdeğeri sütun
+`$table->decimal('miktar', 5, 2);`  |  basamak ve ondalık basamak sayısı belirlenmiş DECIMAL eşdeğeri sütun
+`$table->double('column', 15, 8);`  |  DOUBLE eşdeğeri sütun
+`$table->enum('tercihler', array('falan', 'filan'));` | ENUM eşdeğeri sütun
+`$table->float('miktar');`  |  FLOAT eşdeğeri sütun
+`$table->increments('id');`  |  Giderek artan ID alanı ekler (esas key).
+`$table->integer('puan');`  |  INTEGER eşdeğeri sütun
+`$table->longText('description');`  |  LONGTEXT equivalent to the table
+`$table->mediumText('description');`  |  MEDIUMTEXT equivalent to the table
+`$table->morphs('taggable');`  |  Adds INTEGER `taggable_id` and STRING `taggable_type`
+`$table->smallInteger('puan');`  |  SMALLINT eşdeğeri sütun
+`$table->tinyInteger('numbers');`  |  TINYINT equivalent to the table
+`$table->softDeletes();`  |  Belirsiz silmeler için **deleted\_at** sütunu ekler
+`$table->string('email');`  |  VARCHAR eşdeğeri sütun
+`$table->string('isim', 100);`  |  belli uzunlukta VARCHAR eşdeğeri sütun
+`$table->text('izahat');`  |  TEXT eşdeğeri sütun
+`$table->time('ikindi');`  |  TIME eşdeğeri sütun
+`$table->timestamp('eklenme_vakti');`  |  TIMESTAMP eşdeğeri sütun
+`$table->timestamps();`  |  **created\_at** ve **updated\_at** sütunlarını ekler
+`->nullable()`  |  İlgili sütunun NULL değerleri olabilir demektir
+`->default($deger)`  |  Bir sütun için ön tanımlı bir değer tanımlar
+`->unsigned()`  |  INTEGER'i UNSIGNED olarak ayarlar
 
 Şayet MySQL veritabanı kullanıyorsanız, sütunların sıralamasını belirlemek için `after` metodunu kullanabilirsiniz:
 
-**MySQL Veritabanında After Kullanımı**
+#### MySQL Veritabanında After Kullanımı
 
 	$table->string('isim')->after('email');
 
@@ -94,7 +98,7 @@ Tablo oluşturma zamanında ise tablo oluşturucusunda bulunan çeşitli sütun 
 
 Bir sütun ismini değiştirmek için Şema Oluşturucusunda `renameColumn` metodunu kullanabilirsiniz:
 
-**Bir Sütun İsminin Değiştirilmesi**
+#### Bir Sütun İsminin Değiştirilmesi
 
 	Schema::table('uyeler', function($table)
 	{
@@ -106,14 +110,14 @@ Bir sütun ismini değiştirmek için Şema Oluşturucusunda `renameColumn` meto
 <a name="dropping-columns"></a>
 ## Sütunların Yok Edilmesi
 
-**Bir Veritabanı Tablosundan Bir Sütunun Yok Edilmesi**
+#### Bir Veritabanı Tablosundan Bir Sütunun Yok Edilmesi
 
 	Schema::table('uyeler', function($table)
 	{
 		$table->dropColumn('puan');
 	});
 
-**Bir Veritabanı Tablosundan Birden Çok Sütunun Yok Edilmesi**
+#### Bir Veritabanı Tablosundan Birden Çok Sütunun Yok Edilmesi
 
 	Schema::table('uyeler', function($table)
 	{
@@ -125,14 +129,14 @@ Bir sütun ismini değiştirmek için Şema Oluşturucusunda `renameColumn` meto
 
 `hasTable` ve `hasColumn` metodlarını kullanarak bir tablo ya da sütunun var olup olmadığını kolayca yoklayabilirsiniz:
 
-**Tablonun Var Olduğunun Yoklanması**
+#### Tablonun Var Olduğunun Yoklanması
 
 	if (Schema::hasTable('uyeler'))
 	{
 		//
 	}
 
-**Sütunların Var Olduğunun Yoklanması**
+#### Sütunların Var Olduğunun Yoklanması
 
 	if (Schema::hasColumn('uyeler', 'email'))
 	{
@@ -144,25 +148,25 @@ Bir sütun ismini değiştirmek için Şema Oluşturucusunda `renameColumn` meto
 
 Şema oluşturucusu çeşitli indeks tiplerini desteklemektedir. Bunları iki şekilde ekleyebilirsiniz. Birinci yol bir sütun tanımı sırasında tanımlamak, ikinci yol ise ayrıca eklemektir:
 
-**Bir Sütun ve İndeksin Birlikte Oluşturulması**
+#### Bir Sütun ve İndeksin Birlikte Oluşturulması
 
 	$table->string('email')->unique();
 
 Ya da, ayrı satırlarda indeks ekleme yolunu seçebilirsiniz. Aşağıda, kullanılabilecek tüm indeks tiplerinin bir listesi verilmiştir:
 
-	Komut         | Açıklama
-	------------- | -------------
-	`$table->primary('id');`  |  Bir esas key eklenmesi
-	`$table->primary(array('ilk', 'son'));`  |  Bileşik keylerin eklenmesi
-	`$table->unique('email');`  |  Benzersiz bir indeks eklenmesi
-	`$table->index('il');`  |  Basit bir indeks eklenmesi
+Komut         | Açıklama
+------------- | -------------
+`$table->primary('id');`  |  Bir esas key eklenmesi
+`$table->primary(array('ilk', 'son'));`  |  Bileşik keylerin eklenmesi
+`$table->unique('email');`  |  Benzersiz bir indeks eklenmesi
+`$table->index('il');`  |  Basit bir indeks eklenmesi
 
 <a name="foreign-keys"></a>
 ## Yabancı Anahtar (Foreign Key)
 
 Laravel, tablolarınıza yabancı key sınırlaması eklemeniz için de destek verir:
 
-**Bir Tabloya Bir Yabcancı Key Eklenmesi**
+#### Bir Tabloya Bir Yabcancı Key Eklenmesi
 
 	$table->foreign('uye_id')->references('id')->on('uyeler');
 
@@ -185,11 +189,11 @@ Bir yabancı keyi yok etmek için, `dropForeign` metodunu kullanabilirsiniz. Yab
 
 Bir indeksi yok etmek için indeksin adını belirtmelisiniz. Laravel, ön tanımlı olarak indekslere makul bir isim tahsis eder. Tablo adını, indekslenen alan adlarını ve indeks tipini art arda ekler. İşte bazı örnekler:
 
-	Komut         | Açıklama
-	------------- | -------------
-	`$table->dropPrimary('uyeler_id_primary');`  |  "uyeler" tablosundan primer key'in yok edilmesi
-	`$table->dropUnique('uyeler_email_unique');`  |  "uyeler" tablosundan benzersiz bir indeksin yok edilmesi
-	`$table->dropIndex('geo_il_index');`  |  "geo" tablosundan basit bir indeksin yok edilmesi
+Komut         | Açıklama
+------------- | -------------
+`$table->dropPrimary('uyeler_id_primary');`  |  "uyeler" tablosundan primer key'in yok edilmesi
+`$table->dropUnique('uyeler_email_unique');`  |  "uyeler" tablosundan benzersiz bir indeksin yok edilmesi
+`$table->dropIndex('geo_il_index');`  |  "geo" tablosundan basit bir indeksin yok edilmesi
 
 <a name="storage-engines"></a>
 ## Depolama Motorları
