@@ -26,6 +26,7 @@
 	list($keys, $values) = array_divide($array);
 
 ### array_dot
+
 `array_dot` fonksiyonu, çok boyutlu bir array'i derinlikleri 'nokta (dot)' notasyonunu sağlayacak şekilde 1 boyutlu array'e çevirir.
 
 	$array = array('foo' => array('bar' => 'baz'));
@@ -44,9 +45,12 @@
 
 `array_fetch` metodu seçilen bir iç elemanı içeren düz bir dizi döndürür.
 
-	$array = array(array('name' => 'Taylor'), array('name' => 'Dayle'));
+	$array = array(
+		array('developer' => array('name' => 'Taylor')),
+		array('developer' => array('name' => 'Dayle')),
+	);
 
-	var_dump(array_fetch($array, 'name'));
+	$array = array_fetch($array, 'developer.name');
 
 	// array('Taylor', 'Dayle');
 
@@ -64,6 +68,23 @@
 Ayrıca varsayılan bir değer, üçüncü eleman olarak verilebilir.
 
 	$value = array_first($array, $callback, $default);
+
+### array_last
+
+The `array_last` method returns the last element of an array passing a given truth test.
+
+	$array = array(350, 400, 500, 300, 200, 100);
+
+	$value = array_last($array, function($key, $value)
+	{
+		return $value > 350;
+	});
+
+	// 500
+
+A default value may also be passed as the third parameter:
+
+	$value = array_last($array, $callback, $default);
 
 ### array_flatten
 
@@ -90,6 +111,8 @@ Ayrıca varsayılan bir değer, üçüncü eleman olarak verilebilir.
 	$array = array('names' => array('joe' => array('programmer')));
 
 	$value = array_get($array, 'names.joe');
+
+> **Note:** Want something like `array_get` but for objects instead? Use `object_get`.
 
 ### array_only
 
@@ -125,6 +148,33 @@ Ayrıca varsayılan bir değer, üçüncü eleman olarak verilebilir.
 
 	array_set($array, 'names.editor', 'Taylor');
 
+### array_sort
+
+The `array_sort` method sorts the array by the results of the given Closure.
+
+	$array = array(
+		array('name' => 'Jill'),
+		array('name' => 'Barry'),
+	);
+
+	$array = array_values(array_sort($array, function($value)
+	{
+		return $value['name'];
+	}));
+
+### array_where
+
+Filter the array using the given Closure.
+
+	$array = array(100, '200', 300, '400', 500);
+
+	$array = array_where($array, function($key, $value)
+	{
+		return is_string($value);
+	});
+
+	// Array ( [1] => 200 [3] => 400 )
+
 ### head
 
 Dizideki ilk elemanı döndürür. PHP 5.3.x'deki metod zincirleme işine yarar.
@@ -143,6 +193,8 @@ Dizideki son elemanı döndürür. Metod zincirlemesinde işe yarar.
 ### app_path
 
 `app` dizininin tam dosya yolunu getirir.
+
+	$path = app_path();
 
 ### base_path
 
@@ -194,6 +246,18 @@ Yazıyı `snake_case` olacak şekilde düzenler.
 	$snake = snake_case('fooBar');
 
 	// foo_bar
+
+### str_limit
+
+Limit the number of characters in a string.
+
+	str_limit($value, $limit = 100, $end = '...')
+
+Example:
+
+	$value = str_limit('The PHP framework for web artisans.', 7);
+
+	// The PHP...
 
 ### starts_with
 
@@ -290,22 +354,19 @@ Girilen URL'e gerekli HTML linkini oluşturur.
 
 Verilen varlık için bir HTML bağlantısı üretir.
 
-	echo link_to_asset('foo/bar.zip', $title, $attributes = array(),
-		$secure = null);
+	echo link_to_asset('foo/bar.zip', $title, $attributes = array(), $secure = null);
 
 ### link_to_route
 
 Girilen rota için gerekli HTML linkini oluşturur.
 
-	echo link_to_route('route.name', $title,
-		$parameters = array(), $attributes = array());
+	echo link_to_route('route.name', $title, $parameters = array(), $attributes = array());
 
 ### link_to_action
 
 Verilen bir denetçi eylemi için bir HTML linki oluşturur.
 
-	echo link_to_action('HomeController@getIndex', $title,
-		$parameters = array(), $attributes = array());
+	echo link_to_action('HomeController@getIndex', $title, $parameters = array(), $attributes = array());
 
 ### secure_asset
 
