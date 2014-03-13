@@ -72,7 +72,7 @@ Eğer Laravel ile birlikte gelen `.htaccess` dosyası Apache kurulumunuz ile iş
 
 ### Nginx
 
-On Nginx, the following directive in your site configuration will allow "pretty" URLs:
+Nginx kullanıyorsanız, ekteki ayar "zarif url"lerin çalışmasını sağlamaya yeterlidir:
 
     location / {
         try_files $uri $uri/ /index.php?$query_string;
