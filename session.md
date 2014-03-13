@@ -103,4 +103,4 @@ Oturum "driver'ı" her istek için oturum verisinin nerede saklanacağını tan�
 - `memcached` / `redis` - oturumlar bu hızlı, önbellekleme tabanlı depolardan birisinde saklanacaktır.
 - `array` - oturumlar basit bir PHP dizisinde saklanacak ve istekler arasında sebat etmeyecektir.
 
-> **Not:**  Array sürücüsü tipik olarak unit testler için kullanılır, bu yüzden oturum verileri sürdürülmeyecektir.
+> **Not:** Array sürücüsü tipik olarak unit testler için kullanılır, bu yüzden oturum verileri sürdürülmeyecektir.
