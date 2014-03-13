@@ -13,7 +13,7 @@
 
 Laravel, `Validation` sınıfı aracığıyla verilerin geçerlilik denetimi ve geçerlilik hata mesajlarının gösterilmesi için temel ve kullanışlı bir araçla birlikte gelmektedir.
 
-**Temel Bir Geçerlilik Denetimi Örneği**
+#### Temel Bir Geçerlilik Denetimi Örneği
 
 	$geçerlilikyoklayici = Validator::make(
 		array('isim' => 'Tuana Şeyma'),
@@ -24,14 +24,14 @@ Buradaki `make` metoduna geçilen ilk parametre, geçerli olup olmadığına bak
 
 Birden çok kural ya bir "pipe" karakteri (|) ile ayrılır, ya da ayrı dizi elemanları olarak verilebilir.
 
-**Kuralları Belirtmek İçin Dizi Kullanımı**
+#### Kuralları Belirtmek İçin Dizi Kullanımı
 
 	$geçerlilikyoklayici = Validator::make(
 		array('isim' => 'Tuana Şeyma'),
 		array('yas'  => array('required', 'min:5'))
 	);
 
-**Birçok Alana Tek Seferde Geçerlilik Denetimi Yapmak**
+#### Birçok Alana Tek Seferde Geçerlilik Denetimi Yapmak
 
     $validator = Validator::make(
         array(
@@ -61,7 +61,7 @@ Ayrıca, başarısız olan geçerlilik kurallarına bir dizi olarak da erişebil
 
 	$kalanlar = $geçerlilikyoklayici->failed();
 
-**Dosyalar İçin Geçerlilik Denetimi**
+#### Dosyalar İçin Geçerlilik Denetimi
 
 `Validator` sınıfı dosyaların geçerliliği konusunda `size`, `mimes` ve benzeri kurallar sağlar. Dosyaları geçerlilikten geçirirken, tıpkı diğer verilerde olduğu gibi bunları da geçerlilik denetçisine parametre olarak geçersiniz.
 
@@ -70,38 +70,38 @@ Ayrıca, başarısız olan geçerlilik kurallarına bir dizi olarak da erişebil
 
 Bir `Validator` olgusunda `messages` metodunu çağırdıktan sonra, bir `MessageBag` olgusu alacaksınız. MessageBag sınıfında hata mesajlarıyla çalışmak için bir takım yararlı metodlar vardır.
 
-**Bir Alan İçin İlk Hata Mesajının Elde Edilmesi**
+#### Bir Alan İçin İlk Hata Mesajının Elde Edilmesi
 
 	echo $mesajlar->first('email');
 
-**Bir Alan İçin Tüm Hata Mesajlarının Elde Edilmesi**
+#### Bir Alan İçin Tüm Hata Mesajlarının Elde Edilmesi
 
 	foreach ($mesajlar->get('email') as $mesaj)
 	{
 		//
 	}
 
-**Tüm Alanlar İçin Tüm Hata Mesajlarının Elde Edilmesi**
+#### Tüm Alanlar İçin Tüm Hata Mesajlarının Elde Edilmesi
 
 	foreach ($mesajlar->all() as $mesaj)
 	{
 		//
 	}
 
-**Bir Alan İçin Hata Mevcut Olup Olmadığının Tespiti**
+#### Bir Alan İçin Hata Mevcut Olup Olmadığının Tespiti
 
 	if ($mesajlar->has('email'))
 	{
 		//
 	}
 
-**Bir Hata Mesajının Biçimlendirilmiş Olarak Alınması**
+#### Bir Hata Mesajının Biçimlendirilmiş Olarak Alınması
 
 	echo $mesajlar->first('email', '<p>:mesaj</p>');
 
 > **Not:** Ön tanımlı olarak, mesajlar Bootstrap'a uyumlu bir söz dizimiyle biçimlendirilir.
 
-**Tüm Hata Mesajlarının Biçimlendirilmiş Olarak Alınması**
+#### Tüm Hata Mesajlarının Biçimlendirilmiş Olarak Alınması
 
 	foreach ($mesajlar->all('<li>:mesaj</li>') as $mesaj)
 	{
@@ -145,19 +145,22 @@ Mevcut tüm geçerlilik kuralları ve bunların işlevleri aşağıda verilmişt
 
 - [Accepted](#rule-accepted)
 - [Active URL](#rule-active-url)
-- [After (Tarih)](#rule-after)
+- [After (Date)](#rule-after)
 - [Alpha](#rule-alpha)
 - [Alpha Dash](#rule-alpha-dash)
 - [Alpha Numeric](#rule-alpha-num)
-- [Before (Tarih)](#rule-before)
+- [Array](#rule-array)
+- [Before (Date)](#rule-before)
 - [Between](#rule-between)
 - [Confirmed](#rule-confirmed)
 - [Date](#rule-date)
 - [Date Format](#rule-date-format)
 - [Different](#rule-different)
+- [Digits](#rule-digits)
+- [Digits Between](#rule-digits-between)
 - [E-Mail](#rule-email)
-- [Exists (Veritabanı)](#rule-exists)
-- [Image (Dosya)](#rule-image)
+- [Exists (Database)](#rule-exists)
+- [Image (File)](#rule-image)
 - [In](#rule-in)
 - [Integer](#rule-integer)
 - [IP Address](#rule-ip)
@@ -170,10 +173,12 @@ Mevcut tüm geçerlilik kuralları ve bunların işlevleri aşağıda verilmişt
 - [Required](#rule-required)
 - [Required If](#rule-required-if)
 - [Required With](#rule-required-with)
+- [Required With All](#rule-required-with-all)
 - [Required Without](#rule-required-without)
+- [Required Without All](#rule-required-without-all)
 - [Same](#rule-same)
 - [Size](#rule-size)
-- [Unique (Veritabanı)](#rule-unique)
+- [Unique (Database)](#rule-unique)
 - [URL](#rule-url)
 
 <a name="rule-accepted"></a>
@@ -206,6 +211,11 @@ Geçerlilik bakılan alan alfa-numerik karakterler yanında tire ve alt tire de 
 
 Geçerlilik bakılan alan tamamen alfa-numerik karakterler olmalıdır.
 
+<a name="rule-array"></a>
+#### array
+
+The field under validation must be of type array.
+
 <a name="rule-before"></a>
 #### before: _tarih_
 
@@ -236,6 +246,16 @@ Geçerlilik bakılan alan `date_parse_from_format` PHP fonksiyona göre tanımla
 
 Verilen _alan_, geçerlilik bakılan alandan farklı olmalıdır.
 
+<a name="rule-digits"></a>
+#### digits:_value_
+
+The field under validation must be _numeric_ and must have an exact length of _value_.
+
+<a name="rule-digits-between"></a>
+#### digits_between:_min_,_max_
+
+The field under validation must have a length between the given _min_ and _max_.
+
 <a name="rule-email"></a>
 #### email
 
@@ -246,17 +266,21 @@ Geçerlilik bakılan alan bir e-mail adresi şeklinde biçimlendirilmiş olmalı
 
 Geçerlilik bakılan alan verilen bir veritabanı tablosunda mevcut olmalıdır.
 
-**Exists Kuralının Basit Kullanım Şekli**
+#### Exists Kuralının Basit Kullanım Şekli
 
 	'il' => 'exists:iller'
 
-**Özel Bir Sütun İsminin Belirtilmesi**
+#### Özel Bir Sütun İsminin Belirtilmesi
 
 	'il' => 'exists:iller,kisa_hali'
 
 Sorguya "where" cümleciği olarak eklenecek daha fazla şart da belirtebilirsiniz:
 
 	'email' => 'exists:personel,email,hesap_id,1'
+
+Passing `NULL` as a "where" clause value will add a check for a `NULL` database value:
+
+	'email' => 'exists:staff,email,deleted_at,NULL'
 
 <a name="rule-image"></a>
 #### image
@@ -288,7 +312,7 @@ Geçerlilik bakılan alan bir maksimum _deger_'den az olmalıdır. Stringler, sa
 
 Geçerlilik bakılan alan listelenen uzantılardan birine tekabül eden bir MIME tipinde olmalıdır.
 
-**MIME Kuralının Basit Kullanım Şekli**
+#### MIME Kuralının Basit Kullanım Şekli
 
 	'resim' => 'mimes:jpeg,bmp,png'
 
@@ -329,10 +353,20 @@ Geçerlilik bakılan alan input verisinde bulunmak zorundadır.
 
 Geçerlilik bakılan alan, sadece belirtilen alanların bulunması durumunda bulunmak zorundadır.
 
+<a name="rule-required-with-all"></a>
+#### required_with_all:_foo_,_bar_,...
+
+The field under validation must be present _only if_ all of the other specified fields are present.
+
 <a name="rule-required-without"></a>
 #### required_without: _falan_, _filan_,...
 
 Geçerlilik bakılan alan, sadece diğer belirtilen alanlar olmadığı takdirde bulunmak zorundadır.
+
+<a name="rule-required-without-all"></a>
+#### required_without_all:_foo_,_bar_,...
+
+The field under validation must be present _only when_ the all of the other specified fields are not present.
 
 <a name="rule-same"></a>
 #### same: _alan_
@@ -349,19 +383,19 @@ Geçerlilik bakılan alan verilen _deger_'le aynı büyüklükte olmalıdır. St
 
 Geçerlilik bakılan alan verilen bir veritabanı tablosunda benzersiz olmalıdır. Eğer `sütun` seçeneği belirtilmemişse, geçerlilik bakılan alan aynı zamanda sütun adı olarak kabul edilecektir.
 
-**Unique Kuralının Basit Kullanım Şekli**
+#### Unique Kuralının Basit Kullanım Şekli
 
 	'email' => 'unique:uyeler'
 
-**Özel Bir Sütun Adının Belirtilmesi**
+#### Özel Bir Sütun Adının Belirtilmesi
 
 	'email' => 'unique:uyeler,email_adresi'
 
-**Verilen Bir ID İçin Unique Kuralının Göz Ardı Edilmesi**
+#### Verilen Bir ID İçin Unique Kuralının Göz Ardı Edilmesi
 
 	'email' => 'unique:uyeler,email_adresi,10'
 
-**Ek olarak Where Cümlecikleri Ekleme**
+#### Ek olarak Where Cümlecikleri Ekleme
 
 Bir sorguya  "where" cümlecikleri ekler gibi daha fazla şart ekleyebilirsiniz:
 
@@ -374,8 +408,20 @@ Yukarıdaki kuralda, sadece `account_id`'si `1` olan satırlar unique yoklaması
 
 Geçerlilik bakılan alan bir URL şeklinde biçimlendirilmiş olmalıdır.
 
+> **Note:** This function uses PHP's `filter_var` method.
+
 <a name="conditionally-adding-rules"></a>
 ## Duruma Göre Kurallar Ekleme
+
+In some situations, you may wish to run validation checks against a field **only** if that field is present in the input array. To quickly accomplish this, add the `sometimes` rule to your rule list:
+
+	$v = Validator::make($data, array(
+		'email' => 'sometimes|required|email',
+	));
+
+In the example above, the `email` field will only be validated if it is present in the `$data` array.
+
+#### Complex Conditional Validation
 
 Bazen belli bir alanın başka bir alan 100'den fazla bir değere sahip olduğunda gerekli olmasını isteyebilirsiniz. Bu geçerlilik kurallarının eklenmesi sorun oluşturmak zorunda değildir. Öncelikle, asla değişmeyecek _statik kuralları_ nızın olduğu bir `Validator` olgusu oluşturun:
 
@@ -405,7 +451,7 @@ Bu `sometimes` metoduna geçirilen ilk parametre duruma bağlı olarak geçerlil
 
 Gerek duyduğunuzda, geçerlilik için ön tanımlı hata mesajları yerine özel hata mesajları kullanabilirsiniz. Özel mesaj belirtmek için birkaç yol var.
 
-**Validator'e Özel Mesaj Geçilmesi**
+#### Validator'e Özel Mesaj Geçilmesi
 
 	$mesajlar = array(
 		'required' => ':attribute alanı gereklidir.',
@@ -415,7 +461,7 @@ Gerek duyduğunuzda, geçerlilik için ön tanımlı hata mesajları yerine öze
 
 *Not:* Buradaki `:attribute` yer tutucusu geçerlilik bakılan alanın gerçek adıyla değiştirilecektir. Geçerlilik mesajlarınızda diğer yer tutucuları da kullanabilirsiniz.
 
-**Diğer Geçerlilik Yer Tutucuları**
+#### Diğer Geçerlilik Yer Tutucuları
 
 	$mesajlar = array(
 		'same'    => ':attribute ve :other aynı olmalıdır.',
@@ -426,7 +472,7 @@ Gerek duyduğunuzda, geçerlilik için ön tanımlı hata mesajları yerine öze
 
 Bazen sadece belirli bir alan için özel hata mesajları belirlemek isteyebilirsiniz:
 
-**Belli Bir Attribute İçin Özel Mesaj Belirlenmesi**
+#### Belli Bir Attribute İçin Özel Mesaj Belirlenmesi
 
 	$mesajlar = array(
 		'email.required' => 'e-mail adresinizi bilmemiz gerekiyor!',
@@ -435,7 +481,7 @@ Bazen sadece belirli bir alan için özel hata mesajları belirlemek isteyebilir
 Bazı durumlarda, özel hata mesajlarınızı doğrudan `Validator`'e geçirmek yerine bir dil dosyasında belirtmek isteyebilirsiniz. Bunu yapmak için, mesajlarınızı `app/lang/xx/validation.php` dil dosyasındaki `custom` dizisine ekleyiniz.
 
 <a name="localization"></a>
-**Özel Mesajların Dil Dosyalarında Belirtilmesi**
+#### Özel Mesajların Dil Dosyalarında Belirtilmesi
 
 	'custom' => array(
 		'email' => array(
@@ -448,14 +494,12 @@ Bazı durumlarda, özel hata mesajlarınızı doğrudan `Validator`'e geçirmek 
 
 Laravel'de her biri yararlı çok sayıda geçerlilik kuralı bulunmaktadır; bununla birlikte siz kendiniz de bazı kurallar belirlemek isteyebilirsiniz. Özel geçerlilik kuralı kayda geçirmenin bir yolu `Validator::extend` metodunu kullanmaktır:
 
-**Özel Bir Geçerlilik Kuralını Kayda Geçirme**
+#### Özel Bir Geçerlilik Kuralını Kayda Geçirme
 
 	Validator::extend('falan', function($attribute, $value, $parameters)
 	{
 		return $value === 'falan';
 	});
-
-> **Not:** `extend` metoduna geçilen kuralın adı "yılan tipi" (kelimeler boşluk olmaksızın, küçük harfli ve alt tire ile birleştirilmiş) olmalıdır.
 
 Özel bir geçerlilik bitirme fonksiyonu (Closure) üç parametre alır: geçerlilik bakılacak `$attribute`'ın adı, bu niteliğin `$value`'i ve kurala geçilecek bir `$parameters` dizisi.
 
@@ -467,7 +511,7 @@ Bu `extend` metoduna bir bitirme fonksiyonu yerine bir sınıf ve metod da geçe
 
 Validator'ü genişletmek için bir bitirme fonksiyonu çağrısı kullanmak yerine, Validator sınıfının kendisini de genişletebilirsiniz. Bunu yapmak için, `Illuminate\Validation\Validator`'ü genişleten bir Validator sınıfı yazın. Validation metodlarınızı, başına `validate` getirerek bu sınıfa ekleyebilirsiniz:
 
-**Validator Sınıfının Genişletilmesi**
+#### Validator Sınıfının Genişletilmesi
 
 	<?php
 
@@ -482,7 +526,7 @@ Validator'ü genişletmek için bir bitirme fonksiyonu çağrısı kullanmak yer
 
 Daha sonra, özel Validator uzantınızı kayda geçirmeniz gerekiyor:
 
-**Özel Bir Validator Çözümleyicisinin Kayda Geçirilmesi**
+#### Özel Bir Validator Çözümleyicisinin Kayda Geçirilmesi
 
 	Validator::resolver(function($translator, $data, $rules, $messages)
 	{
@@ -495,3 +539,10 @@ Daha sonra, özel Validator uzantınızı kayda geçirmeniz gerekiyor:
 	{
 		return str_replace(':falan', $parameters[0], $message);
 	}
+
+If you would like to add a custom message "replacer" without extending the `Validator` class, you may use the `Validator::replacer` method:
+
+	Validator::replacer('rule', function($message, $attribute, $rule, $parameters)
+	{
+		//
+	});
