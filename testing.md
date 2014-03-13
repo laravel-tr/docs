@@ -7,6 +7,7 @@
 - [Facade'ları Taklit Etmek](#mocking-facades)
 - [Çatı "Assert" Metodları](#framework-assertions)
 - [Yardımcı Metodlar](#helper-methods)
+- [Refreshing The Application](#refreshing-the-application)
 
 <a name="introduction"></a>
 ## Giriş
@@ -20,7 +21,7 @@ Laravel hazırlanırken birim testler ile hazırlandı. Açıkçası, PHPUnit il
 
 Yeni bir test durumu oluşturmak için, `app/test` dizini içerisinde yeni bir test dosyası oluşturmanız yeterli. Test sınıflarınız `TestCase` sınıfını extend ediyor olmalıdır. Bu şekilde normalde PHPUnit ile hazırladığınız test metodlarını aynı şekilde oluşturabilirsiniz.
 
-**Örnek Bir Test Sınıfı**
+#### Örnek Bir Test Sınıfı
 
 	class FooTest extends TestCase {
 
@@ -45,7 +46,7 @@ Testleri çalıştırırken, Laravel otomatik olarak ortam yapılandırmasını 
 
 Testleriniz içerisinde `call` metodu ile rahatlıkla rotaları çağırabilirsiniz:
 
-**Test Dosyasından Bir Rota Çağırmak**
+#### Test Dosyasından Bir Rota Çağırmak
 
 	$response = $this->call('GET', 'user/profile');
 
@@ -57,7 +58,7 @@ Daha sonra `Illuminate\Http\Response` nesnesini inceleyebilirsiniz:
 
 Ayrıca bir test dosyasından denetçileri de çağırabilirsiniz:
 
-**Test Dosyasından Bir Denetçi Çağırmak**
+#### Test Dosyasından Bir Denetçi Çağırmak
 
 	$response = $this->action('GET', 'HomeController@index');
 
@@ -101,7 +102,7 @@ Test yaparken, sabit Laravel facadelarını taklit etmeniz gerekecektir. Örneğ
 
 `Event` sınıfına yapılan çağrıyı taklit edebilmek için Facade üzerinde `shouldReceive` metodunu kullanabilirsiniz, bu metod bir [Mockery](https://github.com/padraic/mockery) örneği döndürecek.
 
-**Bir Facade'ı Taklit Etmek**
+#### Bir Facade'ı Taklit Etmek
 
 	public function testGetIndex()
 	{
@@ -117,7 +118,7 @@ Test yaparken, sabit Laravel facadelarını taklit etmeniz gerekecektir. Örneğ
 
 Laravel test yapımını kolaylaştırmak için halihazırda bazı `assert` metodlarıyla gelir:
 
-**Yanıtın Başarıyla Geldiği İspatlamak**
+#### Yanıtın Başarıyla Geldiği Ispatlamak
 
 	public function testMethod()
 	{
@@ -126,11 +127,11 @@ Laravel test yapımını kolaylaştırmak için halihazırda bazı `assert` meto
 		$this->assertResponseOk();
 	}
 
-**Yanıt Kodlarını İspatlamak**
+#### Yanıt Kodlarını Ispatlamak
 
 	$this->assertResponseStatus(403);
 
-**Yanıtın Bir Yönlendirme Olduğunu İspatlamak**
+#### Yanıtın Bir Yönlendirme Olduğunu Ispatlamak
 
 	$this->assertRedirectedTo('foo');
 
@@ -138,7 +139,7 @@ Laravel test yapımını kolaylaştırmak için halihazırda bazı `assert` meto
 
 	$this->assertRedirectedToAction('Controller@method');
 
-**Bir Görünümde Veri Olduğunu İspatlamak**
+#### Bir Görünümde Veri Olduğunu Ispatlamak
 
 	public function testMethod()
 	{
@@ -148,7 +149,7 @@ Laravel test yapımını kolaylaştırmak için halihazırda bazı `assert` meto
 		$this->assertViewHas('age', $value);
 	}
 
-**Oturumda Bir Verinin Kayıtlı Olduğunu İspatlamak**
+#### Oturumda Bir Verinin Kayıtlı Olduğunu Ispatlamak
 
 	public function testMethod()
 	{
@@ -158,14 +159,29 @@ Laravel test yapımını kolaylaştırmak için halihazırda bazı `assert` meto
 		$this->assertSessionHas('age', $value);
 	}
 
+#### Eski Girdide Veri Olduğunu Ispatlamak
+
+	public function testMethod()
+	{
+		$this->call('GET', '/');
+
+		$this->assertHasOldInput();
+	}
+
 <a name="helper-methods"></a>
 ## Yardımcı Metodlar
 
 Test yapımını kolaylaştırmak için `TestCase` sınıfı bazı yardımcı metodlarla birlikte gelir.
 
-Mevcut oturum açmış kullanıcıyı `be` metodu ile belirleyebilirsiniz.
+#### Test İçerisinden Oturum Tanımlamak ve Silmek
 
-**Oturum Açmış Kullanıcıyı Belirleme**
+	$this->session(['foo' => 'bar']);
+
+	$this->flushSession();
+
+#### Oturum Açmış Kullanıcıyı Belirleme
+
+Mevcut oturum açmış kullanıcıyı `be` metodu ile belirleyebilirsiniz.
 
 	$user = new User(array('name' => 'John'));
 
@@ -173,10 +189,15 @@ Mevcut oturum açmış kullanıcıyı `be` metodu ile belirleyebilirsiniz.
 
 Bir test içerisinden `seed` metoduyla veritabanınıza yeniden veri ekebilirsiniz:
 
-**Test İçerisinden Veritabanına Yeniden Veri Ekmek**
+#### Test İçerisinden Veritabanına Yeniden Veri Ekmek
 
 	$this->seed();
 
 	$this->seed($connection);
 
 Veri Ekmeyle ilgili daha fazla bilgiyi dökümantasyonun [migrasyon ve veri ekme](/docs/migrations#database-seeding) bölümünde bulabilirsiniz.
+
+<a name="refreshing-the-application"></a>
+## Refreshing The Application
+
+As you may already know, you can access your Laravel `Application` / IoC Container via `$this->app` from any test method. This Application instance is refreshed for each test class. If you wish to manually force the Application to be refreshed for a given method, you may use the `refreshApplication` method from your test method. This will reset any extra bindings, such as mocks, that have been placed in the IoC container since the test case started running.
