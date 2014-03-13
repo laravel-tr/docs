@@ -81,7 +81,7 @@ Filtreleri, denetçinizin içerisinden de belirtebilirsiniz:
 
 	}
 
-Controller filtrelerini bir Closure kullanarak da belirtebilirsiniz:
+Denetçi filtrelerini bir Closure kullanarak da belirtebilirsiniz:
 
 	class KullaniciController extends BaseController {
 
@@ -98,7 +98,7 @@ Controller filtrelerini bir Closure kullanarak da belirtebilirsiniz:
 
 	}
 
-If you would like to use another method on the controller as a filter, you may use `@` syntax to define the filter:
+Eğer filtre olarak denetçi sınıfın bir metodunu kullanmak isterseniz, filtre isminin önüne `@` koymalısınız.
 
 	class UserController extends BaseController {
 
@@ -192,7 +192,7 @@ Ve, rotasında da eylemlerin sadece bazılarını yönetmesini belirleyebilirsin
 	Route::resource('photo', 'PhotoController',
 			array('except' => array('create', 'store', 'update', 'destroy')));
 
-By default, all resource controller actions have a route name; however, you can override these names by passing a `names` array with your options:
+Varsayılan olarak tüm kaynak denetçilerinin bir rota ismi bulunur; ancak bu isimleri üçüncü parametrede gireceğiniz dizi ile kendiniz belirleyebilirsiniz.
 
 	Route::resource('photo', 'PhotoController',
 					array('names' => array('create' => 'photo.build'));
