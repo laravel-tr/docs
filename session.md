@@ -16,44 +16,44 @@ Oturum yapılandırma ayarları `app/config/session.php` dosyasında bulunmaktad
 <a name="session-usage"></a>
 ## Oturum Kullanımı
 
-**Oturumda Bir Öğe Saklamak**
+#### Oturumda Bir Öğe Saklamak
 
 	Session::put('anahtar', 'deger');
 
-**Dizi Oturum Değerine Bir Değer Eklemek**
+#### Dizi Oturum Değerine Bir Değer Eklemek
 
 	Session::push('uyeler.takimlar', 'gelistiriciler');
 
-**Oturumdaki Bir Öğeyi Öğrenmek**
+#### Oturumdaki Bir Öğeyi Öğrenmek
 
 	$deger = Session::get('anahtar');
 
-**Bir Öğe Almak Veya Varsayılan Bir Değer Döndürmek**
+#### Bir Öğe Almak Veya Varsayılan Bir Değer Döndürmek
 
 	$deger = Session::get('anahtar', 'default');
 
 	$deger = Session::get('anahtar', function() { return 'default'; });
 
-**Oturumdaki Tüm Verileri Almak**
+#### Oturumdaki Tüm Verileri Almak
 
 	$veri = Session::all();
 
-**Oturumda Bir Öğenin Olup Olmadığını Tespit Etmek**
+#### Oturumda Bir Öğenin Olup Olmadığını Tespit Etmek
 
 	if (Session::has('uyeler'))
 	{
 		//
 	}
 
-**Oturumdan Bir Öğeyi Çıkartmak**
+#### Oturumdan Bir Öğeyi Çıkartmak
 
 	Session::forget('anahtar');
 
-**Oturumdaki Tüm Öğeleri Çıkartmak**
+#### Oturumdaki Tüm Öğeleri Çıkartmak
 
 	Session::flush();
 
-**Tekrar Oturum ID Üretmek**
+#### Tekrar Oturum ID Üretmek
 
 	Session::regenerate();
 
@@ -64,11 +64,11 @@ Bazen oturumda sadece sonraki istek için öğeler saklamak isteyebilirsiniz. Bu
 
 	Session::flash('anahtar', 'deger');
 
-**Mevcut Flaş Verinin Bir Başka İstek İçin Yeniden Flaşlanması**
+#### Mevcut Flaş Verinin Bir Başka İstek İçin Yeniden Flaşlanması
 
 	Session::reflash();
 
-**Flaş Verinin Sadece Bir Alt Kümesinin Yeniden Flaşlanması**
+#### Flaş Verinin Sadece Bir Alt Kümesinin Yeniden Flaşlanması####
 
 	Session::keep(array('uyeadi', 'email'));
 
@@ -103,4 +103,4 @@ Oturum "driver'ı" her istek için oturum verisinin nerede saklanacağını tan�
 - `memcached` / `redis` - oturumlar bu hızlı, önbellekleme tabanlı depolardan birisinde saklanacaktır.
 - `array` - oturumlar basit bir PHP dizisinde saklanacak ve istekler arasında sebat etmeyecektir.
 
-> **Not:** Array sürücüsü tipik olarak unit testler için kullanılır, bu yüzden oturum verileri sürdürülmeyecektir.
+> **Not:**  Array sürücüsü tipik olarak unit testler için kullanılır, bu yüzden oturum verileri sürdürülmeyecektir.
