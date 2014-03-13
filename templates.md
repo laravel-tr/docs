@@ -3,13 +3,14 @@
 - [Denetçi (Controller) Düzenleri](#controller-layouts)
 - [Blade Şablonları](#blade-templating)
 - [Diğer Blade Kontrol Yapıları](#other-blade-control-structures)
+- [Extending Blade](#extending-blade)
 
 <a name="controller-layouts"></a>
 ## Denetçi (Controller) Düzenleri
 
 Laravel'de şablon kullanma yöntemlerinden birisi denetçi düzenleri üzerinden gerçekleştirilir. İlgili denetçideki `layout` özelliğinin belirlenmesiyle, belirlemiş olduğunuz görünüm oluşturulacak ve eylemlerden dönmüş cevap olarak kabul edilecektir.
 
-**Bir Denetçide Bir Düzen Tanımlanması**
+#### Bir Denetçide Bir Düzen Tanımlanması
 
 	class UyeController extends BaseController {
 
@@ -33,7 +34,7 @@ Laravel'de şablon kullanma yöntemlerinden birisi denetçi düzenleri üzerinde
 
 Blade Laravel'le gelen basit ama güçlü bir şablon motorudur. Denetçi düzenlerinden farklı olarak, Blade _şablon kalıtımı_ ve _kesimler_ (sections) ile yürütülür. Tüm Blade şablonlarının uzantısı `.blade.php` olmalıdır.
 
-**Bir Blade Düzeninin Tanımlanması**
+#### Bir Blade Düzeninin Tanımlanması
 
 	<!-- app/views/layouts/master.blade.php 'de bulunmaktadır-->
 
@@ -49,7 +50,7 @@ Blade Laravel'le gelen basit ama güçlü bir şablon motorudur. Denetçi düzen
 		</body>
 	</html>
 
-**Bir Blade Düzeninin Kullanılması**
+#### Bir Blade Düzeninin Kullanılması
 
 	@extends('layouts.master')
 
@@ -72,7 +73,7 @@ Kimi zaman, örneğin bir kesimin tanımlanmış olup olmadığından emin olmad
 <a name="other-blade-control-structures"></a>
 ## Diğer Blade Kontrol Yapıları
 
-**Veri Yazdırılması**
+#### Veri Yazdırılması
 
 	Merhaba {{ $isim }}.
 
@@ -80,7 +81,7 @@ Kimi zaman, örneğin bir kesimin tanımlanmış olup olmadığından emin olmad
 
 Küme parantezleri ile sarmalanmış bir metni görüntülemek isterseniz, küme parantezi önüne `@` sembolü ilave ederek Blade davranışını devredışı bırakabilirsiniz.
 
-**Küme Parantezi İle Ham Metin Görüntülemek**
+#### Küme Parantezi İle Ham Metin Görüntülemek
 
 	@{{ Bu metin Blade tarafından işleme alınmayacaktır }}
 
@@ -90,7 +91,7 @@ Tabii ki, kullanıcılardan gelen tüm veriler escape edilmeli ya da arındırı
 
 > **Not:** Uygulamanızın kullanıcılarından gelen verileri yazdıracağınız zaman çok dikkatli olun. İçerikte olabilecek HTML antitelerini escape etmek amacıyla her zaman için üçlü küme parantezi sözdizimi kullanın.
 
-**If Cümleleri**
+#### If Cümleleri
 
 	@if (count($records) === 1)
 		Tek kayıt var!
@@ -104,7 +105,7 @@ Tabii ki, kullanıcılardan gelen tüm veriler escape edilmeli ya da arındırı
 		Giriş yapmadınız.
 	@endunless
 
-**Döngüler**
+#### Döngüler
 
 	@for ($i = 0; $i < 10; $i++)
 		Şu anki değer {{ $i }}'dir.
@@ -118,7 +119,7 @@ Tabii ki, kullanıcılardan gelen tüm veriler escape edilmeli ya da arındırı
 		<p>Sonsuz döngüdeyim.</p>
 	@endwhile
 
-**Alt Görünümlerin Dahil Edilmesi**
+#### Alt Görünümlerin Dahil Edilmesi
 
 	@include('view.ismi')
 
@@ -126,7 +127,7 @@ Dahil edilen görünüme bir veri dizisi de geçebilirsiniz:
 
 	@include('view.ismi', array('birsey'=>'veri'))
 
-**Kesimlerin Üzerine Yazmak**
+#### Kesimlerin Üzerine Yazmak
 
 Ön tanımlı olarak, section'lar sectionda önceden mevcut olan bir içeriğe eklenirler. Bir section'u, öncekini geçersiz kılarak tümden üzerine yazmak için `overwrite` cümlesini kullanabilirsiniz:
 
@@ -136,12 +137,30 @@ Dahil edilen görünüme bir veri dizisi de geçebilirsiniz:
 	    <p>Bu {{ $item->type }} tipinde bir öğedir</p>
 	@overwrite
 
-**Dil Satırlarının Gösterilmesi**
+#### Dil Satırlarının Gösterilmesi
 
 	@lang('language.line')
 
 	@choice('language.line', 1);
 
-**Yorumlar**
+#### Yorumlar
 
 	{{-- Bu yorum, gösterilen HTML içerisinde olmayacaktır --}}
+
+<a name="extending-blade"></a>
+## Extending Blade
+
+Blade even allows you to define your own custom control structures. When a Blade file is compiled, each custom extension is called with the view contents, allowing you to do anything from simple `str_replace` manipulations to more complex regular expressions.
+
+The Blade compiler comes with the helper methods `createMatcher` and `createPlainMatcher`, which generate the expression you need to build your own custom directives.
+
+The `createPlainMatcher` method is used for directives with no arguments like `@endif` and `@stop`, while `createMatcher` is used for directives with arguments.
+
+The following example creates a `@datetime($var)` directive which simply calls `->format()` on `$var`:
+
+	Blade::extend(function($view, $compiler)
+	{
+		$pattern = $compiler->createMatcher('datetime');
+
+		return preg_replace($pattern, '$1<?php echo $2->format('m/d/Y H:i'); ?>', $view);
+	});
