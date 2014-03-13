@@ -2,8 +2,8 @@
 
 - [Giriş](#introduction)
 - [Ortam Yapılandırması](#environment-configuration)
-- [Provider Configuration](#provider-configuration)
-- [Protecting Sensitive Configuration](#protecting-sensitive-configuration)
+- [Sağlayıcı Yapılandırması](#provider-configuration)
+- [Hassas Yapılandırmaları Korumak](#protecting-sensitive-configuration)
 - [Bakım Modu](#maintenance-mode)
 
 <a name="introduction"></a>
@@ -58,7 +58,7 @@ Dikkat ederseniz, bu dosyada _bütün_ değerleri yazmanıza gerek yok. Sadece �
 
     ));
 
-In this example, 'local' is the name of the environment and 'bilgisayarınızın-ismi' is the hostname of your server. On Linux and Mac, you may determine your hostname using the `hostname` terminal command.
+Bu örnekte, 'local' ortamın ismi ve 'bilgisayarınızın-ismi' sunucunuzun makine ismidir. Linux ve Mac işletim sistemlerinde, terminalde `hostname` komutunu çalıştırarak sunucunuzun makine ismini öğrenebilirsiniz.
 
 Dilerseniz, `detectEnvironment` methoduna `Closure` ekleyip ortam algılama özelliğini kendiniz de yazabilirsiniz:
 
@@ -67,39 +67,39 @@ Dilerseniz, `detectEnvironment` methoduna `Closure` ekleyip ortam algılama öze
 		return $_SERVER['MY_LARAVEL_ENV'];
 	});
 
-Şuanki uygulama ortamına `environment` methoduyla erişebilirsiniz:
+Şu anki uygulama ortamına `environment` methoduyla erişebilirsiniz:
 
-#### Şuanki Uygulama Ortamına Erişmek
+#### Şu anki Uygulama Ortamına Erişmek
 
 	$environment = App::environment();
 
-You may also pass arguments to the `environment` method to check if the environment matches a given value:
+Ayrıca `environment` metoduna bir veya daha fazla parametre girerek, ortamın girilen parametrelerden biriyle eşleşip eşleşmediğini kontrol edebilirsiniz:
 
 	if (App::environment('local'))
 	{
-		// The environment is local
+		// Ortam 'local'
 	}
 
 	if (App::environment('local', 'staging'))
 	{
-		// The environment is either local OR staging...
+		// Ortam 'local' veya 'staging'
 	}
 
 <a name="provider-configuration"></a>
-### Provider Configuration
+### Sağlayıcı Yapılandırması
 
-When using environment configuration, you may want to "append" environment [service providers](/docs/ioc#service-providers) to your primary `app` configuration file. However, if you try this, you will notice the environment `app` providers are overriding the providers in your primary `app` configuration file. To force the providers to be appended, use the `append_config` helper method in your environment `app` configuration file:
+Ortam yapılandırması kullanırken ana `app` yapılandırma dosyanıza ortam [hizmet sağlayıcıları](/docs/ioc#service-providers) eklemek isteyebilirsiniz. Denediğinizde, ortama ait sağlayıcıların, ana `app` yapılandırmasındaki sağlayıcıları geçersiz kıldığını fark edeceksiniz. Ortama ait sağlayıcıların, diğerlerini geçersiz kılmak yerine onlara eklenmesini sağlamak için ortam yapılandırma dosyalarınızda `append_config` yardımcı fonksiyonunu kullanmanız gerekir:
 
 	'providers' => append_config(array(
 		'LocalOnlyServiceProvider',
 	))
 
 <a name="protecting-sensitive-configuration"></a>
-## Protecting Sensitive Configuration
+## Hassas Yapılandırmaları Korumak
 
-For "real" applications, it is advisable to keep all of your sensitive configuration out of your configuration files. Things such as database passwords, Stripe API keys, and encryption keys should be kept out of your configuration files whenever possible. So, where should we place them? Thankfully, Laravel provides a very simple solution to protecting these types of configuration items using "dot" files.
+"Gerçek" uygulamalarda, hassas yapılandırmaları yapılandırma dosyalarında tutmamanız önerilir. Veritabanı şifreler, Stripe API anahtarları ve kriptolama anahtarları mümkün olduğunca yapılandırma dosyalarının dışında tutulmalı. O zaman nerede tutacağız bu bilgileri? Neyse ki, Laravel bu tip bilgilerin korunabilmesi için "nokta" yapılandırma dosyaları adında oldukça basit bir çözüm sağlıyor.
 
-First, [configure your application](/docs/configuration#environment-configuration) to recognize your machine as being in the `local` environment. Next, create a `.env.local.php` file within the root of your project, which is usually the same directory that contains your `composer.json` file. The `.env.local.php` should return an array of key-value pairs, much like a typical Laravel configuration file:
+Öncelikle uygulamanızı 'local' ortamınızı tanıyacak şekilde [yapılandır](/docs/configuration#environment-configuration)malısınız. Sonra projenizin kök dizininde, yani composer.json dosyanızın bulunduğu dizinde `.env.local.php` dosyanızı oluşturmalısınız. Bu dosya tıpku diğer Laravel yapılandırma dosyaları gibi anahtar-değer çiftlerine sahip bir dizi döndürmelidir.
 
 	<?php
 
@@ -109,15 +109,15 @@ First, [configure your application](/docs/configuration#environment-configuratio
 
 	);
 
-All of the key-value pairs returned by this file will automatically be available via the `$_ENV` and `$_SERVER` PHP "superglobals". You may now reference these globals from within your configuration files:
+Bu dosyadaki tüm anahtar-değer çiftleri PHP'nin `$_ENV` ve `$_SERVER` "süperküresel" değişkenlerinde erişilebilir olacaktır. Artık yapılandırma dosyalarınızda bu değişkenlere erişebilirsiniz:
 
 	'key' => $_ENV['TEST_STRIPE_KEY']
 
-Be sure to add the `.env.local.php` file to your `.gitignore` file. This will allow other developers on your team to create their own local environment configuration, as well as hide your sensitive configuration items from source control.
+`.env.local.php` dosyasını `.gitignore` dosyasına eklemeyi unutmayın. Bu, dosyanın kaynak kontrol sistemine (Git) girmesini ve ortamınızın kişisel bilgilerine erişilmesini engeller.
 
-Now, On your production server, create a `.env.php` file in your project root that contains the corresponding values for your production environment. Like the `.env.local.php` file, the production `.env.php` file should never be included in source control.
+Şimdi bir de projenizi yayınladığınız sunucuda `.env.php` dosyası oluşturup gerekli yapılandırmaları aynı formatta girin. Aynı `.env.local.php` dosyası gibi, bu dosya da hiçbir zaman kaynak kontrolde bulunmamalı.
 
-> **Note:** You may create a file for each environment supported by your application. For example, the `development` environment will load the `.env.development.php` file if it exists.
+> **Not:** Her bir ortam için gerekli yapılandırma dosyasını oluşturabilirsiniz. Örneğin, `development` ortamında çalışan proje, eğer varsa `.env.development.php` dosyasını sisteme dahil edecektir.
 
 <a name="maintenance-mode"></a>
 ## Bakım Modu
@@ -139,8 +139,8 @@ Uygulamanız bakım modundayken kullanıcılara özel bir view göstermek için 
 		return Response::view('bakim_sayfasi', array(), 503);
 	})
 
-If the Closure passed to the `down` method returns `NULL`, maintenace mode will be ignored for that request.
+Eğer `down` metoduna girilen anonim fonksiyon (Closure) `NULL` değeri döndürürse, bakım modu o istek için görmezden gelinecektir.
 
-### Maintenance Mode & Queues
+### Bakım Modu ve Kuyruklar
 
-While your application is in maintenance mode, no [queue jobs](/docs/queues) will be handled. The jobs will continue to be handled as normal once the application is out of maintenance mode.
+Uygulamanız bakım modunda iken, hiçbir [kuyruk işlemi](/docs/queues) uygulanmaz. Tüm işlemler, uygulama bakım modundan çıktığında normal bir şekilde devam eder.

@@ -1,7 +1,7 @@
 # Temel Veritabanı Kullanımı
 
 - [Yapılandırma](#configuration)
-- [Read / Write Connections](#read-write-connections)
+- [Oku / Yaz Bağlantıları](#read-write-connections)
 - [Sorguları Çalıştırma](#running-queries)
 - [Veritabanı İşlemleri](#database-transactions)
 - [Bağlantılara Erişme](#accessing-connections)
@@ -15,11 +15,11 @@ Laravel, veritabanı bağlantısını ve sorguları çalıştırmayı fazlasıyl
 Laravel tarafından desteklenen veritabanı sistemleri: MySQL, Postgres, SQLite, ve SQL Server.
 
 <a name="read-write-connections"></a>
-## Read / Write Connections
+## Oku / Yaz Bağlantıları
 
-Sometimes you may wish to use one database connection for SELECT statements, and another for INSERT, UPDATE, and DELETE statements. Laravel makes this a breeze, and the proper connections will always be used whether you are using raw queries, the query builder, or the Eloquent ORM.
+Bazen SELECT sorguları için bir bağlantı ve diğer sorgular için başka bir bağlantı kullanmak isteyebilirsiniz. Laravel bunu inanılmaz bir şekilde kolaylaştırır ve düz sorgu, sorgu oluşturucu (query builder) veya Eloquent ORM kullansanız bile hepsi için doğru bağlantıyı kullanır.
 
-To see how read / write connections should be configured, let's look at this example:
+Oku / yaz bağlantılarının nasıl yapılandırıldığını görmek için bu örneği inceleyebilirsiniz:
 
 	'mysql' => array(
 		'read' => array(
@@ -37,7 +37,7 @@ To see how read / write connections should be configured, let's look at this exa
 		'prefix'    => '',
 	),
 
-Note that two keys have been added to the configuration array: `read` and `write`. Both of these keys have array values containing a single key: `host`. The rest of the database options for the `read` and `write` connections will be merged from the main `mysql` array. So, we only need to place items in the `read` and `write` arrays if we wish to override the values in the main array. So, in this case, `192.168.1.1` will be used as the "read" connection, while `192.168.1.2` will be used as the "write" connection. The database credentials, prefix, character set, and all other options in the main `mysql` array will be shared across both connections.
+Yapılandırma dizisine eklenen iki anahtara dikkat edin: `read` ve `write`. İkisi de sadece `host` anahtarını barındıran bir dizi. Geri kalan tüm veritabanı seçenekleri hem `read` hem `write` için geçerli oluyor. Yani `read` ve `write` dizilerine sadece farklı olan değerleri girmeniz yeterli oluyor. Bu durumda `read` bağlantısı kullanılırken `192.168.1.1` adresine, `write` bağlantısı kullanılırken `192.168.1.2` adresine bağlanılıyor. Kullanıcı adı ve şifre gibi diğer tüm bilgiler `read` ve `write` anahtarlarının dışında kalan genel anahtarlardan alınıyor.
 
 <a name="running-queries"></a>
 ## Sorguları Çalıştırma
@@ -89,17 +89,17 @@ Bir veritabanı işleminde, birden fazla işlemi birden gerçekleştirmek için,
 		DB::table('posts')->delete();
 	});
 
-> **Note:** Any exception thrown within the `transaction` closure will cause the transaction to be rolled back automatically.
+> **Not:** `transaction` metoduna girilen anonim fonksiyonunda oluşan herhangi bir exception, transaction işleminin otomatik olarak geri sarılmasına (rollback edilmesine) sebep olur.
 
-Sometimes you may need to begin a transaction yourself:
+Transaction'ı elle başlatmanız gerekirse:
 
 	DB::beginTransaction();
 
-You can rollback a transaction via the `rollback` method:
+Transaction'ı geri sarmanız gerekirse:
 
 	DB::rollback();
 
-Lastly, you can commit a transaction via the `commit` method:
+Transaction'ı tamamlamak için:
 
 	DB::commit();
 
@@ -118,7 +118,7 @@ Bazen veritabanına tekrar bağlanmaya ihtiyacınız olabilir.
 
 	DB::reconnect('foo');
 
-If you need to disconnect from the given database due to exceeding the underyling PDO instance's `max_connections` limit, use the `disconnect` method:
+Veritabanıyla, PDO nesnesinin `max_connections` limiti aşıldığı için bağlantıyı koparmanız gerekirse `disconnect` metodunu kullanabilirsiniz:
 
 	DB::disconnect('foo');
 
@@ -129,6 +129,6 @@ Varsayılan olarak, Laravel güncel istek için çalıştırılabilecek tüm sor
 
 	DB::connection()->disableQueryLog();
 
-To get an array of the executed queries, you may use the `getQueryLog` method:
+Çalıştırılan sorguların listesini bir dizi olarak almak için `getQueryLog` metodunu kullanabilirsiniz:
 
 	$queries = DB::getQueryLog();
