@@ -90,38 +90,38 @@ Ayrıca, `remember` ve `forever` methodlarını birlikte kullanabilirsiniz.
 
 	Cache::decrement('key', $miktar);
 
-<a name="cache-sections"></a>
-## Önbellek Bölümleri
+<a name="cache-tags"></a>
+## Cache Tags
 
-> **Not:** Önbellek bölümleri `dosya` ve `veritabanı` önbellekleme sürücüleri kullanılırken desteklenmemektedir.
+> **Note:** Cache tags are not supported when using the `file` or `database` cache drivers. Furthermore, when using multiple tags with caches that are stored "forever", performance will be best with a driver such as `memcached`, which automatically purges stale records.
 
-Önbellek bölümleri, önbellekteki ilişkili öğeleri gruplamanıza ve tüm bölümü temizlemenize olanak sağlar. Bölüme erişim için `section` metodu kullanılır:
+Cache tags allow you to tag related items in the cache, and then flush all caches tagged with a given name. To access a tagged cache, use the `tags` method:
 
-#### Bir Önbellek Bölümününe Erişim
+#### Accessing A Tagged Cache
 
 You may store a tagged cache by passing in an ordered list of tag names as arguments, or as an ordered array of tag names.
 
-	Cache::section('insanlar')->put('Mehmet', $mehmet, $dakika);
+	Cache::tags('people', 'authors')->put('John', $john, $minutes);
 
-	Cache::section('insanlar')->put('Şeyma', $ayse, $dakika);
+	Cache::tags(array('people', 'artists'))->put('Anne', $anne, $minutes);
 
-You may use any cache storage method in combination with tags, including `remember`, `forever`, and `rememberForever`. Ayrıca bölümlerde önbelleklenmiş öğelere, diğer önbellek metodlarında olduğu gibi `increment` ve `decrement` ile de erişebilirsiniz.
+You may use any cache storage method in combination with tags, including `remember`, `forever`, and `rememberForever`. You may also access cached items from the tagged cache, as well as use the other cache methods such as `increment` and `decrement`:
 
-#### Önbellek Bölümündeki Öğelere Erişmek
+#### Accessing Items In A Tagged Cache
 
 To access a tagged cache, pass the same ordered list of tags used to save it.
 
-	$anne = Cache::section('insanlar')->get('Tuana Şeyma');
+	$anne = Cache::tags('people', 'artists')->get('Anne');
 
-	$mehmet = Cache::tags(array('insanlar', 'yazarlar'))->get('Mehmet');
+	$john = Cache::tags(array('people', 'authors'))->get('John');
 
-You may flush all items tagged with a name or list of names. For example, this statement would remove all caches tagged with either `insanlar`, `yazarlar`, or both. So, both "Tuana Şeyma" and "Mehmet" would be removed from the cache:
+You may flush all items tagged with a name or list of names. For example, this statement would remove all caches tagged with either `people`, `authors`, or both. So, both "Anne" and "John" would be removed from the cache:
 
-	Cache::tags('insanlar', 'yazarlar')->flush();
+	Cache::tags('people', 'authors')->flush();
 
-In contrast, this statement would remove only caches tagged with `yazarlar`, so "Mehmet" would be removed, but not "Tuana Şeyma".
+In contrast, this statement would remove only caches tagged with `authors`, so "John" would be removed, but not "Anne".
 
-	Cache::tags('yazarlar')->flush();
+	Cache::tags('authors')->flush();
 
 <a name="database-cache"></a>
 ## Veritabanı Önbelleği
