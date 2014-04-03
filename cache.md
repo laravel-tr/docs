@@ -3,7 +3,7 @@
 - [Yapılandırma](#configuration)
 - [Önbellekleme Kullanımı](#cache-usage)
 - [Arttırma & Azaltma](#increments-and-decrements)
-- [Önbellek Bölümleri](#cache-sections)
+- [Önbellek Bölümleri](#cache-tags)
 - [Veritabanı Önbelleği](#database-cache)
 
 <a name="configuration"></a>
@@ -11,51 +11,51 @@
 
 Laravel, çeşitli önbellekleme sistemleri için tümleşik bir API sağlar. Önbellekleme yapılandırma ayarları `app/config/cache.php` dosyasında bulunmaktadır. Bu dosyada uygulamanızda varsayılan olarak hangi önbellekleme sürücüsünü kullanmak istediğinizi belirtebilirsiniz. Laravel, [Memcached](http://memcached.org) ve [Redis](http://redis.io) gibi popüler önbellekleme sürücülerini barındırır.
 
-Önbellekleme yapılandırma dosyası ayrıca dosyanın içinde açıklanmış çeşitli seçenekleri de içerir, bu yüzden o seçenekleri de okuduğunuzdan emin olun. Varsayılan olarak, Laravel, sıralanarak önbelleklenmiş öğeleri dosya sisteminde depolayan `file` (dosya) önbellekleme sürücüsünü kullanmak üzere ayarlanmıştır. Daha büyük uygulamalar için, Memcached ve APC gibi bir önbellekleme uygulaması kullanmanız önerilir.
+Önbellekleme yapılandırma dosyası ayrıca dosyanın içinde açıklanmış çeşitli seçenekleri de içerir, bu yüzden o seçenekleri de okuduğunuzdan emin olun. Varsayılan olarak, Laravel, serileştirilerek önbelleklenmiş öğeleri dosya sisteminde depolayan `file` (dosya) önbellekleme sürücüsünü kullanmak üzere ayarlanmıştır. Daha büyük uygulamalar için, Memcached ve APC gibi bir önbellekleme uygulaması kullanmanız önerilir.
 
 <a name="cache-usage"></a>
 ## Önbellekleme Kullanımı
 
 #### Bir Öğeyi Önbelleğe Koymak
 
-	Cache::put('key', 'value', $minutes);
+	Cache::put('anahtar', 'değer', $dakika);
 
-#### Using Carbon Objects To Set Expire Time
+#### Son Kullanım Zamanını Ayarlamak İçin Carbon Nesneleri Kullanılması
 
-	$expiresAt = Carbon::now()->addMinutes(10);
+	$sonZaman = Carbon::now()->addMinutes(10);
 
-	Cache::put('key', 'value', $expiresAt);
+	Cache::put('anahtar', 'değer', $sonZaman);
 
 #### Eğer Öğe Önbellekte Yoksa, Öğeyi Önbelleğe Koymak
 
-	Cache::add('key', 'value', $minutes);
+	Cache::add('anahtar', 'değer', $dakika);
 
-The `add` method will return `true` if the item is actually **added** to the cache. Otherwise, the method will return `false`.
+Eğer ilgili öğe önbelleğe gerçekten **eklenirse** `add` metodu `true` döndürecektir. Aksi takdirde bu metod `false` döndürecektir.
 
 #### Öğenin Önbellekte Var Olup Olmadığını Kontrol Etmek
 
-	if (Cache::has('key'))
+	if (Cache::has('anahtar'))
 	{
 		//
 	}
 
 #### Önbellekten Bir Öğeyi Almak
 
-	$value = Cache::get('key');
+	$value = Cache::get('anahtar');
 
 #### Bir Önbellek Değeri Almak Veya Varsayılan Bir Değer Döndürmek
 
-	$value = Cache::get('key', 'varsayılanDeğer');
+	$value = Cache::get('anahtar', 'varsayılanDeğer');
 
-	$value = Cache::get('key', function() { return 'varsayılanDeğer'; });
+	$value = Cache::get('anahtar', function() { return 'varsayılanDeğer'; });
 
-#### Bir Öğeyi Kalıcı Olarak Önbelleğe Koymak
+#### Bir Öğeyi Önbelleğe Kalıcı Olarak Koymak
 
-	Cache::forever('key', 'value');
+	Cache::forever('anahtar', 'değer');
 
 Bazen, önbellekten bir öğeyi almak isteyebilir ve ayrıca talep edilen öğe yoksa önbellekte varsayılan bir değer saklayabilirsiniz. Bunu, `Cache::remember` metodunu kullanarak yapabilirsiniz:
 
-	$value = Cache::remember('kullanicilar', $minutes, function()
+	$value = Cache::remember('kullanicilar', $dakika, function()
 	{
 		return DB::table('kullanicilar')->get();
 	});
@@ -67,66 +67,66 @@ Ayrıca, `remember` ve `forever` methodlarını birlikte kullanabilirsiniz.
 		return DB::table('kullanicilar')->get();
 	});
 
-Önbellekte bütün öğelerin sıralanmış şekilde saklandığını unutmayın, yani her türlü veriyi saklayabilirsiniz.
+Önbellekte bütün öğelerin serileştirilmiş şekilde saklandığını unutmayın, yani her türlü veriyi saklayabilirsiniz.
 
 #### Önbellekten Bir Öğeyi Silmek
 
-	Cache::forget('key');
+	Cache::forget('anahtar');
 
 <a name="increments-and-decrements"></a>
 ## Arttırma & Azaltma
 
-`file` ve `database` hariç tüm sürücüler `increment` (artma) ve `decrement` (azalma) işlemlerini destekler:
+`file` ve `database` hariç tüm sürücüler `increment` (artırma) ve `decrement` (azaltma) işlemlerini destekler:
 
 #### Bir Değeri Arttırmak
 
-	Cache::increment('key');
+	Cache::increment('anahtar');
 
-	Cache::increment('key', $miktar);
+	Cache::increment('anahtar', $miktar);
 
 #### Bir Değeri Azaltmak
 
-	Cache::decrement('key');
+	Cache::decrement('anahtar');
 
-	Cache::decrement('key', $miktar);
+	Cache::decrement('anahtar', $miktar);
 
 <a name="cache-tags"></a>
-## Cache Tags
+## Önbellek Etiketleri (Tags)
 
-> **Note:** Cache tags are not supported when using the `file` or `database` cache drivers. Furthermore, when using multiple tags with caches that are stored "forever", performance will be best with a driver such as `memcached`, which automatically purges stale records.
+> **Not:** Önbellek bölümleri `file` ve `database` önbellekleme sürücüleri kullanılırken desteklenmemektedir. Ayrıca, "forever" saklanır önbelleklerde birden çok tag kullanmanız halinde, bayat kayıtları otomatik olarak temizleyen `memcached` gibi bir sürücüyle performans en iyi olacaktır.
 
-Cache tags allow you to tag related items in the cache, and then flush all caches tagged with a given name. To access a tagged cache, use the `tags` method:
+Cache tagları cache'deki birbirine yakın öğeleri etiketlemenize ve daha sonra verilen bir isimle etiketlenmiş tüm cache'leri yok etmenize (flush) imkan verir. Etiketlenmiş bir cache'e erişmek için, `tags` metodunu kullanın:
 
-#### Accessing A Tagged Cache
+#### Etiketlenmiş Bir Önbelleğe Erişim
 
-You may store a tagged cache by passing in an ordered list of tag names as arguments, or as an ordered array of tag names.
+Parametreler olarak sıralı bir tag isimleri listesi geçerek veya parametre olarak sıralı tag isimlerinden oluşan bir dizi geçerek etiketlenmiş bir cache saklayabilirsiniz.
 
-	Cache::tags('people', 'authors')->put('John', $john, $minutes);
+	Cache::tags('insanlar', 'yazarlar')->put('Can', $can, $dakika);
 
-	Cache::tags(array('people', 'artists'))->put('Anne', $anne, $minutes);
+	Cache::tags(array('insanlar', 'artistler'))->put('Mine', $mine, $dakika);
 
-You may use any cache storage method in combination with tags, including `remember`, `forever`, and `rememberForever`. You may also access cached items from the tagged cache, as well as use the other cache methods such as `increment` and `decrement`:
+Tag kombinasyonlarında `remember`, `forever` ve `rememberForever` gibi herhangi bir cache saklama metodunu kullanabilirsiniz. Ayrıca etiketlenmiş cache'lerde önbelleklenmiş öğelere erişebileceğiniz gibi, `increment` ve `decrement` gibi diğer önbellek metodlarını da kullanabilirsiniz.
 
-#### Accessing Items In A Tagged Cache
+#### Etiketlenmiş Bir Önbellekteki Öğelere Erişmek
 
-To access a tagged cache, pass the same ordered list of tags used to save it.
+Etiketlenmiş bir cache'ye erişmek için, onu saklarken kullandığınız aynı sıradaki tag listesini geçiniz.
 
-	$anne = Cache::tags('people', 'artists')->get('Anne');
+	$mine = Cache::tags('insanlar', 'artistler')->get('Mine');
 
-	$john = Cache::tags(array('people', 'authors'))->get('John');
+	$can = Cache::tags(array('insanlar', 'yazarlar'))->get('Can');
 
-You may flush all items tagged with a name or list of names. For example, this statement would remove all caches tagged with either `people`, `authors`, or both. So, both "Anne" and "John" would be removed from the cache:
+Bir isim veya bir isim listesi ile etiketlenmiş tüm ögeleri yok edebilirsiniz. Örneğin, aşağıdaki cümle `insanlar`, `yazarlar` veya her ikisi ile de etiketlenmiş tüm cache'leri çıkarıp atacaktır. Dolayısıyla, cache'den hem "Mine" hem de "Can" çıkartılacaktır:
 
-	Cache::tags('people', 'authors')->flush();
+	Cache::tags('insanlar', 'yazarlar')->flush();
 
-In contrast, this statement would remove only caches tagged with `authors`, so "John" would be removed, but not "Anne".
+Tersine, şu cümle sadece `yazarlar` etiketi verilmiş cache'leri çıkartacaktır, yani "Can" çıkartılacak ama "Mine" çıkartılmayacak.
 
-	Cache::tags('authors')->flush();
+	Cache::tags('yazarlar')->flush();
 
 <a name="database-cache"></a>
 ## Veritabanı Önbelleği
 
-`Veritabanı` önbellek sürücüsü kullanırken, önbellek öğelerini içeren bir tablo kurulumu gerekir. Bu tablo için örnek bir `şema` aşağıda gösterilmiştir:
+`database` önbellek sürücüsü kullandığınız takdirde, önbellek öğelerini içeren bir tablo kurulumu gerekir. Bu tablo için örnek bir `şema` aşağıda gösterilmiştir:
 
 	Schema::create('cache', function($table)
 	{
