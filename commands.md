@@ -17,7 +17,7 @@ Artisan'da mevcut olan komutlara ilaveten,  uygulamanız ile çalışacak olan k
 
 Yeni bir komut oluşturmak için, `command:make` Artisan komutunu kullanabilirsiniz. Bu komut, başlamanızda size yardımcı olmak için yeni bir komut taslağı oluşturacaktır.
 
-#### Yeni bir Komut Sınıfının Oluşturulması
+#### Yeni Bir Komut Sınıfının Oluşturulması
 
 	php artisan command:make FalancaKomut
 
@@ -25,7 +25,7 @@ Yeni bir komut oluşturmak için, `command:make` Artisan komutunu kullanabilirsi
 
 	php artisan command:make FalancaKomut --path=app/classes --namespace=Siniflar
 
-When creating the command, the `--command` option may be used to assign the terminal command name:
+Bir komut oluşturulurken terminal komut adı atamak için `--command` seçeneği kullanılabilir:
 
 	php artisan command:make AssignUsers --command=users:assign
 
@@ -39,13 +39,13 @@ Komut çalıştırıldığında `fire` (ateşle) metodu çağırılmaktadır. Bu
 
 Komutunuzun alacağı argüman veya seçenekleri tanımlayabileceğiniz yerler `getArguments` ve `getOptions` metodlarıdır. Bu metodların her ikisi de birer komut dizisi verirler. Bu komut dizileri, bir 'dizi seçenekleri listesi' ile tarif edilirler.
 
-Argümanları `arguments` belirlerlerken, dizi tanımı değerleri şunları belirler: (ismi, modu, tanımı, ön değeri)
+Argümanları (`arguments`) belirlerlerken, dizi tanımı değerleri şunları belirler: (ismi, modu, tanımı, ön değeri)
 
 	array($name, $mode, $description, $defaultValue)
 
 Modu argümanı `mode` şunlardan herhangi biri olabilir: `InputArgument::REQUIRED` (mecburi) veya `InputArgument::OPTIONAL` (isteğe bağlı).
 
-Seçenekleri `options` belirlerken, dizi tanımı değerleri şunları belirler: (ismi, kısayolu, modu, tanımı, ön değeri)
+Seçenekleri (`options`) belirlerken, dizi tanımı değerleri şunları belirler: (ismi, kısayolu, modu, tanımı, ön değeri)
 
 	array($name, $shortcut, $mode, $description, $defaultValue)
 
@@ -117,7 +117,7 @@ Kullanıcıdan bir girdi talep etmek için, `ask` (sor) ve `confirm` (onayla) me
 <a name="registering-commands"></a>
 ## Komutların Kayıt Ettirilmesi
 
-Komutunuzun inşa edilmesi tamamlandığında, kullanılmaya hazır olabilmesi için, Artisan'da kayıt ettirmeniz gerekir. Bu, genelde `app/start/artisan.php` dosyası içerisinde yapılır. Bu dosya içerisinde, kayıt ettirmek için `Artisan::add` (Artisan::ekle) metodunu kullanabilirsiniz.
+Komutunuzun inşa edilmesi tamamlandığında, kullanılmaya hazır olabilmesi için, Artisan'da kayıt ettirmeniz gerekir. Bu, genelde `app/start/artisan.php` dosyası içerisinde yapılır. Bu dosya içerisinde, kayıt ettirmek için `Artisan::add` metodunu kullanabilirsiniz.
 
 #### Bir Artisan Komutunun Kayıt Ettirilişi
 
@@ -132,7 +132,7 @@ Eğer komutunuz [IoC container](/docs/ioc) uygulamasında kayıtlı ise, Artisan
 <a name="calling-other-commands"></a>
 ## Diğer Komutların Çağırılması
 
-Bazı durumlarda, komtunuzun içerisinden diğer başka bir komutu çağırmak isteyebilirsiniz. Bunu, `call` (çağır) metodunu kullanarak yapabilirsiniz:
+Bazı durumlarda, komutunuzun içerisinden başka bir komutu çağırmak isteyebilirsiniz. Bunu, `call` metodunu kullanarak yapabilirsiniz:
 
 #### Başka Bir Komutun Çağırılışı
 
