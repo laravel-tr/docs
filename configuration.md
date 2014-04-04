@@ -17,7 +17,7 @@ Bazen yapılandırma değerlerine run-time (çalışma anı) esnasında erişmen
 
 	Config::get('app.timezone');
 
-Eğer yapılandırma değeri bulunamazsa dönecek değeri ise ikinci bir parametreyle belirleyebilirsiniz:
+Eğer yapılandırma değeri bulunamazsa dönecek değeri ise, ikinci bir parametreyle belirleyebilirsiniz:
 
 	$timezone = Config::get('app.timezone', 'UTC');
 
@@ -48,7 +48,7 @@ Bunu yapmak çok basit! `config` dizini içerisinde, ortam isminizi kullandığ�
 
 Dikkat ederseniz, bu dosyada _bütün_ değerleri yazmanıza gerek yok. Sadece üzerine yazmak istediklerinizi eklemeniz yeterli. Geri kalan değerler, öntanımlı yapılandırma değerlerinden alınacaktır.
 
-Şimdi yapmamız gereken Laravel'e hangi ortamda çalıştığını belirtmek. Öntanımlı ortam daima `production` ortamıdır. Ancak ana dizindeki `bootstrap/start.php` dosya içerisine eklemeler yaparak farklı ortamlar oluşturmak mümkündür. Bu dosya içerisinde `$app->detectEnvironment` adında bir tanım bulacaksınız. Bu methoda eklenen bir parametre ile Laravel'e hangi ortamda çalıştığını belirtebilirsiniz. Hatta ihtiyacınız olursa, diğer ortam ve makine isimlerini de dizi olarak ekleyebilirsiniz:
+Şimdi yapmamız gereken Laravel'e hangi ortamda çalıştığını belirtmek. Öntanımlı ortam daima `production` ortamıdır. Ancak ana dizindeki `bootstrap/start.php` dosyası içerisine eklemeler yaparak farklı ortamlar oluşturmak mümkündür. Bu dosya içerisinde `$app->detectEnvironment` adında bir tanım bulacaksınız. Bu metoda eklenen bir parametre ile Laravel'e hangi ortamda çalıştığını belirtebilirsiniz. Hatta ihtiyacınız olursa, diğer ortam ve makine isimlerini de dizi olarak ekleyebilirsiniz:
 
     <?php
 
@@ -67,7 +67,7 @@ Dilerseniz, `detectEnvironment` methoduna `Closure` ekleyip ortam algılama öze
 		return $_SERVER['MY_LARAVEL_ENV'];
 	});
 
-Şu anki uygulama ortamına `environment` methoduyla erişebilirsiniz:
+Şu anki uygulama ortamına `environment` metoduyla erişebilirsiniz:
 
 #### Şu anki Uygulama Ortamına Erişmek
 
@@ -97,9 +97,9 @@ Ortam yapılandırması kullanırken ana `app` yapılandırma dosyanıza ortam [
 <a name="protecting-sensitive-configuration"></a>
 ## Hassas Yapılandırmaları Korumak
 
-"Gerçek" uygulamalarda, hassas yapılandırmaları yapılandırma dosyalarında tutmamanız önerilir. Veritabanı şifreler, Stripe API anahtarları ve kriptolama anahtarları mümkün olduğunca yapılandırma dosyalarının dışında tutulmalı. O zaman nerede tutacağız bu bilgileri? Neyse ki, Laravel bu tip bilgilerin korunabilmesi için "nokta" yapılandırma dosyaları adında oldukça basit bir çözüm sağlıyor.
+"Gerçek" uygulamalarda, hassas yapılandırmaları yapılandırma dosyalarında tutmamanız önerilir. Veritabanı şifreleri, Stripe API anahtarları ve kriptolama anahtarları mümkün olduğunca yapılandırma dosyalarının dışında tutulmalıdır. O zaman nerede tutacağız bu bilgileri? Neyse ki, Laravel bu tip bilgilerin korunabilmesi için "nokta" yapılandırma dosyaları adında oldukça basit bir çözüm sağlıyor.
 
-Öncelikle uygulamanızı 'local' ortamınızı tanıyacak şekilde [yapılandır](/docs/configuration#environment-configuration)malısınız. Sonra projenizin kök dizininde, yani composer.json dosyanızın bulunduğu dizinde `.env.local.php` dosyanızı oluşturmalısınız. Bu dosya tıpku diğer Laravel yapılandırma dosyaları gibi anahtar-değer çiftlerine sahip bir dizi döndürmelidir.
+Öncelikle uygulamanızı 'local' ortamınızı tanıyacak şekilde [yapılandır](/docs/configuration#environment-configuration)malısınız. Sonra projenizin kök dizininde, yani composer.json dosyanızın bulunduğu dizinde `.env.local.php` dosyanızı oluşturmalısınız. Bu dosya tıpkı diğer Laravel yapılandırma dosyaları gibi anahtar-değer çiftlerine sahip bir dizi döndürmelidir.
 
 	<?php
 
@@ -115,7 +115,7 @@ Bu dosyadaki tüm anahtar-değer çiftleri PHP'nin `$_ENV` ve `$_SERVER` "süper
 
 `.env.local.php` dosyasını `.gitignore` dosyasına eklemeyi unutmayın. Bu, dosyanın kaynak kontrol sistemine (Git) girmesini ve ortamınızın kişisel bilgilerine erişilmesini engeller.
 
-Şimdi bir de projenizi yayınladığınız sunucuda `.env.php` dosyası oluşturup gerekli yapılandırmaları aynı formatta girin. Aynı `.env.local.php` dosyası gibi, bu dosya da hiçbir zaman kaynak kontrolde bulunmamalı.
+Şimdi bir de projenizi yayınladığınız sunucuda `.env.php` dosyası oluşturup gerekli yapılandırmaları aynı formatta girin. Aynı `.env.local.php` dosyası gibi, bu `.env.php` üretim ortamı dosyası da hiçbir zaman kaynak kontrolde bulunmamalıdır.
 
 > **Not:** Her bir ortam için gerekli yapılandırma dosyasını oluşturabilirsiniz. Örneğin, `development` ortamında çalışan proje, eğer varsa `.env.development.php` dosyasını sisteme dahil edecektir.
 
