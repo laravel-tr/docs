@@ -1,7 +1,7 @@
 # Temel Veritabanı Kullanımı
 
 - [Yapılandırma](#configuration)
-- [Oku / Yaz Bağlantıları](#read-write-connections)
+- [Okuma / Yazma Bağlantıları](#read-write-connections)
 - [Sorguları Çalıştırma](#running-queries)
 - [Veritabanı İşlemleri](#database-transactions)
 - [Bağlantılara Erişme](#accessing-connections)
@@ -15,11 +15,11 @@ Laravel, veritabanı bağlantısını ve sorguları çalıştırmayı fazlasıyl
 Laravel tarafından desteklenen veritabanı sistemleri: MySQL, Postgres, SQLite, ve SQL Server.
 
 <a name="read-write-connections"></a>
-## Oku / Yaz Bağlantıları
+## Okuma / Yazma Bağlantıları
 
-Bazen SELECT sorguları için bir bağlantı ve diğer sorgular için başka bir bağlantı kullanmak isteyebilirsiniz. Laravel bunu inanılmaz bir şekilde kolaylaştırır ve düz sorgu, sorgu oluşturucu (query builder) veya Eloquent ORM kullansanız bile hepsi için doğru bağlantıyı kullanır.
+Bazen SELECT sorguları için bir bağlantı ve diğer sorgular için başka bir bağlantı kullanmak isteyebilirsiniz. Laravel bunu inanılmaz bir şekilde kolaylaştırır ve ister düz sorgu, ister sorgu oluşturucu (query builder) veya ister Eloquent ORM kullansanız bile hepsi için doğru bağlantıyı kullanır.
 
-Oku / yaz bağlantılarının nasıl yapılandırıldığını görmek için bu örneği inceleyebilirsiniz:
+Okuma / yazma bağlantılarının nasıl yapılandırıldığını görmek için bu örneği inceleyebilirsiniz:
 
 	'mysql' => array(
 		'read' => array(
@@ -37,12 +37,12 @@ Oku / yaz bağlantılarının nasıl yapılandırıldığını görmek için bu 
 		'prefix'    => '',
 	),
 
-Yapılandırma dizisine eklenen iki anahtara dikkat edin: `read` ve `write`. İkisi de sadece `host` anahtarını barındıran bir dizi. Geri kalan tüm veritabanı seçenekleri hem `read` hem `write` için geçerli oluyor. Yani `read` ve `write` dizilerine sadece farklı olan değerleri girmeniz yeterli oluyor. Bu durumda `read` bağlantısı kullanılırken `192.168.1.1` adresine, `write` bağlantısı kullanılırken `192.168.1.2` adresine bağlanılıyor. Kullanıcı adı ve şifre gibi diğer tüm bilgiler `read` ve `write` anahtarlarının dışında kalan genel anahtarlardan alınıyor.
+Yapılandırma dizisine eklenen iki anahtara dikkat edin: `read` ve `write`. İkisi de sadece `host` anahtarını barındıran bir dizi. `read` ve `write` bağlantılarının geri kalan tüm veritabanı seçenekleri ise ana `mysql` dizisinden alınıp birleştirilecektir. Yani `read` ve `write` dizilerine sadece ana dizideki değerlerden değiştirmek istediğimiz kalemleri girmemiz gereklidir. Bu durumda `read` bağlantısı olarak  `192.168.1.1` kullanılırken, `write` bağlantısı olarak `192.168.1.2` kullanılacaktır. Ana `mysql` dizisindeki username, password, prefix, character set ve diğer tüm seçenekler her iki bağlantı için paylaşılacaktır.
 
 <a name="running-queries"></a>
 ## Sorguları Çalıştırma
 
-Veritabanı bağlantılarını bir kere yapılandırdıktan sonra `DB` sınıfını kullanarak sorgularını çalıştırabilirsiniz.
+Veritabanı bağlantılarını bir kere yapılandırdıktan sonra `DB` sınıfını kullanarak sorguları çalıştırabilirsiniz.
 
 #### Kayıt Çekme (Select)
 
@@ -89,7 +89,7 @@ Bir veritabanı işleminde, birden fazla işlemi birden gerçekleştirmek için,
 		DB::table('posts')->delete();
 	});
 
-> **Not:** `transaction` metoduna girilen anonim fonksiyonunda oluşan herhangi bir exception, transaction işleminin otomatik olarak geri sarılmasına (rollback edilmesine) sebep olur.
+> **Not:** `transaction` metoduna girilen anonim fonksiyonunda oluşan herhangi bir istisna, transaction işleminin otomatik olarak geri sarılmasına (rollback edilmesine) sebep olur.
 
 Transaction'ı elle başlatmanız gerekirse:
 
