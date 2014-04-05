@@ -3,7 +3,7 @@
 - [Form Açmak](#opening-a-form)
 - [CSRF Koruması](#csrf-protection)
 - [Forma Model Bağlanması](#form-model-binding)
-- [Labels](#labels)
+- [Label Elementi](#labels)
 - [Text, Textarea, Password & Hidden Alanlar](#text)
 - [Onay Kutuları ve Seçenek Düğmeleri](#checkboxes-and-radio-buttons)
 - [File Inputu](#file-input)
@@ -27,15 +27,15 @@ Varsayılan olarak, `POST` metodu kullanılır; ancak, istediğiniz bir metodu d
 
 > **Not:** HTML formları, sadece `POST` ve `GET` metotlarını desteklediği için, `PUT` ve `DELETE` metotları formunuza otomatik olarak bir `_method` gizli alanı eklenmek suretiyle taklit edilecektir.
 
-You may also open forms that point to named routes or controller actions:
+İsimli rotalara veya controller eylemlerine işaret eden formlar da açabilirsiniz:
 
 	echo Form::open(array('route' => 'route.name'))
 
 	echo Form::open(array('action' => 'Controller@method'))
 
-Ayrıca, isimlendirilmiş rotalar veya denetçi aksiyonlarına yönlendirilen formlar da açabilirsiniz:
+Ayrıca, rota parametreleri de geçebilirsiniz:
 
-	echo Form::open(array('route' => 'route.name'))
+	echo Form::open(array('route' => array('route.name', $user->id)))
 
 	echo Form::open(array('action' => array('Controller@method', $user->id)))
 
@@ -79,7 +79,7 @@ Bu size model değerlerine bağlanan formları sadece çabukça oluşturmanıza 
 > **Not:** `Form::model` kullanıyor olduğunuzda, `Form::close` ile formunuzu kapatmayı unutmayın!
 
 <a name="labels"></a>
-## Label
+## Label Elementi
 
 #### Bir Label Elementi Üretilmesi
 
@@ -89,16 +89,16 @@ Bu size model değerlerine bağlanan formları sadece çabukça oluşturmanıza 
 
 	echo Form::label('email', 'E-Mail Adresi', array('class' => 'awesome'));
 
-> **Not:** Bir label oluştururken, label ismiyle aynı isimde oluşturduğunuz bir form elemanı otomatik olarak label ile aynı isimde bir ID de alacaktır.
+> **Not:** Bir label oluştururken, label ismiyle aynı isimde oluşturduğunuz bir form elementi otomatik olarak label ile aynı isimde bir ID de alacaktır.
 
 <a name="text"></a>
 ## Text, Textarea, Password & Hidden Alanlar
 
-#### Bir Text Inputu Üretilmesi**
+#### Bir Text Inputu Üretilmesi
 
 	echo Form::text('uyeadi');
 
-#### Ön Tanımlı Bir Değer Belirtilmesi**
+#### Ön Tanımlı Bir Değer Belirtilmesi
 
 	echo Form::text('email', 'ornek@gmail.com');
 
@@ -108,7 +108,7 @@ Bu size model değerlerine bağlanan formları sadece çabukça oluşturmanıza 
 
 	echo Form::password('parola');
 
-#### Generating Other Inputs
+#### Diğer Inputlar Üretilmesi
 
 	echo Form::email($name, $value = null, $attributes = array());
 	echo Form::file($name, $attributes = array());
@@ -116,13 +116,13 @@ Bu size model değerlerine bağlanan formları sadece çabukça oluşturmanıza 
 <a name="checkboxes-and-radio-buttons"></a>
 ## Onay Kutuları ve Seçenek Düğmeleri
 
-#### Bir Checkbox Veya Radio Inputu Üretilmesi**
+#### Bir Checkbox Veya Radio Inputu Üretilmesi
 
 	echo Form::checkbox('isim', 'deger');
 
 	echo Form::radio('isim', 'deger');
 
-#### Seçilmiş Bir Checkbox Veya Radio Inputu Üretilmesi**
+#### Seçilmiş Bir Checkbox Veya Radio Inputu Üretilmesi
 
 	echo Form::checkbox('isim', 'deger', true);
 
@@ -138,44 +138,44 @@ Bu size model değerlerine bağlanan formları sadece çabukça oluşturmanıza 
 <a name="drop-down-lists"></a>
 ## Aşağı Açılır Listeler
 
-#### Aşağı Açılır Bir Liste Üretilmesi**
+#### Aşağı Açılır Bir Liste Üretilmesi
 
 	echo Form::select('boyut', array('B' => 'Büyük', 'K' => 'Küçük'));
 
-#### Ön Tanımlı Seçilmiş Bir Aşağı Açılır Liste Üretilmesi**
+#### Ön Tanımlı Seçilmiş Bir Aşağı Açılır Liste Üretilmesi
 
 	echo Form::select('size', array('B' => 'Büyük', 'K' => 'Küçük''), 'K');
 
-#### Gruplanmış Bir Liste Üretilmesi**
+#### Gruplanmış Bir Liste Üretilmesi
 
 	echo Form::select('hayvan', array(
 		'Kediler' => array('tekir' => 'Tekir'),
 		'Köpekler' => array('kangal' => 'Kangal'),
 	));
 
-#### Generating A Drop-Down List With A Range
+#### Bir Aralık Olan Bir Aşağı Açılır Liste Üretilmesi
 
     echo Form::selectRange('number', 10, 20);
 
-#### Generating A List With Month Names
+#### Ay İsimleri Olan Bir Liste Üretilmesi
 
     echo Form::selectMonth('month');
 
 <a name="buttons"></a>
 ## Düğmeler
 
-#### Bir Submit Düğmesinin Üretilmesi**
+#### Bir Submit Düğmesinin Üretilmesi
 
 	echo Form::submit('Tıkla beni!');
 
-> **Not:** Bir button elamanı üretmeniz gerekiyorsa, *button* metodunu kullanın. Bu aynı *submit* gibi yazılır.
+> **Not:** Bir button elemanı üretmeniz gerekiyorsa, *button* metodunu kullanın. Bu aynı *submit* gibi yazılır.
 
 <a name="custom-macros"></a>
 ## Özel Makrolar
 
 "Makrolar" denen kendi özel Form sınıf yardımcılarınızı tanımlamak kolaydır. Nasıl çalıştığını görün: Önce belli bir isim ve Closure fonksiyonu ile makroyu kayda geçirin:
 
-#### Bir Form Makrosunun Kayda Geçirilmesi####
+#### Bir Form Makrosunun Kayda Geçirilmesi
 
 	Form::macro('makroAlan', function()
 	{
@@ -184,7 +184,7 @@ Bu size model değerlerine bağlanan formları sadece çabukça oluşturmanıza 
 
 Şimdi adını kullanarak makronuzu çağırabilirsiniz:
 
-**Özel Bir Form Makrosunun Çağırılması####
+#### Özel Bir Form Makrosunun Çağırılması
 
 	echo Form::makroAlan();
 
