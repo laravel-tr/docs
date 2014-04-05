@@ -1,7 +1,7 @@
 # Hatalar ve Günlüğe Ekleme
 
 - [Hata Ayrıntısı](#error-detail)
-- [Handling Errors](#handling-errors)
+- [Hataların İşlenmesi](#handling-errors)
 - [HTTP İstisnaları](#http-exceptions)
 - [404 Hatalarının İşlenmesi](#handling-404-errors)
 - [Günlüğe Ekleme](#logging)
@@ -11,7 +11,7 @@
 
 Ön tanımlı olarak hata ayrıntısı uygulamanızda etkindir. Yani bir hata oluştuğu zaman ayrıntılı bir sorun listesi ve hata iletisi gösterebileceksiniz. `app/config/app.php` dosyanızdaki `debug` seçeneğini `false` ayarlayarak hata ayrıntılarını devre dışı bırakabilirsiniz.
 
-> **Not:** Bir üretim (production) ortamında hata ayrıntılarını devre dışı bırakmanız şiddetle önerilir.
+> **Not:** Bir üretim (production) ortamında hata ayrıntılarını devre dışı bırakmanız kuvvetle önerilir.
 
 <a name="handling-errors"></a>
 ## Hataların İşlenmesi
@@ -46,11 +46,11 @@ PHP'nin önemli hatalarını (fatal error) izlemek için, `App::fatal` metodunu 
 		//
 	});
 
-If you have several exception handlers, they should be defined from most generic to most specific. So, for example, a handler that handles all exceptions of type `Exception` should be defined before a custom exception type such as `Illuminate\Encryption\DecryptException`.
+Eğer birkaç istisna işleyiciniz varsa, bunlar en genelde en spesifik olana doğru tanımlanmalıdır. Bu yüzden, örneğin, `Exception` tipindeki tüm istisnaları işleyen bir işleyici `Illuminate\Encryption\DecryptException` gibi özel bir istisna tipinin işleyicisinden daha önce tanımlanmalıdır.
 
-### Where To Place Error Handlers
+### Hata İşleyicileri Nereye Konacak
 
-There is no default "home" for error handler registrations. Laravel offers you freedom in this area. One option is to define the handlers in your `start/global.php` file. In general, this is a convenient location to place any "bootstrapping" code. If that file is getting crowded, you could create an `app/errors.php` file, and `require` that file from your `start/global.php` script. A third option is to create a [service provider](/docs/ioc#service-providers) that registers the handlers. Again, there is no single "correct" answer. Choose a location that you are comfortable with.
+Hata işleyici kayıtları için ön tanımlı bir "konum" yoktur. Laravel bu alanda size seçme hakkı verir. Bir seçenek işleyicileri `start/global.php` dosyanızda tanımlamaktır. Genelde, burası her türlü "bootstrapping" (önce yüklenen) kodun koyulması için uygun bir yerdir. Eğer bu dosya çok kalabalık bir hale gelirse, bir `app/errors.php` dosyası oluşturabilir ve bu dosyayı `start/global.php` skriptinizde `require` yapabilirsiniz. Üçüncü bir seçenek, işleyicileri kayda geçiren bir [servis sağlayıcı](/docs/ioc#service-providers) oluşturmaktır. Tekrar belirtelim, tek bir "doğru" cevap yoktur. Rahat edeceğiniz bir konum seçin.
 
 <a name="http-exceptions"></a>
 ## HTTP İstisnaları
@@ -59,11 +59,11 @@ HTTP istisnaları bir istemci isteği sırasında oluşabilecek hatalar demektir
 
 	App::abort(404);
 
-Optionally, you may provide a response:
+İsteğe bağlı olarak, bir cevap verebilirsiniz:
 
 	App::abort(401, 'Yetkili değilsiniz.');
 
-Bu istisnalar, isteğin yaşam döngüsü boyunca her an çalışabilecektir.
+Bu istisnalar, isteğin yaşam döngüsü boyunca herhangi bir zamanda kullanılabilir.
 
 <a name="handling-404-errors"></a>
 ## 404 Hatalarının İşlenmesi
@@ -78,7 +78,7 @@ Uygulamanızdaki tüm "404 Not Found" hatalarını işleyerek özel 404 hata hat
 <a name="logging"></a>
 ## Günlüğe Ekleme
 
-Laravel'in günlüğe ekleme imkanlanları güçlü [Monolog](http://github.com/seldaek/monolog) üstünde basit bir katman sağlar. Laravel, ön tanımlı olarak uygulamanız için günlük dosyaları oluşturacak şekilde yapılandırılmıştır ve bu dosyalar `app/storage/logs` klasörü içinde tutulmaktadır. Bu dosyalara aşağıdakilere benzer şekilde bilgi yazabilirsiniz:
+Laravel'in günlüğe ekleme imkanları güçlü [Monolog](http://github.com/seldaek/monolog) üstünde basit bir katman sağlar. Laravel, ön tanımlı olarak uygulamanız için günlük dosyaları oluşturacak şekilde yapılandırılmıştır ve bu dosyalar `app/storage/logs` klasörü içinde tutulmaktadır. Bu dosyalara aşağıdakilere benzer şekilde bilgi yazabilirsiniz:
 
 	Log::info('İşte bu yararlı bir bilgidir.');
 
@@ -88,9 +88,9 @@ Laravel'in günlüğe ekleme imkanlanları güçlü [Monolog](http://github.com/
 
 Günlük tutucu, [RFC 5424](http://tools.ietf.org/html/rfc5424)'de tanımlanmış yedi günlük ekleme düzeyi sağlamaktadır: **debug**, **info**, **notice**, **warning**, **error**, **critical** ve **alert**.
 
-An array of contextual data may also be passed to the log methods:
+Log metodlarına bağlamsal bir veri dizisi de geçilebilir:
 
-	Log::info('Log message', array('context' => 'Other helpful information'));
+	Log::info('Günce mesajı', array('context' => 'Diğer yardımcı bilgi'));
 
 Monolog, günlüğe ekleme için kullanabileceğiniz bir takım başka işleyicilere de sahiptir. Gerektiğinde, Laravel tarafından kullanılan Monolog olgusuna şu şekilde ulaşabilirsiniz:
 
