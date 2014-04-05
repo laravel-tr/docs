@@ -34,7 +34,7 @@ Olaylara abone olurken bir öncelik de belirtebilirsiniz. Daha yüksek önceliğ
 
 Bazen bir olayın diğer dinleyicilere yayılmasını durdurmak isteyebilirsiniz. Dinleyicinizden `false` döndürerek bunu gerçekleştirebilirsiniz:
 
-**Bir Olayın Yayılımının Durdurulması**
+#### Bir Olayın Yayılımının Durdurulması
 
 	Event::listen('uye.login', function($event)
 	{
@@ -43,11 +43,11 @@ Bazen bir olayın diğer dinleyicilere yayılmasını durdurmak isteyebilirsiniz
 		return false;
 	});
 
-### Where To Register Events
+### Olayların Kayda Geçirileceği Yer
 
-So, you know how to register events, but you may be wondering _where_ to register them. Don't worry, this is a common question. Unfortunately, it's a hard question to answer because you can register an event almost anywhere! But, here are some tips. Again, like most other bootstrapping code, you may register events in one of your `start` files such as `app/start/global.php`.
+Tamam, olayların nasıl kayda geçirileceğini biliyorsunuz ama onların _nerede_ kayda geçirileceğini merak ediyor olabilirsiniz. Dert etmeyin, bu çok sorulan bir şey. Ne yazık ki bu cevaplandırması zor bir soru, çünkü bir olayı neredeyse her yerde kayda geçirebilirsiniz! Fakat, işte bazı ipuçları. Aynı şekilde, diğer pek çok bootstrapping (önce yüklenen) koduna benzer olarak, olayları `app/start/global.php` gibi `start` dosyalarınızın birisinde kayda geçirebilirsiniz.
 
-If your `start` files are getting too crowded, you could create a separate `app/events.php` file that is included from a `start` file. This is a simple solution that keeps your event registration cleanly separated from the rest of your bootstrapping. If you prefer a class based approach, you may register your events in a [service provider](/docs/ioc#service-providers). Since none of these approaches is inherently "correct", choose an approach you feel comfortable with based on the size of your application.
+Eğer `start` dosyalarınız çok kalabalık bir hale gelirse, bir `start` dosyanızda "include" edilen ayrı bir `app/events.php` dosyası oluşturabilirsiniz. Bu, sizin olay kaydetme işinizi, geri kalan bootstrapping kodundan temiz bir şekilde ayrı tutmanın basit bir çözümüdür. Eğer sınıf temelli bir yaklaşımı tercih ederseniz, olaylarınızı bir [servis sağlayıcı](/docs/ioc#service-providers) ile kayda geçirebilirsiniz. Bu yaklaşımlardan hiçbiri "mutlak" doğru olmadığından, ugulamanızın büyüklüğüne göre rahatlık hissedeceğiniz bir yaklaşımı seçin.
 
 <a name="wildcard-listeners"></a>
 ## Joker Dinleyiciler
@@ -56,18 +56,18 @@ Bir olay dinleyiciyi kayda geçirirken, joker dinleyicileri belirtmek üzere yı
 
 #### Joker Olay Dinleyicilerin Kayda Geçirilmesi
 
-	Event::listen('falan.*', function($param, $event)
+	Event::listen('falan.*', function($param)
 	{
 		// Olayı işle...
 	});
 
-Bu dinleyici `falan.` ile başlayan tüm olayları işleyecektir. Tam olay adının işleyiciye son parametre olarak geçildiğine dikkat ediniz.
+Bu dinleyici `falan.` ile başlayan tüm olayları işleyecektir.
 
-You may use the `Event::firing` method to determine exactly which event was fired:
+Tam olarak hangi olayın ateşlendiğini tespit etmek için `Event::firing` metodunu kullanabilirsiniz:
 
-	Event::listen('foo.*', function($param)
+	Event::listen('falan.*', function($param)
 	{
-		if (Event::firing() == 'foo.bar')
+		if (Event::firing() == 'falan.filan')
 		{
 			//
 		}
@@ -76,13 +76,13 @@ You may use the `Event::firing` method to determine exactly which event was fire
 <a name="using-classes-as-listeners"></a>
 ## Dinleyici Olarak Sınıfları Kullanma
 
-Bazı durumlarda, bir olayı işlemek için bir bitirme fonksiyonu yerine bir sınıf kullanmak isteyebilirsiniz. Sınıf olay dinleyicileri [Laravel'in IoC konteyneri](/docs/ioc) ile çözümlenecek, böylece size dinleyicileriniz üzerinde tam bir koloni enjeksiyonu gücü verecektir.
+Bazı durumlarda, bir olayı işlemek için bir anonim fonksiyon yerine bir sınıf kullanmak isteyebilirsiniz. Sınıf olay dinleyicileri [Laravel'in IoC konteyneri](/docs/ioc) ile çözümlenecek, böylece size dinleyicileriniz üzerinde tam bir bağımlılık enjeksiyonu gücü verecektir.
 
 #### Bir Sınıf Dinleyicinin Kayda Geçirilmesi
 
 	Event::listen('uye.login', 'LoginIsleyici');
 
-Ön tanımlı olarak, `LoginHandler` sınıfındaki `handle` metodu çağrılacaktır:
+Ön tanımlı olarak, `LoginIsleyici` sınıfındaki `handle` metodu çağrılacaktır:
 
 #### Bir Olay Dinleyici Sınıfının Tanımlanması
 
@@ -122,11 +122,11 @@ Son olarak, ilgili "flusher"ı çalıştırabilir ve `flush` metodunu kullanarak
 	Event::flush('falan');
 
 <a name="event-subscribers"></a>
-## Olay Aboneleri
+## Olay Abonecileri
 
-Olay aboneleri, sınıfın kendi içinden birden çok olaya abone olabilen sınıflardır. Aboneler bir `subscribe` metodu ile tanımlanırlar ve bu metoda parametre olarak bir olay sevkiyatçısı olgusu geçilecektir:
+Olay abonecileri, sınıfın kendi içinden birden çok olaya abone olabilen sınıflardır. Aboneciler bir `subscribe` metodu ile tanımlanırlar ve bu metoda parametre olarak bir olay sevkiyatçısı olgusu geçilecektir:
 
-#### Bir Olay Abonesi Tanımlanması
+#### Bir Olay Abonecisi Tanımlanması
 
 	class UyeOlayIsleyici {
 
@@ -161,9 +161,9 @@ Olay aboneleri, sınıfın kendi içinden birden çok olaya abone olabilen sın�
 
 	}
 
-Abone tanımlandıktan sonra, `Event` sınıfı kullanılarak kayda geçirilebilir.
+Aboneci tanımlandıktan sonra, `Event` sınıfı kullanılarak kayda geçirilebilir.
 
-#### Bir Olay Abonesinin Kayda Geçirilmesi
+#### Bir Olay Abonecisinin Kayda Geçirilmesi
 
 	$abone = new UyeOlayIsleyici;
 
