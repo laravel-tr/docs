@@ -2,7 +2,7 @@
 
 - [Giriş](#introduction)
 - [Manager'lar & Factory'ler](#managers-and-factories)
-- [Where To Extend](#where-to-extend)
+- [Genişletme Nereye Konacak](#where-to-extend)
 - [Cache](#cache)
 - [Session](#session)
 - [Authentication](#authentication)
@@ -28,9 +28,9 @@ Bu managerlerin her birisinde, managere kolaylıkla yeni sürücü çözünürl�
 > **Not:** Laravel'le gelen `CacheManager` ve `SessionManager` gibi çeşitli `Manager` sınıflarını keşfetmek için biraz zaman ayırın. Bu sınıfların baştan sona okunması Laravel'in örtü altında nasıl çalıştığı konusunda size daha kapsamlı bir anlayış verecektir. Tüm manager sınıfları `Illuminate\Support\Manager` taban sınıfını genişletir, bu taban sınıf her manager için yararlı, ortak bazı işlevsellik sağlar.
 
 <a name="where-to-extend"></a>
-## Where To Extend
+## Genişletme Nereye Konacak
 
-This documentation covers how to extend a variety of Laravel's components, but you may be wondering where to place your extension code. Like most other bootstrapping code, you are free to place some extensions in your `start` files. Cache and Auth extensions are good candidates for this approach. Other extensions, like `Session`, must be placed in the `register` method of a service provider since they are needed very early in the request life-cycle.
+Bu dokümantasyon çeşitli Laravel bileşenlerinin nasıl genişletileceğini anlatmaktadır, ancak genişletme kodunuzu nereye koyacağınızı merak ediyor olabilirsiniz. Diğer pek çok bootstrapping koduna benzer şekilde, bazı genişletmelerinizi `start` dosyalarınıza koyabilirsiniz. Cache ve Auth genişletmeleri bu yaklaşım için iyi adaylardır. Diğer genişletmeler, örneğin `Session`, bir servis sağlayıcısının `register` metoduna yerleştirilmelidir, çünkü bunlar istek yaşam döngüsünde çok başlarda gereklidirler.
 
 <a name="cache"></a>
 ## Cache
@@ -83,11 +83,11 @@ Laravel'i özel bir session sürücüsü ile genişletmek, tıpkı cache sistemi
 		// SessionHandlerInterface'in implementasyonunu döndür
 	});
 
-### Where To Extend The Session
+### Session Genişletmesi Nereye Konacak
 
-Session extensions need to be registered differently than other extensions like Cache and Auth. Since sessions are started very early in the request-lifecycle, registering the extensions in a `start` file will happen be too late. Instead, a [service provider](/docs/ioc#service-providers) will be needed. You should place your session extension code in the `register` method of your service provider, and the provider should be placed **below** the default `Illuminate\Session\SessionServiceProvider` in the `providers` configuration array.
+Session genişletmelerinin Cache ve Auth benzeri diğer genişletmelerden farklı biçimde kayda geçirilmesi gerekir. Sessionlar istek yaşam döngüsünde çok erken dönemde başlatıldıkları için, bu uzantıların bir `start` dosyasında kayda geçirilmesi çok geç olacaktır. Bunun yerine bir [servis sağlayıcısı](/docs/ioc#service-providers) gerekli olacaktır. Session genişletme kodunuzu servis sağlayıcınızın `register` metoduna koymalısınız ve bu servis sağlayıcının adı `providers` yapılandırma dizisindeki default `Illuminate\Session\SessionServiceProvider`'den **altta** konmalıdır.
 
-### Writing The Session Extension
+### Session Genişletmesi Yazılması
 
 Dikkat ederseniz bizim özel session sürücümüz `SessionHandlerInterface`i implemente edecektir. Bu interface PHP 5.4+ çekirdeğine dahil edilmiştir. Eğer siz PHP 5.3 kullanıyorsanız, ileriye yönelik uyumluluğa sahip olmanız için bu interface Laravel tarafından sizin için tanımlanmış olacaktır. Bu interface, implemente etmemiz gereken sadece birkaç basit metod içermektedir. Bir MongoDB implementation kalıbı şöyle bir şeydir:
 
@@ -175,9 +175,9 @@ Sürücüyü `extend` metodu ile register ettikten sonra, `app/config/auth.php` 
 
 Laravel frameworke dahil edilen hemen her hizmet sağlayıcı IoC konteynerine nesneler bağlar. Uygulamanızın hizmet sağlayıcılarının bir listesini `app/config/app.php` yapılandırma dosyasında bulabilirsiniz. Vaktiniz oldukça bu sağlayıcıların her birinin kaynak koduna baştan sona göz gezdiriniz. Bunu yapmakla, her bir sağlayıcının frameworke neler eklediğini çok daha iyi anlayacaksınız, bunun yanı sıra IoC konteynerine çeşitli hizmetleri bağlamak için hangi anahtarların kullanıldığını da öğreneceksiniz.
 
-For example, the `HashServiceProvider` binds a `hash` key into the IoC container, which resolves into a `Illuminate\Hashing\BcryptHasher` instance. You can easily extend and override this class within your own application by overriding this IoC binding. For example:
+Örneğin, `HashServiceProvider` IoC konteynerine bir `hash` anahtarı bağlar ve bu bir `Illuminate\Hashing\BcryptHasher` olgusuna çözümlenir. Siz kendi uygulamanız içinde bu sınıfı genişleletebilir ve bu IoC bağlamasını ezmek suretiyle bu sınıf yerine kendi genişletmenizi kullanabilirsiniz. Örneğin:
 
-	class SnappyPaginationProvider extends Illuminate\Hashing\HashServiceProvider {
+	class SnappyHasherProvider extends Illuminate\Hashing\HashServiceProvider {
 
 		public function boot()
 		{
@@ -191,14 +191,14 @@ For example, the `HashServiceProvider` binds a `hash` key into the IoC container
 
 	}
 
-Note that this class extends the `HashServiceProvider`, not the default `ServiceProvider` base class. Once you have extended the service provider, swap out the `HashServiceProvider` in your `app/config/app.php` configuration file with the name of your extended provider.
+Bu sınıfın default `ServiceProvider` sınıfını değil `HashServiceProvider` sınıfını genişlettiğine dikkat ediniz. Service providerinizi genişlettikten sonra, `app/config/app.php` yapılandırma dosyanızdaki `HashServiceProvider` yerine sizin genişletmiş olduğunuz sağlayıcının ismini koyun.
 
 Konteynerde bağlanan herhangi bir çekirdek sınıfın genişletilmesi için genel yöntem budur. Esasında, her çekirdek sınıf konteynerde bu tarzda bağlanır ve override edilebilir. Tekrar ifade edeyim, frameworkte yer alan hizmet sağlayıcılarının baştan sona okunması çeşitli sınıfların konteynerde nerede bağlandığı ve onu bağlamak için hangi anahtarın kullanıldığı konusunda sizi bilgilendirecektir. Laravelin nasıl biraraya getirildiğini daha çok öğrenmek için harika bir yoldur.
 
 <a name="request-extension"></a>
 ## Request Genişletmesi
 
-Request frameworkün çok temel bir parçası olduğu ve istek döngüsünde çok erken başlatıldığı için, `Request` sınıfının genişletilmesi önceki örneklerden biraz farklı yapılır.
+Request, frameworkün çok temel bir parçası olduğu ve istek döngüsünde çok erken başlatıldığı için, `Request` sınıfının genişletilmesi önceki örneklerden biraz farklı yapılır.
 
 İlk olarak, sınıfı normaldeki gibi genişletin:
 
