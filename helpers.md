@@ -65,13 +65,13 @@
 		return $value >= 150;
 	});
 
-Ayrıca varsayılan bir değer, üçüncü eleman olarak verilebilir.
+Ayrıca varsayılan bir değer, üçüncü eleman olarak verilebilir:
 
 	$value = array_first($array, $callback, $default);
 
 ### array_last
 
-The `array_last` method returns the last element of an array passing a given truth test.
+`array_last` metodu verilen doğruluk testine uyan son array elemanını döndürür.
 
 	$array = array(350, 400, 500, 300, 200, 100);
 
@@ -82,7 +82,7 @@ The `array_last` method returns the last element of an array passing a given tru
 
 	// 500
 
-A default value may also be passed as the third parameter:
+Ayrıca varsayılan bir değer, üçüncü eleman olarak geçilebilir:
 
 	$value = array_last($array, $callback, $default);
 
@@ -112,7 +112,7 @@ A default value may also be passed as the third parameter:
 
 	$value = array_get($array, 'names.joe');
 
-> **Note:** Want something like `array_get` but for objects instead? Use `object_get`.
+> **Not:** `array_get` gibi birşey ama onun yerine nesneler mi istiyorsunuz? `object_get` kullanın.
 
 ### array_only
 
@@ -150,7 +150,7 @@ A default value may also be passed as the third parameter:
 
 ### array_sort
 
-The `array_sort` method sorts the array by the results of the given Closure.
+`array_sort` metodu bir diziyi verilen bir Closure sonuçlarına göre sıralar.
 
 	$array = array(
 		array('name' => 'Jill'),
@@ -164,7 +164,7 @@ The `array_sort` method sorts the array by the results of the given Closure.
 
 ### array_where
 
-Filter the array using the given Closure.
+Bir diziyi verilen Closure kullanarak filtreler.
 
 	$array = array(100, '200', 300, '400', 500);
 
@@ -221,7 +221,7 @@ Yazıyı `camelCase` olacak şekilde düzenler.
 
 ### class_basename
 
-Girilen class'ın namespace'ler olmadan sadece adını dondürür.
+Verilen class'ın namespace'ler olmadan sadece adını dondürür.
 
 	$class = class_basename('Foo\Bar\Baz');
 
@@ -229,13 +229,13 @@ Girilen class'ın namespace'ler olmadan sadece adını dondürür.
 
 ### e
 
-Girilen yazıya UTF-8 desteğiyle `htmlentities` fonksiyonunu uygular.
+Verilen yazıya UTF-8 desteğiyle `htmlentities` fonksiyonunu uygular.
 
 	$entities = e('<html>foo</html>');
 
 ### ends_with
 
-Girilen yazının verilen değerle bitip bitmediğine karar verir.
+Bir stringin verilen değerle bitip bitmediğini tespit eder.
 
 	$value = ends_with('This is my name', 'name');
 
@@ -249,11 +249,11 @@ Yazıyı `snake_case` olacak şekilde düzenler.
 
 ### str_limit
 
-Limit the number of characters in a string.
+Bir stringin karakter sayısını sınırlar.
 
 	str_limit($value, $limit = 100, $end = '...')
 
-Example:
+Örnek:
 
 	$value = str_limit('The PHP framework for web artisans.', 7);
 
@@ -261,19 +261,19 @@ Example:
 
 ### starts_with
 
-Girilen yazının verilen değerle başlayıp başlamadığına karar verir.
+Bir stringin verilen değerle başlayıp başlamadığını tespit eder.
 
 	$value = starts_with('This is my name', 'This');
 
 ### str_contains
 
-Girilen yazının içinde verilen değerin olup olmadığına karar verir.
+Verilen yazının içinde verilen değerin olup olmadığına karar verir.
 
 	$value = str_contains('This is my name', 'my');
 
 ### str_finish
 
-Girilen yazının sonuna verilen değeri ekler. Verilen değerden oluşan ekstraları yok eder.
+Verilen yazının sonuna verilen değeri ekler. Verilen değerden oluşan ekstraları yok eder.
 
 	$string = str_finish('this/string', '/');
 
@@ -281,31 +281,31 @@ Girilen yazının sonuna verilen değeri ekler. Verilen değerden oluşan ekstra
 
 ### str_is
 
-Girilen yazıyla verilen değerin eşleşip eşleşmediğine karar verir. Yıldız işareti (*) genel arama karakteri olarak kullanılabilir.
+Verilen yazıyla verilen değerin eşleşip eşleşmediğine karar verir. Yıldız işareti (*) genel arama karakteri olarak kullanılabilir.
 
 	$value = str_is('foo*', 'foobar');
 
 ### str_plural
 
-Girilen kelimeyi çoğul hale getirir (Sadece ingilizce için geçerli).
+Verilen kelimeyi çoğul hale getirir (Sadece ingilizce için geçerli).
 
 	$plural = str_plural('car');
 
 ### str_random
 
-Girilen değer kadar uzunlukta rastgele karakterlerden oluşan bir yazı üretir.
+Verilen değer kadar uzunlukta rastgele karakterlerden oluşan bir yazı üretir.
 
 	$string = str_random(40);
 
 ### str_singular
 
-Girilen kelimeyi tekil hale getirir (Sadece ingilizce için geçerli).
+Verilen kelimeyi tekil hale getirir (Sadece ingilizce için geçerli).
 
 	$singular = str_singular('cars');
 
 ### studly_case
 
-Girilen yazıyı `StudlyCase` olacak şekilde düzenler.
+Verilen yazıyı `StudlyCase` olacak şekilde düzenler.
 
 	$value = studly_case('foo_bar');
 
@@ -313,13 +313,13 @@ Girilen yazıyı `StudlyCase` olacak şekilde düzenler.
 
 ### trans
 
-Girilen dil satırını çevirir. `Lang::get` fonksiyonunun kısayolu.
+Verilen dil satırını çevirir. `Lang::get` fonksiyonunun kısayolu.
 
 	$value = trans('validation.required'):
 
 ### trans_choice
 
-Girilen dil satırını çekimli çevirir. `Lang::choice` fonksiyonunun kısayolu.
+Verilen dil satırını çekimli çevirir. `Lang::choice` fonksiyonunun kısayolu.
 
 	$value = trans_choice('foo.bar', $count);
 
@@ -346,7 +346,7 @@ Bir varlık için bir URL üretir.
 
 ### link_to
 
-Girilen URL'e gerekli HTML linkini oluşturur.
+Verilen URL'e gerekli HTML linkini oluşturur.
 
 	echo link_to('foo/bar', $title, $attributes = array(), $secure = null);
 
@@ -358,7 +358,7 @@ Verilen varlık için bir HTML bağlantısı üretir.
 
 ### link_to_route
 
-Girilen rota için gerekli HTML linkini oluşturur.
+Verilen rota için gerekli HTML linkini oluşturur.
 
 	echo link_to_route('route.name', $title, $parameters = array(), $attributes = array());
 
@@ -370,13 +370,13 @@ Verilen bir denetçi eylemi için bir HTML linki oluşturur.
 
 ### secure_asset
 
-Girilen eleman için gerekli HTML linkini HTTPS kullanarak oluşturur.
+Verilen eleman için gerekli HTML linkini HTTPS kullanarak oluşturur.
 
 	echo secure_asset('foo/bar.zip', $title, $attributes = array());
 
 ### secure_url
 
-Girilen URL'e gerekli HTML linkini HTTPS kullanarak oluşturur.
+Verilen URL'e gerekli HTML linkini HTTPS kullanarak oluşturur.
 
 	echo secure_url('foo/bar', $parameters = array());
 
@@ -397,18 +397,18 @@ CSRF token'inin güncel değerini döndürür.
 
 ### dd
 
-Girilen veriyi ekrana basar ve uygulamayı durdurur.
+Verilen veriyi ekrana basar ve uygulamayı durdurur.
 
 	dd($value);
 
 ### value
 
-Eğer girilen değer anonim bir fonksiyonsa, değer olarak anonim fonksiyonun döndürdüğü değer döndürür. Eğer değilse direk değeri döndürür.
+Eğer verilen değer anonim bir fonksiyonsa, değer olarak anonim fonksiyonun döndürdüğü değeri döndürür. Eğer değilse direkt değeri döndürür.
 
 	$value = value(function() { return 'bar'; });
 
 ### with
 
-Girilen objeyi döndürür. PHP 5.3.x kullanımında metod zincirleme işlemi için çok yararlı.
+Verilen nesneyi döndürür. PHP 5.3.x kullanımında metod zincirleme işlemi için çok yararlı.
 
 	$value = with(new Foo)->doWork();
