@@ -11,7 +11,7 @@
 
 Bütün rotalandırma mantığını, tüm rotaları tek tek `routes.php` dosyasında tanımlamak yerine, bu davranışlarını Denetçiler (Controllers) sınıflarını kullanarak organize edebilirsiniz. Denetçiler, ilişkin oldukları rotaların mantığını bir sınıfta gruplar. Aynı zamanda, daha ileri çerçeve (framework) özelliklerini kullanma avantajına sahiptirler, örneğin otomatik [dependency injection](/docs/ioc) (bağımlılık enjeksiyonu) gibi.
 
-Denetçiler genelde `app/controllers` dizininde konumlandırılır ve `composer.json` dosyanızın sınıf haritası `classmap` seçeneğinde, varsayılan olarak bu dizin belirlenmiştir.
+Denetçiler genelde `app/controllers` dizininde konumlandırılır ve varsayılan olarak bu dizin `composer.json` dosyanızın `classmap` seçeneğinde kayda geçirilmiştir.
 
 Basit bir denetçi (controller) sınıfı örneği şöyledir:
 
@@ -33,22 +33,22 @@ Bütün denetçilerin `BaseController` sınıfından türetilmiş olması gereki
 
 	Route::get('kullanici/{id}', 'KullaniciController@showProfile');
 
-Eğer bir denetçinizi, dizin içerisinde yuvalandırarak (nest) veya PHP isim-alanları (namespaces) kullanarak organize etmek isterseniz, bu durumda rotayı tanımlarken, tam nitelendirilmiş (fully qualified) sınıf adını kullanınız:
+Eğer bir denetçinizi, dizin içerisinde yuvalandırarak (nest) veya PHP aduzayları (namespaces) kullanarak organize etmek isterseniz, bu durumda rotayı tanımlarken, tam nitelendirilmiş (yani, aduzayıyla birlikte) sınıf adını kullanınız:
 
-	Route::get('falanca', 'Namespace\FalancaController@yontemAdi');
+	Route::get('falanca', 'Namespace\FalancaController@metodAdi');
 
-> **Note:** Since we're using [Composer](http://getcomposer.org) to auto-load our PHP classes, controllers may live anywhere on the file system, as long as composer knows how to load them. The controller directory does not enforce any folder structure for your application. Routing to controllers is entirely de-coupled from the file system.
+> **Not:** PHP sınıflarımızı otomatik yüklemek için [Composer](http://getcomposer.org) kullandığımız için, composer onların nasıl yükleneceğini bildiği sürece controllerler dosya sistemindeki herhangi bir yerde bulunabilir. Controller dizini uygulamanız için herhangi bir klasör yapısını zorlamaz. Controller'lara rotalama dosya sisteminden tamamen ayrık tutulmuştur.
 
 Denetçi rotalarına isimler de verebilirsiniz:
 
-	Route::get('falanca', array('uses' => 'FalancaController@yontemAdi',
+	Route::get('falanca', array('uses' => 'FalancaController@metodAdi',
 		'as' => 'rotaAdi'));
 
-Herhangi bir denetçi eylemine ait bir URL üretmek için, `URL::action` metodunu kullanabilirsiniz:
+Herhangi bir denetçi eylemine ait bir URL üretmek için, `URL::action` metodunu veya `action` helper metodunu kullanabilirsiniz:
 
-	$url = URL::action('FalancaController@yontemAdi');
+	$url = URL::action('FalancaController@metodAdi');
 
-	$url = action('FalancaController@yontemAdi');
+	$url = action('FalancaController@metodAdi');
 
 Çalıştırılmakta olan bir denetçi eyleminin ismine `currentRouteAction` metodu ile erişebilirsiniz:
 
@@ -67,7 +67,7 @@ Filtreleri, denetçinizin içerisinden de belirtebilirsiniz:
 	class KullaniciController extends BaseController {
 
 		/**
-		 * Yeni bir KullaniciController sureti (instance) oluştur. (new KullaniciController)
+		 * Yeni bir KullaniciController olgusu başlat.
 		 */
 		public function __construct()
 		{
@@ -76,7 +76,7 @@ Filtreleri, denetçinizin içerisinden de belirtebilirsiniz:
 			$this->beforeFilter('csrf', array('on' => 'post'));
 
 			$this->afterFilter('log', array('only' =>
-				array('falancaYontem', 'filancaYontem')));
+				array('falancaMetod', 'filancaMetod')));
 		}
 
 	}
@@ -86,7 +86,7 @@ Denetçi filtrelerini bir Closure kullanarak da belirtebilirsiniz:
 	class KullaniciController extends BaseController {
 
 		/**
-		 * Yeni bir KullaniciController sureti (instance) oluştur. (new KullaniciController)
+		 * Yeni bir KullaniciController olgusu başlat.
 		 */
 		public function __construct()
 		{
@@ -103,7 +103,7 @@ Eğer filtre olarak denetçi sınıfın bir metodunu kullanmak isterseniz, filtr
 	class UserController extends BaseController {
 
 		/**
-		 * Instantiate a new UserController instance.
+		 * Yeni bir KullaniciController olgusu başlat.
 		 */
 		public function __construct()
 		{
@@ -111,7 +111,7 @@ Eğer filtre olarak denetçi sınıfın bir metodunu kullanmak isterseniz, filtr
 		}
 
 		/**
-		 * Filter the incoming requests.
+		 * Gelen istekleri filtrele.
 		 */
 		public function filterRequests($route, $request)
 		{
@@ -123,13 +123,13 @@ Eğer filtre olarak denetçi sınıfın bir metodunu kullanmak isterseniz, filtr
 <a name="restful-controllers"></a>
 ## TEDA-uyumlu (Temsili Durum Aktarma uyumlu, RESTful) Denetçiler
 
-Laravel size, basit TEDA (REST) isimlendirme tüzüklerini (naming conventions) kullanarak, belirleyeceğiniz tek bir rota ile, denetçilerinizin içindeki her eylemi kullanabilme imkanını tanır. İlk olarak, (rota : denetçi) `Route::controller` metodu ile bu rotayı tanımlayınız:
+Laravel size, basit TEDA (REST) isimlendirme gelenekleri kullanarak, belirleyeceğiniz tek bir rota ile, denetçilerinizin içindeki her eylemi kullanabilme imkanını tanır. İlk olarak, `Route::controller` metodu ile bu rotayı tanımlayınız:
 
-**TEDA-uyumlu Bir Denetçi Oluşturulması**
+#### TEDA-uyumlu Bir Denetçi Oluşturulması
 
 	Route::controller('kullanicilar', 'KullaniciController');
 
-`controller` (denetçi) metodu iki argüman alır. Birincisi denetçinin yöneteceği baz URI olup, ikincisi denetçinin sınıf ismidir. Akabinde sadece, isimlerine HTTP eyleminin ön ek olarak ekleneceği ve bunlara cevap verecek olan metodlarınızı denetçinize ilave ediniz:
+`controller` metodu iki argüman alır. Birincisi denetçinin yöneteceği taban URI olup, ikincisi denetçinin sınıf ismidir. Akabinde sadece, isimlerine HTTP eyleminin ön ek olarak ekleneceği ve bunlara cevap verecek olan metodlarınızı denetçinize ilave ediniz:
 
 	class KullaniciController extends BaseController {
 
@@ -145,9 +145,9 @@ Laravel size, basit TEDA (REST) isimlendirme tüzüklerini (naming conventions) 
 
 	}
 
-`index` (fihrist) metodları, denetçi tarafından yönetilmekte olan kök URI 'a cevap verir. Örneğimizde bu, `kullanicilar` dır.
+`index` metodları, denetçi tarafından yönetilmekte olan kök URI'a cevap verir. Örneğimizde bu, `kullanicilar` dır.
 
-Denetçinizdeki bir eylem metodunun ismi birden fazla kelimeden oluşuyorsa, bu eylem metoduna, URI da kelime aralarına tire işareti "-" eklenmiş şekilde yazarak erişebilirsiniz. Örneğin, 'KullaniciController' denetçimizdeki aşağıdaki şekilde isimlendirilmiş olan metod, `kullanici/yonetici-profili` URI 'na cevap verecektir.
+Denetçinizdeki bir eylem metodunun ismi birden fazla kelimeden oluşuyorsa, bu eylem metoduna, URI da kelime aralarına tire işareti "-" eklenmiş şekilde yazarak erişebilirsiniz. Örneğin, 'KullaniciController' denetçimizdeki aşağıdaki şekilde isimlendirilmiş olan metod, `kullanici/yonetici-profili` URI'na cevap verecektir.
 
 	public function getYoneticiProfili() {}
 
@@ -160,7 +160,7 @@ Denetçiyi komut satırını kullanarak oluşturmak için şu komutu kullanını
 
 	php artisan controller:make FotoController
 
-Bu denetçinin TEDA-uyumlu rotasını (routes.php) dosyasında kayıt ettiriniz:
+Şimdi bu controller için resourceful bir rotayı kayda geçirebiliriz (routes.php dosyasında):
 
 	Route::resource('foto', 'FotoController');
 
@@ -184,7 +184,7 @@ Bazen bu eylemlerin sadece bazılarına ihtiyaç duyabilirsiniz:
 
 	php artisan controller:make FotoController --except=index     //belirtilenler hariç
 
-Ve, rotasında da eylemlerin sadece bazılarını yönetmesini belirleyebilirsiniz:
+Ve, aynı zamanda rotasında da eylemlerin sadece bazılarını yönetmesini belirleyebilirsiniz:
 
 	Route::resource('foto', 'FotoController',
 			array('only' => array('index', 'show')));
@@ -198,13 +198,13 @@ Varsayılan olarak tüm kaynak denetçilerinin bir rota ismi bulunur; ancak bu i
 					array('names' => array('create' => 'photo.build'));
 
 <a name="handling-missing-methods"></a>
-## Eksik Olan Metodların Yönetilmesi
+## Eksik Olan Metodların İşlenmesi
 
-Denetçide tanımlanmamış olan metodlara gelecek olan çağrıları yönetmek için bir "hepsini-yakala" metodu tanımlanabilir. Bu metodun isminin `missingMethod` (eksik metod) olması gerekir ve tek argümanı olarak gelen isteğin (request) parametrelerini  alır:
+Denetçide tanımlanmamış olan metodlara gelecek olan çağrıları işlemek için bir "hepsini yakala" metodu tanımlanabilir. Bu metodun isminin `missingMethod` olması gerekir ve istek için metod ve parametre dizisi alır:
 
-**Bir Hepsini-Yakala Metodunun Tanımlanması**
+#### Bir Hepsini Yakala Metodunun Tanımlanması
 
-	public function missingMethod($parameters)
+	public function missingMethod($parameters = array())
 	{
 		//
 	}
