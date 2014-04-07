@@ -3,7 +3,7 @@
 - [Yapılandırma](#configuration)
 - [Önbellekleme Kullanımı](#cache-usage)
 - [Arttırma & Azaltma](#increments-and-decrements)
-- [Önbellek Bölümleri](#cache-tags)
+- [Önbellek Etiketleri (Tags)](#cache-tags)
 - [Veritabanı Önbelleği](#database-cache)
 
 <a name="configuration"></a>
