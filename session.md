@@ -11,7 +11,7 @@
 
 HTTP odaklı uygulamalar durum bilgisi taşımadıkları için, oturumlar istekler arasında kullanıcı hakkında bilgi saklamak için bir yol sağlar. Laravel temiz, tek bir API aracılığıyla kullanılabilen çeşitli oturum back-endleri ile birlikte gelir. İçerisinde [Memcached](http://memcached.org), [Redis](http://redis.io) ve veritabanları gibi popüler back-end desteği yer almaktadır.
 
-Oturum yapılandırma ayarları `app/config/session.php` dosyasında bulunmaktadır. Bu belgede size sunulan iyi belgelenmiş seçenekleri gözden geçirmeyi unutmayın. Ön tanımlı olarak, Laravel `native` oturum sürücüsünü kullanmak üzere yapılandırılmıştır ve bu yapılandırma uygulamaların çoğunda iyi çalışacaktır.
+Oturum yapılandırma ayarları `app/config/session.php` dosyasında bulunmaktadır. Bu belgede size sunulan iyi belgelenmiş seçenekleri gözden geçirmeyi unutmayın. Ön tanımlı olarak, Laravel `file` oturum sürücüsünü kullanmak üzere yapılandırılmıştır ve bu yapılandırma uygulamaların çoğunda iyi çalışacaktır.
 
 <a name="session-usage"></a>
 ## Oturum Kullanımı
@@ -97,8 +97,8 @@ Tabii ki, bu migrasyonu üretmek için `session:table` Artisan komutunu kullanab
 
 Oturum "driver'ı" her istek için oturum verisinin nerede saklanacağını tanımlamaktadır. Laravel çeşitli harika sürücülerle birlikte gelmektedir.
 
-- `native` - oturumlar dahili PHP oturum araçları tarafından halledilecektir.
-- `cookie` - oturumlar güvenli, kitiptolanmış çerezlerde saklanacaktır.
+- `file` - oturumlar `app/storage/sessions` klasöründe saklanacaktır.
+- `cookie` - oturumlar güvenli, kriptolanmış çerezlerde saklanacaktır.
 - `database` - oturumlar kendi uygulamanızın kullandığı bir veritabanında saklanacaktır.
 - `memcached` / `redis` - oturumlar bu hızlı, önbellekleme tabanlı depolardan birisinde saklanacaktır.
 - `array` - oturumlar basit bir PHP dizisinde saklanacak ve istekler arasında sebat etmeyecektir.

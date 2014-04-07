@@ -3,7 +3,7 @@
 - [Denetçi (Controller) Düzenleri](#controller-layouts)
 - [Blade Şablonları](#blade-templating)
 - [Diğer Blade Kontrol Yapıları](#other-blade-control-structures)
-- [Extending Blade](#extending-blade)
+- [Blade'in Genişletilmesi](#extending-blade)
 
 <a name="controller-layouts"></a>
 ## Denetçi (Controller) Düzenleri
@@ -36,7 +36,7 @@ Blade Laravel'le gelen basit ama güçlü bir şablon motorudur. Denetçi düzen
 
 #### Bir Blade Düzeninin Tanımlanması
 
-	<!-- app/views/layouts/master.blade.php 'de bulunmaktadır-->
+	<!-- app/views/layouts/master.blade.php'de bulunmaktadır-->
 
 	<html>
 		<body>
@@ -148,19 +148,19 @@ Dahil edilen görünüme bir veri dizisi de geçebilirsiniz:
 	{{-- Bu yorum, gösterilen HTML içerisinde olmayacaktır --}}
 
 <a name="extending-blade"></a>
-## Extending Blade
+## Blade'in Genişletilmesi
 
-Blade even allows you to define your own custom control structures. When a Blade file is compiled, each custom extension is called with the view contents, allowing you to do anything from simple `str_replace` manipulations to more complex regular expressions.
+Blade sizin kendi özel kontrol yapılarınızı tanımlamanıza dahi imkan verir. Bir Blade dosyası derlendiği zaman, her bir özel genişletme, görünüm içerikleriyle çağrılarak basit manipülasyonlardan daha karmaşık düzenli ifadelere kadar her türlü şeyi yapmanıza izin verir.
 
-The Blade compiler comes with the helper methods `createMatcher` and `createPlainMatcher`, which generate the expression you need to build your own custom directives.
+Blade derleyicisi sizin kendi özel direktiflerinizi inşa etmeniz için gerekli ifadeleri üreten `createMatcher` ve `createPlainMatcher` yardımcı metodlarıyla birlikte gelir.
 
-The `createPlainMatcher` method is used for directives with no arguments like `@endif` and `@stop`, while `createMatcher` is used for directives with arguments.
+Bunlardan `createPlainMatcher` metodu bir parametre almayan `@endif` ve `@stop` gibi direktifler için kullanılır, `createMatcher` ise parametreli direktifler için kullanılır.
 
-The following example creates a `@datetime($var)` directive which simply calls `->format()` on `$var`:
+Aşağıdaki örnek, basitçe `$var` üzerinde `->format()` metodunu çağıran bir `@datetime($var)` direktifi oluşturur:
 
 	Blade::extend(function($view, $compiler)
 	{
 		$pattern = $compiler->createMatcher('datetime');
 
-		return preg_replace($pattern, '$1<?php echo $2->format('m/d/Y H:i'); ?>', $view);
+		return preg_replace($pattern, '$1<?php echo $2->format('d/m/Y H:i'); ?>', $view);
 	});

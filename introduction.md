@@ -1,34 +1,34 @@
 # Tanıtım
 
-- [Where To Start](#where-to-start)
+- [Nereden Başlamalı](#where-to-start)
 - [Laravel Felsefesi](#laravel-philosophy)
-- [Additional Resources](#additional-resources)
+- [Diğer Kaynaklar](#additional-resources)
 - [Geliştirme Ekibi](#development-team)
 
 <a name="where-to-start"></a>
-## Where To Start
+## Nereden Başlamalı
 
-Learning a new framework can be daunting, but it's also exciting. To smooth your transition, we've attempted to create very clear, concise documentation for Laravel. Here are some recommendations for what to read first:
+Yeni bir frameworkün öğrenilmesi zorlayıcı olabilir ama aynı zamanda heyecan vericidir. Geçişinizi kolaylaştırmak için çok temiz, özlü bir Laravel dokümantasyonu oluşturmaya çalıştık. İşte ilk önce neyi okuyacağınız konusunda bazı öneriler:
 
-- [Installation](/docs/installation) and [Configuration](/docs/configuration)
-- [Routing](/docs/routing)
-- [Requests & Input](/docs/requests)
-- [Views & Responses](/docs/responses)
-- [Controllers](/docs/controllers)
+- [Kurulum](/docs/installation) ve [Yapılandırma](/docs/configuration)
+- [Rotalar](/docs/routing)
+- [İstekler (Requests) ve Girdi (Input)](/docs/requests)
+- [Görünümler (Views) ve Cevaplar (Responses)](/docs/responses)
+- [Denetçiler (Controllers)](/docs/controllers)
 
-After reading through these documents, you should have a good grasp on basic request / response handling in Laravel. Next, you may wish to read about [configuring your database](/docs/database), the [fluent query builder](/docs/queries), and the [Eloquent ORM](/docs/eloquent). Or, you may wish to read about [authentication and security](/docs/security) so you can start signing people into your application.
+Bu belgeleri iyice okuduktan sonra, Laravelde temel istek / cevap işleyişi üzerinde iyi bir kavrayışa sahip olacaksınız. Daha sonra, [veritabanınızın yapılandırılması](/docs/database), [fluent sorgu oluşturucusu](/docs/queries) ve [Eloquent ORM](/docs/eloquent) konularını okumak isteyebilirsiniz. Ya da, insanları uygulamanızda oturum açmaya başlatabilmek için [kimlik doğrulama ve güvenlik](/docs/security) konularını okumak isteyebilirsiniz.
 
 <a name="laravel-philosophy"></a>
 ## Laravel Felsefesi
 
-Laravel etkileyici ve zarif sözdizimine sahip bir web uygulama çatısıdır (framework). Bizler geliştirmenin gerçekten tatmin edici olması için keyifli ve üretken bir deneyim olması gerektiğine inanıyoruz. Laravel birçok web uygulamasında kullanılan yetkilendirme, rotalama, oturum yönetimi ve ön bellekleme gibi ortak görevleri kolaylaştırarak geliştiriciliğin zorluklarını ortadan kaldırmak amacını gütmektedir.
+Laravel etkileyici ve zarif sözdizimine sahip bir web uygulama çatısıdır (framework). Bizler geliştirmenin gerçekten tatmin edici olması için keyifli ve üretken bir deneyim olması gerektiğine inanıyoruz. Laravel birçok web uygulamasında kullanılan yetkilendirme, rotalama, oturum yönetimi ve ön bellekleme gibi ortak görevleri kolaylaştırarak, geliştiriciliğin zorluklarını ortadan kaldırmak amacını gütmektedir.
 
 Laravel, geliştiriciler için, uygulama işlevselliğinden ödün vermeden geliştirme aşamasını memnuniyet verici hale getirmeyi amaç edinmiştir. En iyi kodu mutlu geliştiriciler yazar. Bu hedefe varmak için, başka dillerde yazılmış Ruby on Rails, ASP.NET MVC ve Sinatra gibi çatılar da dahil olmak üzere, diğer çatılarda gördüğümüz en iyi özellikleri birleştirmeye çalıştık.
 
-Laravel büyük, kapsamlı uygulamalar için gereken araçları içeren erişilebilir, aynı zamanda güçlü bir çatıdır. Mükemmel ters kontrol kapsayıcısı, etkileyici göç sistemi ve sağlam yerleşik ünite test desteği size geliştirmeyi amaçladığınız uygulama için gerekli araçları sağlayacaktır.
+Laravel büyük, kapsamlı uygulamalar için gereken araçları içeren erişilebilir, aynı zamanda güçlü bir çatıdır. Mükemmel IoC konteyneri, etkileyici migrasyon sistemi ve sağlam bir yerleşik ünite test desteği size geliştirmeyi amaçladığınız uygulama için gerekli araçları sağlayacaktır.
 
 <a name="additional-resources"></a>
-## Additional Resources
+## Diğer Kaynaklar
 
 Laravel öğrenmenin en iyi yollarından biri tüm dokümantasyonunu dikkatlice okumaktır. Bu kılavuz size çatının çehresi ve uygulamanızda nasıl kullanacağınız konusunda rehber olur.
 
@@ -46,4 +46,4 @@ Bu kılavuza ek olarak [Laravel kitapları](http://wiki.laravel.io/Books)'na gö
 <a name="development-team"></a>
 ## Geliştirme Ekibi
 
-Laravel, çatının geliştirilmesi liderliğini sürdüren [Taylor Otwell](https://github.com/taylorotwell) tarafından oluşturuldu. Önde gelen diğer topluluk üyeleri ve katkıda bulunan kişiler [Dayle Rees](https://github.com/daylerees), [Shawn McCool](https://github.com/ShawnMcCool), [Jeffrey Way](https://github.com/JeffreyWay), [Jason Lewis](https://github.com/jasonlewis), [Ben Corlett](https://github.com/bencorlett), [Franz Liedke](https://github.com/franzliedke), [Dries Vints](https://github.com/driesvints), [Mior Muhammed Zaki](https://github.com/crynobone) ve [Phil Sturgeon](https://github.com/philsturgeon)'dır.
+Laravel, çatının geliştirilmesi liderliğini sürdüren [Taylor Otwell](https://github.com/taylorotwell) tarafından geliştirildi. Önde gelen diğer topluluk üyeleri ve katkıda bulunan kişiler [Dayle Rees](https://github.com/daylerees), [Shawn McCool](https://github.com/ShawnMcCool), [Jeffrey Way](https://github.com/JeffreyWay), [Jason Lewis](https://github.com/jasonlewis), [Ben Corlett](https://github.com/bencorlett), [Franz Liedke](https://github.com/franzliedke), [Dries Vints](https://github.com/driesvints), [Mior Muhammed Zaki](https://github.com/crynobone) ve [Phil Sturgeon](https://github.com/philsturgeon)'dır.

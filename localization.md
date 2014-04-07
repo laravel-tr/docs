@@ -4,8 +4,8 @@
 - [Dil Dosyaları](#language-files)
 - [Temel Kullanım](#basic-usage)
 - [Çoğullaştırma](#pluralization)
-- [Validation (Geçerlilik Denetimi)](#validation)
-- [Overriding Package Language Files](#overriding-package-language-files)
+- [Geçerlilik Denetimi Yerelleştirmesi](#validation)
+- [Paket Dil Dosyalarının Ezilmesi](#overriding-package-language-files)
 
 <a name="introduction"></a>
 ## Giriş
@@ -26,7 +26,7 @@ Diller için kayıtlar `app/lang` dizininin içerisindeki dosyalarda tutulur. Bu
 
 Dil dosyaları basitçe anahtarlı bir şekilde kayıtları barındıran bir dizi döndürür. Örneğin:
 
-**Örnek Dil Dosyası**
+#### Örnek Dil Dosyası
 
 	<?php
 
@@ -36,14 +36,14 @@ Dil dosyaları basitçe anahtarlı bir şekilde kayıtları barındıran bir diz
 
 Uygulamanız için varsayılan dil `app/config/app.php` ayar dosyasında tutulmaktadır. Bunun dışında, aktif dili `App::setLocale` metoduyla çalışma esnasında da değiştirebilirsiniz.
 
-**Varsayılan Dili Çalışma Esnasında Değiştirmek**
+#### Varsayılan Dili Çalışma Esnasında Değiştirmek
 
 	App::setLocale('tr');
 
 <a name="basic-usage"></a>
 ## Temel Kullanım
 
-**Bir Dil Dosyasından Satırları Almak**
+#### Bir Dil Dosyasından Satırları Almak
 
 	echo Lang::get('mesajlar.hosgeldin');
 
@@ -55,9 +55,9 @@ Uygulamanız için varsayılan dil `app/config/app.php` ayar dosyasında tutulma
 
 	echo trans('mesajlar.hosgeldin');
 
-**Satırlarda Değişiklik Yapmak**
+#### Satırlarda Değişiklik Yapmak
 
-Ayrıca dil satırlarınızda yertutucular tanımlayabilirsiniz:
+Ayrıca dil satırlarınızda yer tutucular tanımlayabilirsiniz:
 
 	'hosgeldin' => 'Hoşgeldin, :isim',
 
@@ -65,7 +65,7 @@ Daha sonra, `Lang::get` metoduna ikinci bir parametreyle yapılacak değişiklik
 
 	echo Lang::get('mesajlar.hosgeldin', array('isim' => 'Ekrem'));
 
-**Bir Dil Dosyasının İstenen Satıra Sahip Olup Olmadığını Kontrol Etmek**
+#### Bir Dil Dosyasının İstenen Satıra Sahip Olup Olmadığını Kontrol Etmek
 
 	if (Lang::has('mesajlar.hosgeldin'))
 	{
@@ -83,20 +83,20 @@ Daha sonra `Lang::choise` metoduyla satırı alabilirsiniz:
 
 	echo Lang::choice('mesajlar.elmalar', 10);
 
-You may also supply a locale argument to specify the language. For example, if you want to use the Russian (ru) language:
+Ayrıca dili belirtmek için bir locale parametresi de verebilirsiniz. Örneğin, eğer Rusca (ru) dili kullanmak istiyorsanız:
 
 	echo Lang::choice('{0} нет товаров|{1} товар', 1, array(), 'ru');
 
-Laravel'in tercüme sınıfı gücünü Symfony'nin tercüme bileşeninden aldığı için, daha belirgin çoğullaştırma kuralları da belirleyebilirsiniz:
+Laravel'in tercümecisi gücünü Symfony'nin tercüme bileşeninden aldığı için, daha belirgin çoğullaştırma kuralları da belirleyebilirsiniz:
 
 	'elmalar' => '{0} Hiç elma yok|[1,19] Bir kaç elma var|[20,Inf] Çok fazla elma var',
 
 <a name="validation"></a>
-## Validation (Geçerlilik Denetimi)
+## Geçerlilik Denetimi Yerelleştirmesi
 
-Validation hatalarının ve mesajlarının yerelleştirmesi için dokümantasyonun <a href="/docs/validation#localization">Validation</a> bölümüne bakınız.
+Geçerlilik Denetimi hatalarının ve mesajlarının yerelleştirmesi için dokümantasyonun <a href="/docs/validation#localization">Geçerlilik Denetimi</a> bölümüne bakınız.
 
 <a name="overriding-package-language-files"></a>
-## Overriding Package Language Files
+## Paket Dil Dosyalarının Ezilmesi
 
-Many packages ship with their own language lines. Instead of hacking the package's core files to tweak these lines, you may override them by placing files in the `app/lang/packages/{locale}/{package}` directory. So, for example, if you need to override the English language lines in `messages.php` for a package named `skyrim/hearthfire`, you would place a language file at: `app/lang/packages/en/hearthfire/messages.php`. In this file you would define only the language lines you wish to override. Any language lines you don't override will still be loaded from the package's language files.
+Birçok paket kendi dil satırlarıyla gelir. Bu satırları değiştirmek için paketin çekirdek dosyalarıyla oynamak yerine, `app/lang/packages/{locale}/{package}` dizinine dosyalar koymak suretiyle onları ezebilirsiniz. Dolayısıyla, örneğin, eğer `skyrim/hearthfire` adındaki bir paket için `messages.php`'yi Türkçe dil satırlarıyla ezmeniz gerekiyorsa koyacağınız dil dosyası şudur: `app/lang/packages/tr/hearthfire/messages.php`. Bu dosyada sadece ezmek istediğiniz dil satırlarını tanımlayacaksınız. Ezmediğiniz dil satırları paketin dil dosyalarından yüklenmeye devam edecektir.

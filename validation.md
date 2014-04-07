@@ -15,7 +15,7 @@ Laravel, `Validation` sınıfı aracığıyla verilerin geçerlilik denetimi ve 
 
 #### Temel Bir Geçerlilik Denetimi Örneği
 
-	$geçerlilikyoklayici = Validator::make(
+	$gecerlilikYoklayici = Validator::make(
 		array('isim' => 'Tuana Şeyma'),
 		array('yas'  => 'required|min:5')
 	);
@@ -26,7 +26,7 @@ Birden çok kural ya bir "pipe" karakteri (|) ile ayrılır, ya da ayrı dizi el
 
 #### Kuralları Belirtmek İçin Dizi Kullanımı
 
-	$geçerlilikyoklayici = Validator::make(
+	$gecerlilikYoklayici = Validator::make(
 		array('isim' => 'Tuana Şeyma'),
 		array('yas'  => array('required', 'min:5'))
 	);
@@ -48,18 +48,18 @@ Birden çok kural ya bir "pipe" karakteri (|) ile ayrılır, ya da ayrı dizi el
 
 Bir `Validator` olgusu oluşturulduktan sonra, geçerlilik denetimi yapmak için `fails` veya `passes` metodları kullanılabilir.
 
-	if ($geçerlilikyoklayici->fails())
+	if ($gecerlilikYoklayici->fails())
 	{
 		// İlgili veri geçerlik denetimini geçememiştir
 	}
 
 Şayet geçerlilik denetimi başarısız olursa, geçerlik yoklayıcısından hata mesajları alabilirsiniz:
 
-	$mesajlar = $geçerlilikyoklayici->messages();
+	$mesajlar = $gecerlilikYoklayici->messages();
 
 Ayrıca, başarısız olan geçerlilik kurallarına bir dizi olarak da erişebilirsiniz. Bunu yapmak için `failed` metodunu kullanabilirsiniz:
 
-	$kalanlar = $geçerlilikyoklayici->failed();
+	$kalanlar = $gecerlilikYoklayici->failed();
 
 #### Dosyalar İçin Geçerlilik Denetimi
 
@@ -97,13 +97,13 @@ Bir `Validator` olgusunda `messages` metodunu çağırdıktan sonra, bir `Messag
 
 #### Bir Hata Mesajının Biçimlendirilmiş Olarak Alınması
 
-	echo $mesajlar->first('email', '<p>:mesaj</p>');
+	echo $mesajlar->first('email', '<p>:message</p>');
 
 > **Not:** Ön tanımlı olarak, mesajlar Bootstrap'a uyumlu bir söz dizimiyle biçimlendirilir.
 
 #### Tüm Hata Mesajlarının Biçimlendirilmiş Olarak Alınması
 
-	foreach ($mesajlar->all('<li>:mesaj</li>') as $mesaj)
+	foreach ($mesajlar->all('<li>:message</li>') as $mesaj)
 	{
 		//
 	}
@@ -122,11 +122,11 @@ Geçerlilik denetimi yaptıktan sonra aldığınız hata mesajlarını görünü
 	{
 		$kurallar = array(...);
 
-		$geçerlilikyoklayici = Validator::make(Input::all(), $kurallar);
+		$gecerlilikYoklayici = Validator::make(Input::all(), $kurallar);
 
-		if ($geçerlilikyoklayici->fails())
+		if ($gecerlilikYoklayici->fails())
 		{
-			return Redirect::to('kayit')->withErrors($geçerlilikyoklayici);
+			return Redirect::to('kayit')->withErrors($gecerlilikYoklayici);
 		}
 	});
 
@@ -214,7 +214,7 @@ Geçerlilik bakılan alan tamamen alfa-numerik karakterler olmalıdır.
 <a name="rule-array"></a>
 #### array
 
-The field under validation must be of type array.
+Geçerlili bakılan alan array tipinde olmalıdır.
 
 <a name="rule-before"></a>
 #### before: _tarih_
@@ -247,14 +247,14 @@ Geçerlilik bakılan alan `date_parse_from_format` PHP fonksiyona göre tanımla
 Verilen _alan_, geçerlilik bakılan alandan farklı olmalıdır.
 
 <a name="rule-digits"></a>
-#### digits:_value_
+#### digits: _value_
 
-The field under validation must be _numeric_ and must have an exact length of _value_.
+Geçerlilik bakılan alan _numerik_ olmalıdır ve tam _value_ uzunluğunda olmalıdır.
 
 <a name="rule-digits-between"></a>
 #### digits_between:_min_,_max_
 
-The field under validation must have a length between the given _min_ and _max_.
+Geçerlilik bakılan alan verilen _min_ ile _max_ arasında bir uzunlukta olmalıdır.
 
 <a name="rule-email"></a>
 #### email
@@ -278,7 +278,7 @@ Sorguya "where" cümleciği olarak eklenecek daha fazla şart da belirtebilirsin
 
 	'email' => 'exists:personel,email,hesap_id,1'
 
-Passing `NULL` as a "where" clause value will add a check for a `NULL` database value:
+Bir "where" cümle parçası olarak `NULL` geçilmesi bir `NULL` veritabanı değeri yönünden kontrol ekleyecektir:
 
 	'email' => 'exists:staff,email,deleted_at,NULL'
 
@@ -356,7 +356,7 @@ Geçerlilik bakılan alan, sadece belirtilen alanların bulunması durumunda bul
 <a name="rule-required-with-all"></a>
 #### required_with_all:_foo_,_bar_,...
 
-The field under validation must be present _only if_ all of the other specified fields are present.
+Geçerlilik bakılan alan, sadece belirtilen diğer alanların tümünün mevcut olması durumunda bulunmalıdır.
 
 <a name="rule-required-without"></a>
 #### required_without: _falan_, _filan_,...
@@ -366,7 +366,7 @@ Geçerlilik bakılan alan, sadece diğer belirtilen alanlar olmadığı takdirde
 <a name="rule-required-without-all"></a>
 #### required_without_all:_foo_,_bar_,...
 
-The field under validation must be present _only when_ the all of the other specified fields are not present.
+Geçerlilik bakılan alan, sadece belirtilen diğer alanların hiçbirinin mevcut olmaması durumunda bulunmalıdır.
 
 <a name="rule-same"></a>
 #### same: _alan_
@@ -408,22 +408,22 @@ Yukarıdaki kuralda, sadece `account_id`'si `1` olan satırlar unique yoklaması
 
 Geçerlilik bakılan alan bir URL şeklinde biçimlendirilmiş olmalıdır.
 
-> **Note:** This function uses PHP's `filter_var` method.
+> **Not:** Bu fonksiyon PHP'nin `filter_var` metodunu kullanır.
 
 <a name="conditionally-adding-rules"></a>
 ## Duruma Göre Kurallar Ekleme
 
-In some situations, you may wish to run validation checks against a field **only** if that field is present in the input array. To quickly accomplish this, add the `sometimes` rule to your rule list:
+Bazı durumlarda, bir alanla ilgili geçerlilik denetimini **yalnızca** bu alan input dizisinde mevcut olduğu zaman çalıştırmak isteyebilirsiniz. Bunu hızla gerçekleştirmek için kural listenize `sometimes` ekleyiniz:
 
 	$v = Validator::make($data, array(
 		'email' => 'sometimes|required|email',
 	));
 
-In the example above, the `email` field will only be validated if it is present in the `$data` array.
+Yukarıdaki örnekte `email` alanı sadece bu alan `$data` dizisinde mevcutsa geçerlilik denetiminden geçirilecektir.
 
-#### Complex Conditional Validation
+#### Karmaşık Şartlı Geçerlilik Denetimi
 
-Bazen belli bir alanın başka bir alan 100'den fazla bir değere sahip olduğunda gerekli olmasını isteyebilirsiniz. Bu geçerlilik kurallarının eklenmesi sorun oluşturmak zorunda değildir. Öncelikle, asla değişmeyecek _statik kuralları_ nızın olduğu bir `Validator` olgusu oluşturun:
+Bazen belli bir alanın başka bir alan 100'den büyük bir değere sahip olduğunda gerekli olmasını isteyebilirsiniz. Bu geçerlilik kurallarının eklenmesi sorun oluşturmak zorunda değildir. Öncelikle, asla değişmeyecek _statik kuralları_ nızın olduğu bir `Validator` olgusu oluşturun:
 
 	$v = Validator::make($data, array(
 		'email' => 'required|email',
@@ -457,7 +457,7 @@ Gerek duyduğunuzda, geçerlilik için ön tanımlı hata mesajları yerine öze
 		'required' => ':attribute alanı gereklidir.',
 	);
 
-	$geçerlilikyoklayici = Validator::make($input, $kurallar, $mesajlar);
+	$gecerlilikYoklayici = Validator::make($input, $kurallar, $mesajlar);
 
 *Not:* Buradaki `:attribute` yer tutucusu geçerlilik bakılan alanın gerçek adıyla değiştirilecektir. Geçerlilik mesajlarınızda diğer yer tutucuları da kullanabilirsiniz.
 
@@ -501,15 +501,15 @@ Laravel'de her biri yararlı çok sayıda geçerlilik kuralı bulunmaktadır; bu
 		return $value === 'falan';
 	});
 
-Özel bir geçerlilik bitirme fonksiyonu (Closure) üç parametre alır: geçerlilik bakılacak `$attribute`'ın adı, bu niteliğin `$value`'i ve kurala geçilecek bir `$parameters` dizisi.
+Özel bir geçerlilik anonim fonksiyonu (Closure) üç parametre alır: geçerlilik bakılacak `$attribute`'ın adı, bu niteliğin `$value`'i ve kurala geçilecek bir `$parameters` dizisi.
 
-Bu `extend` metoduna bir bitirme fonksiyonu yerine bir sınıf ve metod da geçebilirsiniz:
+Bu `extend` metoduna bir isimsiz fonksiyon yerine bir sınıf ve metod da geçebilirsiniz:
 
 	Validator::extend('falan', 'FalanValidator@validate');
 
 Özel kurallarınız için aynı zamanda bir hata mesajı da tanımlamanız gerekeceğini unutmayın. Bunu, ya aynı satırda özel hata mesaj dizisi kullanarak ya da geçerlilik dil dosyasına bir giriş eklemek suretiyle yapabilirsiniz.
 
-Validator'ü genişletmek için bir bitirme fonksiyonu çağrısı kullanmak yerine, Validator sınıfının kendisini de genişletebilirsiniz. Bunu yapmak için, `Illuminate\Validation\Validator`'ü genişleten bir Validator sınıfı yazın. Validation metodlarınızı, başına `validate` getirerek bu sınıfa ekleyebilirsiniz:
+Validator'ü genişletmek için bir isimsiz fonksiyon çağrısı kullanmak yerine, Validator sınıfının kendisini de genişletebilirsiniz. Bunu yapmak için, `Illuminate\Validation\Validator`'ü genişleten bir Validator sınıfı yazın. Validation metodlarınızı, başına `validate` getirerek bu sınıfa ekleyebilirsiniz:
 
 #### Validator Sınıfının Genişletilmesi
 
@@ -540,7 +540,7 @@ Daha sonra, özel Validator uzantınızı kayda geçirmeniz gerekiyor:
 		return str_replace(':falan', $parameters[0], $message);
 	}
 
-If you would like to add a custom message "replacer" without extending the `Validator` class, you may use the `Validator::replacer` method:
+Şayet `Validator` sınıfını genişletmeksizin özel bir mesaj "değiştirici" eklemek isterseniz, `Validator::replacer` metodunu kullanabilirsiniz:
 
 	Validator::replacer('rule', function($message, $attribute, $rule, $parameters)
 	{

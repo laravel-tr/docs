@@ -10,7 +10,7 @@
 - [Güncellemeler](#updates)
 - [Silmeler](#deletes)
 - [Birleştirmeler](#unions)
-- [Pessimistic Locking](#pessimistic-locking)
+- [Pesimistik Kilitleme](#pessimistic-locking)
 - [Sorguların Bellekte Saklanması](#caching-queries)
 
 <a name="introduction"></a>
@@ -83,7 +83,7 @@ Bu metod rol ünvanlarından oluşan bir dizi döndürecektir. Döndürülen diz
 #### Where Not Between Kullanımı
 
 	$users = DB::table('users')
-	                    ->whereNotBetween('votes', array(1, 100))->get();
+	                    ->whereNotBetween('puan', array(1, 100))->get();
 
 #### Bir Dizi Aracılığıyla Where In Kullanımı
 
@@ -137,13 +137,13 @@ Daha ileri join cümleleri de tanımlayabilirsiniz:
 	        })
 	        ->get();
 
-If you would like to use a "where" style clause on your joins, you may use the `where` and `orWhere` methods on a join. Instead of comparing two columns, these methods will compare the column against a value:
+Şayet joinlerinizde "where" biçiminde bir cümlecik kullanmak isterseniz, bir join üzerinde `where` ve `orWhere` metodlarını kullanabilirsiniz. Bu metodlar iki sütunu karşılaştırmak yerine, sütunu bir değer açısından karşılaştıracaktır:
 
-	DB::table('users')
-	        ->join('contacts', function($join)
+	DB::table('uyeler')
+	        ->join('kisiler', function($join)
 	        {
-	        	$join->on('users.id', '=', 'contacts.user_id')
-	        	     ->where('contacts.user_id', '>', 5);
+	        	$join->on('uyeler.id', '=', 'kisiler.uye_id')
+	        	     ->where('kisiler.uye_id', '>', 5);
 	        })
 	        ->get();
 
@@ -188,7 +188,7 @@ Yukardaki sorgu aşağıdaki SQL cümlesini oluşturacaktır:
 <a name="aggregates"></a>
 ## Kümeleme (Aggregate) İşlemleri
 
-Sorgu oluşturucusu; `count`, `max`, `min`, `avg` ve `sum` gibi çeşitli kümeleme metodları da sağlamaktadır.
+Sorgu oluşturucusu `count`, `max`, `min`, `avg` ve `sum` gibi çeşitli kümeleme metodları da sağlamaktadır.
 
 #### Aggregate Metodlarının Kullanımı
 
@@ -209,7 +209,7 @@ Bazen bir sorguda ham ifade kullanma ihtiyacı duyabilirsiniz. Bu ifadeler sorgu
 
 #### Ham İfade Kullanımı
 
-	$users = DB::table('uyeler')
+	$uyeler = DB::table('uyeler')
 		->select(DB::raw('count(*) as uye_adedi, durum'))
 		->where('durum', '<>', 1)
 		->groupBy('durum')
@@ -288,22 +288,22 @@ Sorgu oluşturucusu, iki ayrı sorgunun tek bir "birlik" haline getirilmesi içi
 
 	$ilksorgu = DB::table('uyeler')->whereNull('ismi');
 
-	$users = DB::table('uyeler')->whereNull('soy_ismi')->union($ilksorgu)->get();
+	$uyeler = DB::table('uyeler')->whereNull('soy_ismi')->union($ilksorgu)->get();
 
 Ayrıca `unionAll` metodu da mevcut olup, aynı `union` gibi kullanılır.
 
 <a name="pessimistic-locking"></a>
-## Pessimistic Locking
+## Pesimistik Kilitleme
 
-The query builder includes a few functions to help you do "pessimistic locking" on your SELECT statements.
+Sorgu oluşturucusu SELECT cümleleriniz üzerinde "pesimistik kilitleme" yapmanıza yardımcı olacak birkaç fonksiyon içermektedir.
 
-To run the SELECT statement with a "shared lock", you may use the `sharedLock` method on a query:
+Bir SELECT cümlesini bir "shared lock (paylaşılan kilit)" ile çalıştırmak için bir sorgu üzerinde `sharedLock` metodunu kullanabilirsiniz:
 
-	DB::table('users')->where('votes', '>', 100)->sharedLock()->get();
+	DB::table('uyeler')->where('puan', '>', 100)->sharedLock()->get();
 
-To "lock for update" on a SELECT statement, you may use the `lockForUpdate` method on a query:
+Bir SELECT cümlesinde "güncelleme için kilitlemek" için bir sorgu üzerinde `lockForUpdate` metodunu kullanabilirsiniz:
 
-	DB::table('users')->where('votes', '>', 100)->lockForUpdate()->get();
+	DB::table('uyeler')->where('puan', '>', 100)->lockForUpdate()->get();
 
 <a name="caching-queries"></a>
 ## Sorguların Bellekte Saklanması
@@ -316,6 +316,6 @@ Bir sorgunun sonuçları `remember` metodu kullanılarak bellekte saklanabilir:
 
 Bu örnekte, sorgunun sonuçları on dakika süreyle bellekte saklanacaktır. Sonuçlar bellekte tutulduğu süre boyunca bu sorgu artık veritabanında çalıştırılmayacak, onun yerine sonuçlar uygulamanız için belirlediğiniz ön tanımlı bellekleme sürücüsü tarafından yüklenecektir.
 
-If you are using a [supported cache driver](/docs/cache#cache-tags), you can also add tags to the caches:
+Eğer cache taglarını [destekleyen bir cache sürücüsü](/docs/cache#cache-tags) kullanıyorsanız, önbelleğe taglar da ekleyebilirsiniz:
 
-	$users = DB::table('users')->cacheTags(array('people', 'authors'))->remember(10)->get();
+	$uyeler = DB::table('uyeler')->cacheTags(array('insanlar', 'yazarlar'))->remember(10)->get();

@@ -14,21 +14,21 @@ Laravel bağımlılıklarını yönetmek için [Composer](http://getcomposer.org
 <a name="install-laravel"></a>
 ## Laravel Yükleme
 
-### Via Laravel Installer
+### Laravel Installer Aracılığıyla
 
-İlk olarak, [Laravel installer PHAR arşivini indirin](http://laravel.com/laravel.phar). Kolaylık açısından ismini `laravel` olarak değiştirin ve `/usr/local/bin` yoluna taşıyın. Bir kere kurduktan sonra, `laravel new` komutu, istediğiniz klasöre pürüzsüz bir laravel kurulumunu yapacaktır. Örneğin, `laravel new blog` komutu, içinde tüm bağımlılıkları yüklenmiş bir laravel kurulumu barındıran `blog` klasörünü oluşturacaktır. Bu yolla kurulum yapmak Composer ile yapmaktan katbekat kolaydır.
+İlk olarak, [Laravel installer PHAR arşivini indirin](http://laravel.com/laravel.phar). Kolaylık açısından ismini `laravel` olarak değiştirin ve `/usr/local/bin` yoluna taşıyın. Bir kere kurduktan sonra, `laravel new` komutu, istediğiniz klasöre yeni bir laravel kurulumunu yapacaktır. Örneğin, `laravel new blog` komutu, içinde tüm bağımlılıkları yüklenmiş yeni bir laravel kurulumu barındıran `blog` klasörünü oluşturacaktır. Bu yolla kurulum yapmak Composer ile yapmaktan çok daha hızlıdır.
 
 ### Composer'ın Create-Project Komutuyla
 
-Terminalinizde Composer create-project komutunu yayınlayarak Laravel'i yükleyebilirsiniz:
+Terminalinizde Composer create-project komutunu vererek Laravel'i yükleyebilirsiniz:
 
-`composer create-project laravel/laravel --prefer-dist`
+	composer create-project laravel/laravel --prefer-dist
 
 ### Elle İndirerek
 
-Composer yüklendikten sonra, Laravel framework'ün [son sürümü](https://github.com/laravel/laravel/archive/master.zip)nü indirip, içeriğini sunucunuzdaki bir dizine çıkarınız. Ardından, Laravel uygulamanızın ana dizininde, Laravel gereksinimlerini yüklemek için, `php composer.phar install` (veya `composer install`) komutunu çalıştırınız. Bu işlemin başarıyla tamamlanabilmesi için sunucunuzda [Git](http://git-scm.com/downloads) yüklü olması gerekmektedir.
+Composer yüklendikten sonra, Laravel framework'ün [son sürümünü](https://github.com/laravel/laravel/archive/master.zip) indirip, içeriğini sunucunuzdaki bir dizine çıkarınız. Ardından, Laravel uygulamanızın ana dizininde, Laravel gereksinimlerini yüklemek için, `php composer.phar install` (veya `composer install`) komutunu çalıştırınız. Bu işlemin başarıyla tamamlanabilmesi için sunucunuzda [Git](http://git-scm.com/downloads) yüklü olması gerekmektedir.
 
-Laravel'i güncellemek isterseniz `php composer.phar update` komutunu yayınlayabilirsiniz.
+Laravel'i güncellemek isterseniz `php composer.phar update` komutunu verebilirsiniz.
 
 <a name="server-requirements"></a>
 ## Sunucu Gereksinimleri
@@ -38,12 +38,12 @@ Laravel framework'un birkaç sistem gereksinimi bulunmaktadır:
 - PHP >= 5.3.7
 - MCrypt PHP Eklentisi
 
-As of PHP 5.5, some OS distributions may require you to manually install the PHP JSON extension. When using Ubuntu, this can be done via `apt-get install php5-json`.
+PHP 5.5 için, bazı OS yayımlamaları PHP JSON eklentisinin elle yüklenmesini gerektirebilir. Ubuntu kullanırken, bu `apt-get install php5-json` aracılığı ile yapılabilir.
 
 <a name="configuration"></a>
 ## Yapılandırma
 
-Laravel'in çalışabilmesi için neredeyse hiç yapılandırma ayarı gerekmez. Geliştirmeye başlamak için serbestsiniz! Ancak `app/config/app.php` dosyasını ve dokümantasyonunu gözden geçirebilirsiniz. Buradaki `timezone` (saat dilimi) ve `locale` (lisan) gibi değerleri uygulamanızın ihtiyaçlarına göre düzenleyebilirsiniz.
+Laravel'in çalışabilmesi için neredeyse hiç yapılandırma ayarı gerekmez. Geliştirmeye hemen başlayabilirsiniz! Ancak `app/config/app.php` dosyasını ve dokümantasyonunu gözden geçirebilirsiniz. Buradaki `timezone` (saat dilimi) ve `locale` (lisan) gibi değerleri uygulamanızın ihtiyaçlarına göre düzenleyebilirsiniz.
 
 <a name="permissions"></a>
 ### İzinler
@@ -59,7 +59,7 @@ Framework dizin yollarının birkaçı yapılandırılabilirdir. Bu dizin yollar
 
 ### Apache
 
-Framework ile beraber gelen `public/.htaccess` dosyası URL'lerin `index.php` olmadan kullanımına olanak sağlamaktadır. Laravel uygulamanızın sunumu için Apache kullanıyorsanız `mod_rewrite` modülünün etkin olduğundan emin olunuz.
+Laravel framework, URL'lerin `index.php` olmadan kullanımına imkan vermek için kullanılan bir `public/.htaccess` dosyası ile birlikte gelmektedir. Laravel uygulamanızın sunumu için Apache kullanıyorsanız `mod_rewrite` modülünün etkin olduğundan emin olunuz.
 
 Eğer Laravel ile birlikte gelen `.htaccess` dosyası Apache kurulumunuz ile işlev göstermezse, bunu deneyiniz:
 

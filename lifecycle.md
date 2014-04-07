@@ -1,54 +1,54 @@
 # İstek Yaşam Döngüsü
 
 - [Genel Bakış](#overview)
-- [Request Lifecycle](#request-lifecycle)
+- [İstek Yaşam Döngüsü](#request-lifecycle)
 - [Start Dosyaları](#start-files)
 - [Application Olayları (Events)](#application-events)
 
 <a name="overview"></a>
 ## Genel Bakış
 
-When using any tool in the "real world", you feel more confidence if you understand how that tool works. Application development is no different. When you understand how your development tools function, you feel more comfortable and confident using them. The goal of this document is to give you a good, high-level overview of how the Laravel framework "works". By getting to know the overall framework better, everything feels less "magical" and you will be more confident building your applications. In addition to a high-level overview of the request lifecycle, we'll cover "start" files and application events.
+"Gerçek dünyada" bir alet kullanırken, aletin nasıl kullanıldığını bilirseniz kendinizi daha güvende hissedersiniz. Uygulama geliştirme farklı değildir. Geliştirme aletlerinizin nasıl fonksiyon gördüklerini bilirseniz bunları kullanırken kendinizi daha rahat ve güvende hissedersiniz. Bu dokümanın amacı Laravel frameworkünün nasıl "çalıştığının" iyi, yüksek düzeyli bir özetini vermektir. Tüm frameworkün daha iyi tanınmasıyla, her şey daha az "büyülü" hissedilecek ve uygulamanızı inşa ederken daha güvenli olacaksınız. İstek yaşam döngüsünün yüksek düzeyli bir özetine ek olarak "start" dosyalarını ve application olaylarını da anlatacağız.
 
-If you don't understand all of the terms right away, don't lose heart! Just try to get a basic grasp of what is going on, and your knowledge will grow as you explore other sections of the documentation.
+Terimlerin hepsini hemencecik anlamadıysanız, inancınızı kaybetmeyin! Sadece ne olup bittiğini temel olarak kavrayama çalışın. Dokümantasyonun diğer kesimlerini inceledikçe bilginiz giderek büyüyecektir.
 
 <a name="request-lifecycle"></a>
-## Request Lifecycle
+## İstek Yaşam Döngüsü
 
-All requests into your application are directed through the `public/index.php` script. When using Apache, the `.htaccess` file that ships with Laravel handles the passing of all requests to `index.php`. From here, Laravel begins the process of handling the requests and returning a response to the client. Getting a general idea for the Laravel bootstrap process will be useful, so we'll cover that now!
+Uygulamanıza gelen tüm istekler `public/index.php` skripti aracılığı ile yönetilir. Apache kullanırken, Laravel'le gelen `.htaccess` dosyası tüm isteklerin `index.php`'ye geçirilmesi işini halletmektedir. Bu noktadan itibaren, Laravel istekleri işleme ve istemciye bir cevap döndürme sürecine başlar. Laravel bootstrap süreci hakkında genel bir fikir elde edilmesi yararlı olacaktır, bu nedenle şimdi onu anlatacağız!
 
-By far, the most important concept to grasp when learning about Laravel's bootstrap process is **Service Providers**. You can find a list of service providers by opening your `app/config/app.php` configuration file and finding the `providers` array. These providers serve as the primary bootstrapping mechanism for Laravel. But, before we dig into service providers, let's go back to `index.php`. After a request enters your `index.php` file, the `bootstrap/start.php` file will be loaded. This file creates the new Laravel `Application` object, which also serves as an [IoC container](/docs/ioc).
+Laravel'in bootstrap sürecini öğrenirken kavranması gereken en önemli kavram **Servis Sağlayıcılarıdır**. Kendinizin `app/config/app.php` yapılandırma dosyasını açıp, buradaki `providers` dizisine bakarak servis sağlayıcılarının bir listesini görebilirsiniz. Bu sağlayıcılar Laravel için başlıca bootstrapping mekanizması olarak hizmet ederler. Fakat, servis sağlayıcıları konusuna daha fazla girmeden önce `index.php` dosyasına geri dönelim. Bir istek sizin `index.php` dosyasına girdikten sonra, `bootstrap/start.php` dosyası yüklenecektir. Bu dosya, aynı zamanda bir [IoC konteyneri](/docs/ioc) olarak hizmet eden yeni bir Laravel `Application` nesnesi oluşturur.
 
-After creating the `Application` object, a few project paths will be set and [environment detection](/docs/configuration#environment-configuration) will be performed. Then, an internal Laravel bootstrap script will be called. This file lives deep within the Laravel source, and sets a few more settings based on your configuration files, such as timezone, error reporting, etc. But, in addition to setting these rather trivial configuration options, it also does something very important: registers all of the service providers configured for your application.
+`Application` nesnesi oluşturulduktan sonra, birkaç proje path'i ayarlanacak ve [ortam tespiti](/docs/configuration#environment-configuration) yapılacaktır. Ondan sonra, dahili bir Laravel bootstrap skripti çağrılacaktır. Bu dosya Laravel kaynağının derinliklerinde yaşar ve yapılandırma dosyalarınıza dayalı olarak zaman dilimi (timezone), hata bildirimi ve benzeri birkaç ayarı daha ayarlar. Fakat, oldukça önemsiz yapılandırma seçeneklerinin ayarlanmasına ek olarak, aynı zamanda çok önemli bir şey daha yapar: uygulamanız için yapılandırılmış servis sağlayıcılarının hepsini kayda geçirir.
 
-Simple service providers only have one method: `register`. This `register` method is called when the service provider is registered with the application object via the application's own `register` method. Within this method, service providers register things with the [IoC container](/docs/ioc). Essentially, each service provider binds one or more [closures](http://us3.php.net/manual/en/functions.anonymous.php) into the container, which allows you to access those bound services within your application. So, for example, the `QueueServiceProvider` registers closures that resolve the various [Queue](/docs/queues) related classes. Of course, service providers may be used for any bootstrapping task, not just registering things with the IoC container. A service provider may register event listeners, view composers, Artisan commands, and more.
+Basit servis sağlayıcılarında sadece bir metod vardır: `register`. Bu `register` metodu, Application nesnesi tarafından Application'un kendi `register` metodu aracılığıyla bir servis sağlayıcısı kayda geçirildiği zaman çağrılır. Bu metod içerisinde, servis sağlayıcıları bir şeyleri [IoC konteynerinde](/docs/ioc) kayda geçirirler. Esasında, her servis sağlayıcı konteynere bir veya daha fazla [closure](http://us3.php.net/manual/en/functions.anonymous.php) (anonim fonksiyon) bağlar ki, bu closure'lar uygulamanız içinde bağlanmış hizmetlere erişmenize imkan verirler. Yani, örnek olarak `QueueServiceProvider` servis sağlayıcısı [Kuyruk (Queue)](/docs/queues) ile ilgili çeşitli sınıfları çözümleyen closure'leri kayda geçirmektedir. Pek tabii, servis sağlayıcıları sadece bir şeyleri IoC konteynerinde kayda geçirmekte değil, her türlü bootstrapping işi için kullanılabilirler. Bir servis sağlayıcı olay dinleyicilerini, view composer'lerini, Artisan komutlarını ve başkalarını kayda geçirebilirler.
 
-After all of the service providers have been registered, your `app/start` files will be loaded. Lastly, your `app/routes.php` file will be loaded. Once your `routes.php` file has been loaded, the Request object is sent to the application so that it may be dispatched to a route.
+Servis sağlayıcılarının hepsi kayda geçirildikten sonra, `app/start` dosyalarınız yüklenecektir. Son olarak, `app/routes.php` dosyanız yüklenecektir. `routes.php` dosyanız yüklendikten sonra, Request nesnesi bir rotaya sevk edilebilmesi için "application"a gönderilir.
 
-So, let's summarize:
+Özetleyecek olursak:
 
-1. Request enters `public/index.php` file.
-2. `bootstrap/start.php` file creates Application and detects environment.
-3. Internal `framework/start.php` file configures settings and loads service providers.
-4. Application `app/start` files are loaded.
-5. Application `app/routes.php` file is loaded.
-6. Request object sent to Application, which returns Response object.
-7. Response object sent back to client.
+1. İstek `public/index.php` dosyasına girer.
+2. `bootstrap/start.php` dosyası "Application"ı oluşturur ve ortamı tespit eder.
+3. Dahili `framework/start.php` dosyası ayarları yapılandırır ve servis sağlayıcılarını yükler.
+4. Application `app/start` dosyaları yüklenir.
+5. Application `app/routes.php` dosyası yüklenir.
+6. Request nesnesi Application'a gönderilir, o da Response nesnesi döndürür.
+7. Response nesnesi istemciye geri gönderilir.
 
-Now that you have a good idea of how a request to a Laravel application is handled, let's take a closer look at "start" files!
+Artık bir Laravel uygulamasına gelen bir isteğin nasıl işlendiği konusunda iyi bir fikre sahip olduğunuza göre, "start" dosyalarına daha yakından bakabiliriz!
 
 <a name="start-files"></a>
 ## Start Dosyaları
 
-Uygulamanızın start dosyaları `app/start` dizininde bulunmaktadır. Varsayılan olarak bunlardan üçü uygulamanızın içine dahil edilmiştir. Bunlar `global.php`, `local.php`, ve `artisan.php`'dir. `artisan.php` hakkında daha fazla bilgiye sahip olmak için [Artisan komut satırı](/docs/commands#registering-commands) dökümanlarına bakınız.
+Uygulamanızın start dosyaları `app/start` dizininde bulunmaktadır. Varsayılan olarak bunlardan üçü uygulamanızın içine dahil edilmiştir. Bunlar `global.php`, `local.php` ve `artisan.php`'dir. `artisan.php` hakkında daha fazla bilgiye sahip olmak için [Artisan komut satırı](/docs/commands#registering-commands) dökümanlarına bakınız.
 
 Bunlardan `global.php` start dosyası [Günlüklerin](/docs/errors) kayda geçirilmesi ve `app/filters.php` dosyanızın dahil edilmesi gibi ön tanımlı birkaç temel öğe içerir. Ancak, bu dosyaya istediğiniz her şeyi ekleyebilirsiniz. Bu dosya ortam ne olursa olsun uygulamanıza gelen _her_ istekte otomatik olarak dahil edilecektir. Öte yandan `local.php` dosyası yalnızca uygulamanız `local` ortamda çalışırken çağrılır. Ortamlar hakkında daha fazla bilgi için [Yapılandırma](/docs/configuration) belgelerine bakınız.
 
-`local`'e ilaveten başka ortamlarınız da varsa, pek tabii bu ortamlar için de start dosyaları oluşturabilirsiniz. Uygulamanız o ortamda çalıştığı zaman bunlar otomatik olarak dahil edileceklerdir. So, for example, if you have a `development` environment configured in your `bootstrap/start.php` file, you may create a `app/start/development.php` file, which will be included when any requests enter the application in that environment.
+`local`'e ilaveten başka ortamlarınız da varsa, pek tabii bu ortamlar için de start dosyaları oluşturabilirsiniz. Uygulamanız o ortamda çalıştığı zaman bunlar otomatik olarak dahil edileceklerdir. Dolayısıyla, örneğin eğer `bootstrap/start.php` dosyanızda yapılandırılmış olan bir `development` ortamına sahipseniz, bir `app/start/development.php` dosyası oluşturabilirsiniz; herhangi bir istek uygulamaya bu ortamda girdiği zaman bu dosya dahil edilecektir.
 
-### What To Place In Start Files
+### Start Dosyalarına Koyulacak Şeyler
 
-Start files serve as a simple place to place any "bootstrapping" code. For example, you could register a View composer, configure your logging preferences, set some PHP settings, etc. It's totally up to you. Of course, throwing all of your bootstrapping code into your start files can get messy. For large applications, or if you feel your start files are getting messy, consider moving some bootstrapping code into [service providers](/docs/ioc#service-providers).
+Start dosyaları her türlü "bootstrapping" kodun koyulacağı basit bir yer olarak hizmet ederler. Örneğin, bir View composer'ı kayda geçirebilir, günlükleme tercihlerinizi yapılandırabilir, bazı PHP ayarlarını ve benzerlerini yapabilirsiniz. Bu tamamen size kalmış. Tabii ki, tüm önyükleme kodunuzun start dosyalarına atılması bir karışıklık ve dağınıklık oluşturabilir. Büyük uygulamalar için veya eğer start dosyalarınızın karışmaya başladığını hissederseniz, bootstrapping kodunuzun bir kısmını [servis sağlayıcılarına](/docs/ioc#service-providers) taşımayı düşünün.
 
 <a name="application-events"></a>
 ## Application Olayları (Events)
@@ -67,13 +67,13 @@ Bunlara ek olarak `before`, `after`, `close`, `finish` ve `shutdown` uygulama ol
 		//İstek sonrası olayları
 	});
 
-Bu olay dinleyicileri, uygulamanıza yapılan her istek öncesinde `(before)` ve sonrasında `(after)` çalışacaktır. These events can be helpful for global filtering or global modification of responses. You may register them in one of your `start` files or in a [service provider](/docs/ioc#service-providers).
+Bu olay dinleyicileri, uygulamanıza yapılan her istek öncesinde `(before)` ve sonrasında `(after)` çalışacaktır. Bu olaylar cevapların global filtrelenmesi veya global modifikasyonu için yardımcı olabilirler. Bunları `start` dosyalarınızın birinde veya bir [servis sağlayıcısında](/docs/ioc#service-providers) kayda geçirebilirsiniz.
 
-You may also register a listener on the `matched` event, which is fired when an incoming request has been matched to a route but that route has not yet been executed:
+Bir dinleyiciyi `matched` eventinde de kayda geçirebilirsiniz; bu, gelen bir istek bir rotayla eşleştirildiğinde, ancak rota daha henüz çalıştırılmadan önce ateşlenecektir:
 
 	Route::matched(function($route, $request)
 	{
 		//
 	});
 
-The `finish` event is called after the response from your application has been sent back to the client. This is a good place to do any last minute processing your application requires. The `shutdown` event is called immediately after all of the `finish` event handlers finish processing, and is the last opportunity to do any work before the script terminates. Most likely, you will not have a need to use either of these events.
+`finish` eventi bir cevap sizin uygulamanızdan istemciye geri gönderildikten sonra çağrılır. Burası uygulamanızın gerektirdiği bir son dakika işlemini yapmak için iyi bir yerdir. `shutdown` eventi ise tüm `finish` olay işleyicileri işlemlerini bitirdikten hemen sonra çağrılır ve skript sona ermeden önce herhangi bir iş yapmak için son fırsattır. Büyük ihtimalle, bu olaylardan birini kullanma ihtiyacınız olmayacaktır.

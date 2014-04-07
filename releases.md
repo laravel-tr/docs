@@ -5,54 +5,54 @@
 <a name="laravel-4.1"></a>
 ## Laravel 4.1
 
-### Full Change List
+### Değişikliklerin Tam Listesi
 
-The full change list for this release by running the `php artisan changes` command from a 4.1 installation, or by [viewing the change file on Github](https://github.com/laravel/framework/blob/4.1/src/Illuminate/Foundation/changes.json). These notes only cover the major enhancements and changes for the release.
+Bu sürümün tam değişiklik listesi bir 4.1 yüklemesinden `php artisan changes` komutunu vererek veya [Github'daki değişiklik dosyasına](https://github.com/laravel/framework/blob/4.1/src/Illuminate/Foundation/changes.json) bakarak görülebilir. Bu notlar sadece bu sürümdeki önemli geliştirmeleri ve değişiklikleri kapsamaktadır.
 
-### New SSH Component
+### Yeni SSH Bileşeni
 
-An entirely new `SSH` component has been introduced with this release. This feature allows you to easily SSH into remote servers and run commands. To learn more, consult the [SSH component documentation](/docs/ssh).
+Bu sürümle birlikte tamamen yeni bir `SSH` bileşeni getirilmiştir. Bu özellik sizin uzak suncuculara kolaylıkla SSH iletişimi kurmanıza ve komut çalıştırmanıza imkan verir. Daha fazla öğrenmek için [SSH bileşeni dokümantasyonuna](/docs/ssh) bakın.
 
-The new `php artisan tail` command utilizes the new SSH component. For more information, consult the `tail` [command documentation](http://laravel.com/docs/ssh#tailing-remote-logs).
+Yeni `php artisan tail` komutu yeni SSH bileşenini kullanmaktadır. Daha fazla bilgi için, `tail` [komut dokümantasyonuna](/docs/ssh#tailing-remote-logs) bakın.
 
-### Boris In Tinker
+### Tinker'de Boris
 
-The `php artisan tinker` command now utilizes the [Boris REPL](https://github.com/d11wtq/boris) if your system supports it. The `readline` and `pcntl` PHP extensions must be installed to use this feature. If you do not have these extensions, the shell from 4.0 will be used.
+Eğer sisteminiz destekliyorsa `php artisan tinker` komutu şimdi [Boris REPL](https://github.com/d11wtq/boris) kullanmaktadır. Bu özelliği kullanmak için `readline` ve `pcntl` PHP uzantıları başlatılmış olmalıdır. Bu uzantılara sahip değilseniz, 4.0'daki kabuk kullanılacaktır.
 
-### Eloquent Improvements
+### Eloquent Geliştirmeleri
 
-A new `hasManyThrough` relationship has been added to Eloquent. To learn how to use it, consult the [Eloquent documentation](/docs/eloquent#has-many-through).
+Eloquent'e yeni bir `hasManyThrough` ilişkisi eklenmiştir. Bunun nasıl kullanılacağını öğrenmek için [Eloquent dokümantasyonuna](/docs/eloquent#has-many-through) bakın.
 
-A new `whereHas` method has also been introduced to allow [retrieving models based on relationship constraints](/docs/eloquent#querying-relations).
+[Modelleri ilişki sınırlandırmalarına dayalı getirmeye](/docs/eloquent#querying-relations) imkan vermek amacıyla yeni bir `whereHas` metodu kullanıma girmiştir.
 
-### Database Read / Write Connections
+### Veritabanı Okuma / Yazma Bağlantıları
 
-Automatic handling of separate read / write connections is now available throughout the database layer, including the query builder and Eloquent. For more information, consult [the documentation](/docs/database#read-write-connections).
+Sorgu oluşturucu ve Eloquent de dahil olmak üzere veritabanı katmanı boyunca artık okuma / yazma bağlantılarının otomatik olarak ayrı ayrı ele alınması mümkün bulunmaktadır. Daha fazla bilgi için [dokümantasyonuna](/docs/database#read-write-connections) bakın.
 
-### Queue Priority
+### Kuyruk (Queue) Önceliği
 
-Queue priorities are now supported by passing a comma-delimited list to the `queue:listen` command.
+Kuyruk öncelikleri şimdi `queue:listen` komutuna virgülle ayrılmış bir liste geçilmesi şeklinde desteklenmektedir.
 
-### Failed Queue Job Handling
+### Gerçekleştirilememiş Kuyruk İşinin İşlenmesi
 
-The queue facilities now include automatic handling of failed jobs when using the new `--tries` switch on `queue:listen`. More information on handling failed jobs can be found in the [queue documentation](/docs/queues#failed-jobs).
+Kuyruk araçları şimdi `queue:listen` üzerinde yeni `--tries` anahtarı kullanılması halinde, başarısız kalmış işlerin otomatik işlenmesini içermektedir. Başarısız kalmış işlerin işlenmesiyle ilgili daha fazla bilgi [kuyruklar dokümantasyonunda](/docs/queues#failed-jobs) bulunabilir.
 
-### Cache Tags
+### Cache Tagları
 
-Cache "sections" have been superseded by "tags". Cache tags allow you to assign multiple "tags" to a cache item, and flush all items assigned to a single tag. More information on using cache tags may be found in the [cache documentation](/docs/cache#cache-tags).
+Cache "section"larının yerini "tag"lar almıştır. Cache tagları bir cache öğesine birden çok "tag" atamanıza ve tek bir tag'a atanmış tüm öğeleri boşaltmanıza (flush) imkan verir. Cache taglarının kullanılması üzerine daha fazla bilgi [cache dokümantasyonunda](/docs/cache#cache-tags) bulunabilir.
 
-### Flexible Password Reminders
+### Esnek Şifre Hatırlatıcıları
 
-The password reminder engine has been changed to provide greater developer flexibility when validating passwords, flashing status messages to the session, etc. For more information on using the enhanced password reminder engine, [consult the documentation](/docs/security#password-reminders-and-reset).
+Şifre hatırlatıcı motoru şifreler geçerlilik denetiminden geçirilirken, session'a durum mesajları flaşlanırken v.b., geliştiriciye daha büyük esneklik sağlayacak şekilde değiştirilmiştir. Gelişmiş şifre hatırlatıcı motorunun kullanımı hakkında daha fazla bilgi için [dokümantasyonuna](/docs/security#password-reminders-and-reset) bakın.
 
-### Improved Routing Engine
+### Gelişmiş Rotalama Motoru
 
-Laravel 4.1 features a totally re-written routing layer. The API is the same; however, registering routes is a full 100% faster compared to 4.0. The entire engine has been greatly simplified, and the dependency on Symfony Routing has been minimized to the compiling of route expressions.
+Laravel 4.1 tamamen yeniden yazılmış bir rotalama katmanına sahiptir. API aynıdır; ancak, rotaların kayda geçirilmesi 4.0 ile karşılaştırıldığında tam % 100 daha hızlıdır. Bütün motor büyük ölçüde basitleştirilmiştir ve rota ifadelerinin derlenmesinde Symfony Routing Katmanına bağımlılık en aza indirilmiştir.
 
-### Improved Session Engine
+### Gelişmiş Session Motoru
 
-With this release, we're also introducing an entirely new session engine. Similar to the routing improvements, the new session layer is leaner and faster. We are no longer using Symfony's (and therefore PHP's) session handling facilites, and are using a custom solution that is simpler and easier to maintain.
+Bu yeni sürümde biz aynı zamanda tamamen yeni bir session motorunu da kullanıma sokuyoruz. Rotalama geliştirmelerine benzer şekilde, yeni session katmanı da daha yalın ve daha hızlıdır. Artık Symfony'nin (ve dolayısıyla PHP'nin) session işleme araçlarını kullanmıyoruz ve daha basit ve sürdürülmesi daha kolay olan özel bir çözüm kullanıyoruz.
 
 ### Doctrine DBAL
 
-If you are using the `renameColumn` function in your migrations, you will need to add the `doctrine/dbal` dependency to your `composer.json` file. This package is no longer included in Laravel by default.
+Eğer migrasyonlarınızda `renameColumn` fonksiyonunu kullanıyorsanız, `composer.json` dosyanıza `doctrine/dbal` bağımlılığını eklemeniz gerekecek. Bu paket artık ön tanımlı olarak Laravel'e dahil edilmemektedir.

@@ -26,7 +26,7 @@ Tüm kullanıcı girdisine birkaç basit metodla erişebilirsiniz. İstek için 
 		//
 	}
 
-#### İstekteki Tüm Girdi Değerlerinin Birden Öğrenilmesi
+#### İstekteki Tüm Girdi Değerlerinin Öğrenilmesi
 
 	$girdi = Input::all();
 
@@ -36,11 +36,11 @@ Tüm kullanıcı girdisine birkaç basit metodla erişebilirsiniz. İstek için 
 
 	$girdi = Input::except('kredi_karti');
 
-When working on forms with "array" inputs, you may use dot notation to access the arrays:
+"Dizi" girdileri olan formlarda çalışırken dizilere erişim için nokta gösterimini kullanabilirsiniz:
 
 	$input = Input::get('products.0.name');
 
-Bazı JavaScript kütüphaneleri, örneğin Backbone, girdi bilgisini uygulamaya JSON olarak gönderir. Bu girdi verisine de yine normal şekilde `Input::get` ile erişebilirsiniz.
+> **Not:** Bazı JavaScript kütüphaneleri, örneğin Backbone, girdi bilgisini uygulamaya JSON olarak gönderir. Bu girdi verisine de yine normal şekilde `Input::get` ile erişebilirsiniz.
 
 <a name="cookies"></a>
 ## Çerezler (Cookies)
@@ -51,15 +51,15 @@ Laravel çerçevesi tarafından oluşturulan tüm çerezler, bir kimlik doğrula
 
 	$deger = Cookie::get('ismi');
 
-#### Yanıta (Response) Yeni Bir Çerez İliştirilmesi
+#### Cevaba (Response) Yeni Bir Çerez İliştirilmesi
 
 	$yanit = Response::make('Merhaba Dünya');
 
 	$yanit->withCookie(Cookie::make('ismi', 'degeri', $dakika));
 
-#### Sonraki Yanıt (Response) İçin Kuyruğa Bir Çerez İliştirilmesi
+#### Sonraki Cavap İçin Kuyruğa Bir Çerez İliştirilmesi
 
-Yanıt oluşturulmadan önce bir çerez oluşturmak isterseniz, `Cookie::queue()` metodunu kullanın. Uygulamanızdan gelen son yanıta yeni bir çerez iliştirilecektir.
+Cevap oluşturulmadan önce bir çerez oluşturmak isterseniz, `Cookie::queue()` metodunu kullanın. Uygulamanızdan gelen son cevaba yeni bir çerez iliştirilecektir.
 
 	Cookie::queue($name, $value, $minutes);
 
@@ -108,7 +108,7 @@ Girdinin geçici olarak oturuma yansıtılmasını, sık şekilde bir önceki sa
 		//
 	}
 
-Dosya `file` metodu tarafından döndürülen nesne (object), PHP `SplFileInfo` sınıfının bir uzantısı olan `Symfony\Component\HttpFoundation\File\UploadedFile` sınıfının bir "üyesidir", ve bu sayede dosya ile etkileşim için çeşitli metodlar sağlar.
+Dosya `file` metodu tarafından döndürülen nesne, PHP `SplFileInfo` sınıfının bir uzantısı olan ve dosya ile etkileşim için çeşitli metodlar sağlayan `Symfony\Component\HttpFoundation\File\UploadedFile` sınıfının bir olgusudur.
 
 #### Yüklenmiş Olan Bir Dosyanın Taşınması
 
@@ -154,7 +154,7 @@ Dosya `file` metodu tarafından döndürülen nesne (object), PHP `SplFileInfo` 
 		//
 	}
 
-#### İstek Patikasının Bir Şablona Uygunluğunun Test Edilmesi
+#### İstek Patikasının Bir Desene Uygunluğunun Test Edilmesi
 
 	if (Request::is('admin/*'))
 	{
@@ -177,37 +177,37 @@ Dosya `file` metodu tarafından döndürülen nesne (object), PHP `SplFileInfo` 
 
 	$deger = Request::server('PATH_INFO');
 
-#### İsteğin HTTPS Üzerinden Olduğunun Test Edilmesi
+#### İsteğin HTTPS Üzerinden Olup Olmadığının Belirlenmesi
 
 	if (Request::secure())
 	{
 		//
 	}
 
-#### İsteğin AJAX Kullandığının Test Edilmesi
+#### İsteğin AJAX Kullanıyor Olup Olmadığının Belirlenmesi
 
 	if (Request::ajax())
 	{
 		//
 	}
 
-#### Determine If The Request Has JSON Content Type
+#### İsteğin JSON Content Tipine Sahip Olup Olmadığının Belirlenmesi
 
 	if (Request::isJson())
 	{
 		//
 	}
 
-#### Determine If The Request Is Asking For JSON
+#### İsteğin JSON İstiyor Olup Olmadığının Belirlenmesi
 
 	if (Request::wantsJson())
 	{
 		//
 	}
 
-#### Checking The Requested Response Format
+#### İstenen Cevap Biçiminin Kontrol Edilmesi
 
-The `Request::format` method will return the requested response format based on the HTTP Accept header:
+`Request::format` metodu HTTP Accept header'ine dayalı olarak, istenen cevap formatını döndürecektir:
 
 	if (Request::format() == 'json')
 	{

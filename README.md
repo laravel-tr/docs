@@ -1,4 +1,4 @@
-# Laravel 4 Türkçe Dokümantasyon #
+# Laravel 4 Türkçe Dokümantasyon
 
 Nedir?
 -------------
@@ -9,7 +9,7 @@ Laravel, geliştiriciler için, uygulama işlevselliğinden ödün vermeden geli
 
 Laravel büyük ve kapsamlı uygulamalar için gereken araçları içeren erişilebilir, aynı zamanda güçlü bir çatıdır. Mükemmel ters kontrol kapsayıcısı, etkileyici göç sistemi ve sağlam yerleşik ünite test desteği size geliştirmeyi amaçladığınız uygulama için gerekli araçları sağlayacaktır.
 
-### Çeviri ###
+### Çeviri
 
 [Laravel 4 Türkçe Dokümantasyonu](http://laravel.gen.tr/docs), İngilizce bilmeyen kullanıcıların da istifade edebilmesi amacıyla [Laravel Türkiye Forumları](http://forum.laravel.gen.tr/) kullanıcılarından oluşan gönüllü çeviri ekibi tarafından yapılmış çevirileri içermektedir.
 
@@ -28,6 +28,7 @@ Katılım Sırasına Göre
 * [ersinkandemir](https://github.com/ersinkandemir)
 * [ekrembk](https://github.com/ekrembk)
 * [harunyasar](https://github.com/harunyasar)
+* [hkan](https://github.com/hkan)
 
 Çeviriye katkıda bulunmak isterseniz bu repo'yu fork edip, değişiklikleri yaptıktan sonra pull-request edebilirsiniz.
 

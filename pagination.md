@@ -3,13 +3,13 @@
 - [Yapılandırma](#configuration)
 - [Kullanım](#usage)
 - [Sayfalama Linklerine Ekleme Yapmak](#appending-to-pagination-links)
-- [Converting To JSON](#converting-to-json)
-- [Custom Presenters](#custom-presenters)
+- [JSON'a Dönüştürme](#converting-to-json)
+- [Özel Sunumcular](#custom-presenters)
 
 <a name="configuration"></a>
 ## Yapılandırma
 
-Diğer frameworkler'de, sayfalama oldukça sıkıntılı olabilir. Laravel bu işi çocuk oyuncağı gibi yapar. `app/config/view.php` dosyasında bir tek yapılandırma seçeneği bulunmaktadır. `pagination` seçeneği sayfalama bağlantıları (links) oluşturmak için kullanılması gereken görünümü (view) belirtir. Varsayılan olarak, Laravel iki görünüm içerir.
+Diğer frameworkler'de, sayfalama oldukça sıkıntılı olabilir. Laravel bu işi çocuk oyuncağı gibi yapar. `app/config/view.php` dosyasında bir tek yapılandırma seçeneği bulunmaktadır. Bu dosyadaki `pagination` seçeneği sayfalama bağlantıları (links) oluşturmak için kullanılması gereken görünümü (view) belirtir. Varsayılan olarak, Laravel iki görünüm içerir.
 
 `pagination::slider` görünümü mevcut sayfaya dayalı olarak akıllı bir bağlantı aralığı gösterirken, `pagination::simple` görünümü sadece "önceki" ve "sonraki" butonlarını gösterecektir. **Her iki görünüm de Twitter Bootstrap ile uyumludur**
 
@@ -30,7 +30,7 @@ Diğer frameworkler'de, sayfalama oldukça sıkıntılı olabilir. Laravel bu i�
 
 	$uyeler = User::where('oylar', '>', 100)->paginate(15);
 
-`paginate` metodundan geçen argüman sayfa başı görüntülemek istediğiniz öğelerin sayısıdır. Bir kez sonuçları aldıktan sonra görünümde görüntüleyebilir ve `links` metodunu kullanarak sayfalama bağlantıları oluşturabilirsiniz:
+`paginate` metoduna geçilen argüman sayfa başına görüntülemek istediğiniz öğelerin sayısıdır. Bir kez sonuçları aldıktan sonra görünümde görüntüleyebilir ve `links` metodunu kullanarak sayfalama bağlantıları oluşturabilirsiniz:
 
 	<div class="container">
 		<?php foreach ($uyeler as $uye): ?>
@@ -40,13 +40,13 @@ Diğer frameworkler'de, sayfalama oldukça sıkıntılı olabilir. Laravel bu i�
 
 	<?php echo $uyeler->links(); ?>
 
-Sayfalama sistemi oluşturmak işte bu kadar! Unutmayın, mevcut sayfa için çatıya bilgi vermedik. Laravel bunu sizin için otomatik olarak belirledi.
+Sayfalama sistemi oluşturmak işte bu kadar! Unutmayın, mevcut sayfa için frameworke bilgi vermedik. Laravel bunu sizin için otomatik olarak belirleyecektir.
 
-If you would like to specify a custom view to use for pagination, you may pass a view to the `links` method:
+Sayfalama için kullanılacak özel bir view belirtmek isterseniz, `links` metoduna bir view geçebilirsiniz:
 
-	<?php echo $users->links('view.name'); ?>
+	<?php echo $users->links('view.ismi'); ?>
 
-Ayrıca aşağıdaki metodlarla ek olarak sayfalama bilgisine erişebilirsiniz:
+Ayrıca aşağıdaki metodlar aracılığıyla diğer sayfalama bilgilerine erişebilirsiniz:
 
 - `getCurrentPage`
 - `getLastPage`
@@ -56,15 +56,15 @@ Ayrıca aşağıdaki metodlarla ek olarak sayfalama bilgisine erişebilirsiniz:
 - `getTo`
 - `count`
 
-Bazen bir sayfalama olgusunu kendiniz bir öğeler dizisi geçerek oluşturmak isteyebilirsiniz. Bunu yapmak için `Paginator::make` methodunu kullanınız:
+Bazen bir sayfalama olgusunu kendiniz bir öğeler dizisi geçerek oluşturmak isteyebilirsiniz. Bunu `Paginator::make` metodunu kullanarak yapabilirsiniz:
 
 #### Elle Sayfalandırıcı Oluşturmak
 
-	$sayfalandirici = Paginator::make($ogeler, $toplamOgeler, $sayfaBasi);
+	$sayfalandirici = Paginator::make($ogeler, $toplamOgeAdedi, $sayfaBasinaAdet);
 
 #### Sayfalama URI'ını Özelleştirmek
 
-Sayfalama tarafından kullanılan `setBaseUrl` methodunu da özelleştirebilirsiniz:
+`setBaseUrl` metodu aracılığıyla, sayfalandırıcı tarafından URI'yi de özelleştirebilirsiniz:
 
 	$uyeler = Uye::paginate();
 
@@ -75,35 +75,35 @@ Yukarıdaki örnek böyle bir URL oluşturacaktır: http://ornek.com/ozel/url?pa
 <a name="appending-to-pagination-links"></a>
 ## Sayfalama Linklerine Ekleme Yapmak
 
-Sayfalandırıcı üzerinde `appends` methodunu kullanarak sayfalama linklerinize sorgu katarı (query string) ekleyebilirsiniz:
+Sayfalandırıcı üzerinde `appends` metodunu kullanarak sayfalama linklerinize sorgu katarı (query string) ekleyebilirsiniz:
 
 	<?php echo $uyeler->appends(array('sira' => 'oylar'))->links(); ?>
 
 Bu kod, sayfalama linkine "&sira=oylar" ekleyecek ve şöyle bir URL üretecektir:
 
-	http://ornek.com/birsey?sayfa=2&sira=oylar
+	http://ornek.com/birsey?page=2&sira=oylar
 
-If you wish to append a "hash fragment" to the paginator's URLs, you may use the `fragment` method:
+Eğer sayfalandırıcının URL'sine bir "hash fragmanı" eklemek istiyorsanız, `fragment` metodunu kullanabilirsiniz:
 
-	<?php echo $users->fragment('foo')->links(); ?>
+	<?php echo $users->fragment('falan')->links(); ?>
 
-This method call will generate URLs that look something like this:
+Bu metod bunun gibi gözüken URL'ler üretecektir:
 
-	http://example.com/something?page=2#foo
+	http://ornek.com/birsey?page=2#falan
 
 <a name="converting-to-json"></a>
-## Converting To JSON
+## JSON'a Dönüştürme
 
-The `Paginator` class implements the `Illuminate\Support\Contracts\JsonableInterface` contract and exposes the `toJson` method. You can may also convert a `Paginator` instance to JSON by returning it from a route. The JSON'd form of the instance will include some "meta" information such as `total`, `current_page`, `last_page`, `from`, and `to`. The instance's data will be available via the `data` key in the JSON array.
+`Paginator` sınıfı `Illuminate\Support\Contracts\JsonableInterface` sözleşmesini implemente eder ve `toJson` metoduna sahiptir. Bir `Paginator` olgusunu bir rotadan döndürerek de onu JSON'a çevirebilirsiniz. Bu olgunun JSON'lanmış biçimi `total`, `current_page`, `last_page`, `from` ve `to` gibi bazı "meta" bilgilerini de içerecektir. Olgunun verileri JSON dizisindeki `data` anahtarı aracılığı ile erişebilir olacaktır.
 
 <a name="custom-presenters"></a>
-## Custom Presenters
+## Özel Sunumcular
 
-The default pagination presenter is Bootstrap compatible out of the box; however, you may customize this with a presenter of your choice.
+Laravelle geldiği haliyle ön tanımlı sayfalama sunumcusu Bootstrap uyumludur; ancak siz bunu kendi seçeceğiniz bir sunumcu ile özelleştirebilirsiniz.
 
-### Extending The Abstract Presenter
+### Soyut Sunumcunun Genişletilmesi
 
-Extend the `Illuminate\Pagination\Presenter` class and implement its abstract methods. An example presenter for Zurb Foundation might look like this:
+`Illuminate\Pagination\Presenter` sınıfını genişletin ve onun soyut (abstract) metodlarını implemente edin. Zurb Foundation için örnek bir sunumcu bunun gibi gözükebilir:
 
     class ZurbPresenter extends Illuminate\Pagination\Presenter {
 
@@ -124,9 +124,9 @@ Extend the `Illuminate\Pagination\Presenter` class and implement its abstract me
 
     }
 
-### Using The Custom Presenter
+### Özel Sunumcunun Kullanılması
 
-First, create a view in your `app/views` directory that will server as your custom presenter. Then, replace `pagination` option in the `app/config/view.php` configuration file with the new view's name. Finally, the following code would be placed in your custom presenter view:
+Önce `app/views` dizininizde sizin özel sunumcunuz olarak hizmet edecek bir view oluşturun. Ondan sonra, `app/config/view.php` yapılandırma dosyasındaki `pagination` seçeneğini yeni view'in adıyla değiştirin. Son olarak, özel sunumcu view'inizde aşağıdaki kodu koyacaksınız:
 
     <ul class="pagination">
         <?php echo with(new ZurbPrensenter($paginator))->render(); ?>

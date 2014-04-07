@@ -1,18 +1,18 @@
-# Upgrade Guide
+# Yükseltme Rehberi
 
-- [Upgrading To 4.2 From 4.1](#upgrade-4.2)
-- [Upgrading To 4.1 From 4.0](#upgrade-4.1)
+- [4.1'den 4.2'ye Yükseltme](#upgrade-4.2)
+- [4.0'dan 4.1'e Yükseltme](#upgrade-4.1)
 
 <a name="upgrade-4.2"></a>
-## Upgrading To 4.2 From 4.1
+## 4.1'den 4.2'ye Yükseltme
 
 ### PHP 5.4+
 
-Laravel 4.2 requires PHP 5.4.0 or greater.
+Laravel 4.2, PHP 5.4.0 veya daha üstünü gerektirir.
 
-### Soft Deleting Models Now Use Traits
+### Modellerdeki Soft Silmeler Artýk Trait Kullanýyorlar
 
-If you are using soft deleting models, the `softDeletes` property has been removed. You should now use the `SoftDeletingTrait` like so:
+Modellerde soft silmeler kullanýyorsanýz, `softDeletes` propertisi çýkartýlmýþtýr. Artýk aþaðýdakine benzer þekilde `SoftDeletingTrait` kullanmalýsýnýz:
 
 	use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
@@ -20,7 +20,7 @@ If you are using soft deleting models, the `softDeletes` property has been remov
 		use SoftDeletingTrait;
 	}
 
-You should also manually add the `deleted_at` column to your `dates` property:
+Ayrýca, `dates` propertisine `deleted_at` sütununu elle eklemeniz gerekir:
 
 	class User extends Eloquent {
 		use SoftDeletingTrait;
@@ -28,73 +28,73 @@ You should also manually add the `deleted_at` column to your `dates` property:
 		protected $dates = ['deleted_at'];
 	}
 
-The API for all soft delete operations remains the same.
+Tüm soft silme iþlemlerinin API'si ayný kalmýþtýr.
 
-### View / Pagination Environment Renamed
+### View / Pagination Environment Sýnýflarýnýn Adý Deðiþti
 
-If you are directly referencing the `Illuminate\View\Environment` class or `Illuminate\Pagination\Environment` class, update your code to reference `Illuminate\View\Factory` and `Illuminate\Pagination\Factory` instead. These two classes have been renamed to better reflect their function.
+Þayet `Illuminate\View\Environment` sýnýfýný veya `Illuminate\Pagination\Environment` sýnýfýný doðrudan referans ediyorsanýz, kodunuzu bunlar yerine `Illuminate\View\Factory` ve `Illuminate\Pagination\Factory` sýnýflarýný referans verecek þekilde güncellemelisiniz. Bu iki sýnýfýn isimleri, iþlevlerini daha iyi yansýtmasý için deðiþtirilmiþtir.
 
 <a name="upgrade-4.1"></a>
-## Upgrading To 4.1 From 4.0
+## 4.0'dan 4.1'e Yükseltme
 
-### Upgrading Your Composer Dependency
+### Composer Baðýmlýlýðýnýn Yükseltilmesi
 
-To upgrade your application to Laravel 4.1, change your `laravel/framework` version to `4.1.*` in your `composer.json` file.
+Uygulamanýzý Laravel 4.1'e yükseltmek için, `composer.json` dosyanýzdaki `laravel/framework` sürümünü `4.1.*` olarak deðiþtirin.
 
-### Replacing Files
+### Dosyalarýn Deðiþtirilmesi
 
-Replace your `public/index.php` file with [this fresh copy from the repository](https://github.com/laravel/laravel/blob/master/public/index.php).
+Uygulamanýzdaki `public/index.php` dosyasýný [ambardaki bu yeni kopya](https://github.com/laravel/laravel/blob/master/public/index.php) ile deðiþtirin.
 
-Replace your `artisan` file with [this fresh copy from the repository](https://github.com/laravel/laravel/blob/master/artisan).
+Uygulamanýzdaki `artisan` dosyasýný [ambardaki bu yeni kopya](https://github.com/laravel/laravel/blob/master/artisan) ile deðiþtirin.
 
-### Adding Configuration Files & Options
+### Yapýlandýrma Dosya ve Seçeneklerinin Eklenmesi
 
-Update your `aliases` and `providers` arrays in your `app/config/app.php` configuration file. The updated values for these arrays can be found [in this file](https://github.com/laravel/laravel/blob/master/app/config/app.php). Be sure to add your custom and package service providers / aliases back to the arrays.
+Uygulamanýzdaki `app/config/app.php` yapýlandýrma dosyanýzdaki `aliases` ve `providers` dizilerini güncelleyin. Bu dizilerin güncellenmiþ deðerleri [bu dosyada](https://github.com/laravel/laravel/blob/master/app/config/app.php) bulunabilir. Kendi özel ve paket servis saðlayýcýlarýný / aliaslarý tekrar eklemeyi unutmayýn.
 
-Add the new `app/config/remote.php` file [from the repository](https://github.com/laravel/laravel/blob/master/app/config/remote.php).
+[Ambardaki](https://github.com/laravel/laravel/blob/master/app/config/remote.php) yeni `app/config/remote.php` dosyasýný ekleyin.
 
-Add the new `expire_on_close` configuration option to your `app/config/session.php` file. The default value should be `false`.
+Uygulamanýzdaki `app/config/session.php` dosyanýza yeni `expire_on_close` yapýlandýrma seçeneðini ekleyin. Ön tanýmlý deðer `false` olmalýdýr.
 
-Add the new `failed` configuration section to your `app/config/queue.php` file. Here are the default values for the section:
+Uygulamanýzdaki `app/config/queue.php` dosyanýza yeni `failed` yapýlandýrma kesimini ekleyin. Bu kesimin default deðerleri þöyledir:
 
 	'failed' => array(
 		'database' => 'mysql', 'table' => 'failed_jobs',
 	),
 
-**(Optional)** Update the `pagination` configuration option in your `app/config/view.php` file to `pagination::slider-3`.
+**(Ýsteðe Baðlý)** Uygulamanýzdaki `app/config/view.php` dosyanýzdaki `pagination` yapýlandýrma seçeneðini `pagination::slider-3` olarak güncelleyin.
 
-### Controller Updates
+### Controller Güncellemeleri
 
-If `app/controllers/BaseController.php` has a `use` statement at the top, change `use Illuminate\Routing\Controllers\Controller;` to `use Illuminate\Routing\Controller;`.
+Eðer `app/controllers/BaseController.php` dosyasýnda en üstte bir `use` cümlesi varsa, buradaki `use Illuminate\Routing\Controllers\Controller;` olan yeri `use Illuminate\Routing\Controller;` olarak güncelleyin.
 
-### Password Reminders Updates
+### Password Reminders Güncellemeleri
 
-Password reminders have been overhauled for greater flexibility. You may examine the new stub controller by running the `php artisan auth:reminders-controller` Artisan command. You may also browse the [updated documentation](/docs/security#password-reminders-and-reset) and update your application accordingly.
+Þifre hatýrlatýcýlarý daha büyük esneklik olmasý için elden geçirilmiþtir. Artisan `php artisan auth:reminders-controller` komutunu çalýþtýrmak suretiyle yeni iskelet controlleri inceleyebilirsiniz. Ayrýca [güncellenmiþ dokümantasyonu](/docs/security#password-reminders-and-reset) da okuyabilir ve uygulamanýzý ona göre güncelleyebilirsiniz.
 
-Update your `app/lang/en/reminders.php` language file to match [this updated file](https://github.com/laravel/laravel/blob/master/app/lang/en/reminders.php).
+Uygulamanýzdaki `app/lang/en/reminders.php` dil dosyasýný [güncellenen bu dosyaya](https://github.com/laravel/laravel/blob/master/app/lang/en/reminders.php) uyacak þekilde güncelleyin.
 
-### Environment Detection Updates
+### Ortam Saptama Güncellemeleri
 
-For security reasons, URL domains may no longer be used to detect your application environment. These values are easily spoofable and allow attackers to modify the environment for a request. You should convert your environment detection to use machine host names (`hostname` command on Mac & Ubuntu).
+Güvenlik sebepleri nedeniyle, uygulama ortamýnýzý tespit etmek için URL domainleri artýk kullanýlmayabilir. Bu deðerler kolaylýkla kafeslenebilir ve saldýrganlarýn bir istek için ortamý modifiye etmesine imkan verebilir. Ortam tespitinizi makine host adlarý (Mac & Ubuntu üzerinde `hostname` komutu) kullanacak þekilde deðiþtirmelisiniz.
 
-### Simpler Log Files
+### Daha Sade ve Basit Günlük Dosyalarý
 
-Laravel now generates a single log file: `app/storage/logs/laravel.log`. However, you may still configure this behavior in your `app/start/global.php` file.
+Laravel artýk tek bir log dosyasý üretir: `app/storage/logs/laravel.log`. Bununla birlikte, bu davranýþý yine de `app/start/global.php` dosyanýzda yapýlandýrabilirsiniz.
 
-### Removing Redirect Trailing Slash
+### En Sonda Bölü Varsa Yeniden Yönlendirin Çýkartýlmasý
 
-In your `bootstrap/start.php` file, remove the call to `$app->redirectIfTrailingSlash()`. This method is no longer needed as this functionality is now handled by the `.htaccess` file included with the framework.
+Uygulamanýzýn `bootstrap/start.php` dosyasýndan `$app->redirectIfTrailingSlash()` çaðrýsýný çýkartýn. Bu iþlevsellik þimdi frameworkle gelen `.htaccess` dosyasý tarafýndan halledildiði için bu metod artýk gerekli deðildir.
 
-Next, replace your Apache `.htaccess` file with [this new one](https://github.com/laravel/laravel/blob/master/public/.htaccess) that handles trailing slashes.
+Sonra da, sizin Apache `.htaccess` dosyanýzýn yerine, sondaki bölüleri halleden [bu yenisini](https://github.com/laravel/laravel/blob/master/public/.htaccess) koyun.
 
-### Current Route Access
+### Güncel Rotaya Eriþim
 
-The current route is now accessed via `Route::current()` instead of `Route::getCurrentRoute()`.
+Güncel rotaya `Route::getCurrentRoute()` yerine þimdi `Route::current()` ile eriþilmektedir.
 
-### Composer Update
+### Composer Güncellemesi
 
-Once you have completed the changes above, you can run the `composer update` function to update your core application files! If you receive class load errors, try running the `update` command with the `--no-scripts` option enabled like so: `composer update --no-scripts`.
+Yukarýdaki deðiþiklikleri tamamladýktan sonra, çekirdek application dosyalarýný güncellemek için `composer update` fonksiyonunu çalýþtýrabilirsiniz! Eðer sýnýf yükleme (class load) hatalarý alýrsanýz, `update` komutunu þu þekilde etkinleþtirilmiþ `--no-scripts` seçeneði ile kullanmayý deneyin: `composer update --no-scripts`.
 
-### Wildcard Event Listeners
+### Joker Olay Dinleyiciler
 
-The wildcard event listeners no longer append the event to your handler functions parameters. If you require finding the event that was fired you should use `Event::firing()`.
+Joker Olay Dinleyiciler artýk handler fonksiyon parametrelerinize event'i eklemez. Þayet ateþlenen olayý bulmanýz gerekiyorsa, `Event::firing()` kullanmalýsýnýz.

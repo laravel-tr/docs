@@ -26,7 +26,7 @@ Migrasyonu oluştururken bir patika `--path` seçeneği de belirtebilirsiniz. Pa
 
 	php artisan migrate:make falancaMigrasyon --path=app/migrations
 
-Tablo ismini ve yeni bir tablonun oluşturulacağını da, tablo `--table` ve oluştur `--create` seçeneklerini kullanarak belirtebilirsiniz:
+Tablo ismini ve yeni bir tablonun oluşturulacağını da, `--table` ve `--create` seçeneklerini kullanarak belirtebilirsiniz:
 
 	php artisan migrate:make kullanicilar_tablosunu_olustur --table=users
 
@@ -69,7 +69,7 @@ Tablo ismini ve yeni bir tablonun oluşturulacağını da, tablo `--table` ve ol
 <a name="database-seeding"></a>
 ## Veritabanına Veri Ekme
 
-Veri Ekme (seeding), migrasyon ile oluşturulacak veritabanı tablosunda gerekli olacak ilk veri kayıtlarının (seed data) oluşturulması işlemidir(:çevirenin notu). Laravel, veritabanınızın deneme verisi ile veri ekme için kolaylık sağlayacak olan veri ekme (seed) sınıflarını bulundurur. Bütün veri ekme sınıfları `app/database/seeds` dizininde konumlandırılır. Veri ekme sınıflarına istediğiniz isimleri verebilirsiniz. Fakat isimlendirirken anlaşılacak belli bir düzene (convention) uyulması lehinizedir, örneğin `KullanicilarTablosunaVeriEkme`, vb. Ön tanımlı olarak, sizin için bir DatabaseSeeder sınıfı tanımlanmıştır. Veri ekme sırasını denetlemenize imkan verecek olan, bu sınıfın 'çağır' `call` metodunu kullanarak diğer veri ekme sınıflarınızı çalıştırabilirsiniz.
+Veri Ekme (seeding), migrasyon ile oluşturulacak veritabanı tablosunda gerekli olacak ilk veri kayıtlarının (seed data) oluşturulması işlemidir(:çevirenin notu). Laravel, veritabanınızın deneme verisi ile veri ekme için kolaylık sağlayacak olan veri ekme (seed) sınıflarını bulundurur. Bütün veri ekme sınıfları `app/database/seeds` dizininde konumlandırılır. Veri ekme sınıflarına istediğiniz isimleri verebilirsiniz. Fakat isimlendirirken anlaşılacak belli bir geleneğe uyulması lehinizedir, örneğin `KullanicilarTablosunaVeriEkme`, vb. Ön tanımlı olarak, sizin için bir DatabaseSeeder sınıfı tanımlanmıştır. Veri ekme sırasını denetlemenize imkan verecek olan, bu sınıfın 'çağır' `call` metodunu kullanarak diğer veri ekme sınıflarınızı çalıştırabilirsiniz.
 
 #### Veritabanı Veri Ekme Sınıfı Örneği
 
@@ -99,9 +99,9 @@ Veritabanına veri ekmek için, Artisan KSA'da `db:seed` (veri ek) komutunu kull
 
 	php artisan db:seed
 
-By default, the `db:seed` command runs the `DatabaseSeeder` class, which may be used to call other seed classes. However, you may use the `--class` option to specify a specific seeder class to run individually:
+Ön tanımlı olarak, bu `db:seed` komutu `DatabaseSeeder` sınıfını çalıştırır (bu sınıf diğer ekme sınıflarını çağırmak için kullanılabilmektedir). Buna karşın bireysel olarak çalıştırılacak belirli bir seeder sınıfını belirtmek için `--class` seçeneğini kullanabilirsiniz:
 
-	php artisan db:seed --class=UserTableSeeder
+	php artisan db:seed --class=KullanicilarTablosunaVeriEkme
 
 Veritabanına `migrate:refresh` (yenile) komutunu kullanarak da veri ekebilirsiniz, bu komut aynı zamanda bütün migrasyonları geriye döndürüp, hepsini tekrardan çalıştıracaktır:
 

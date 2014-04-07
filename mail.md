@@ -21,7 +21,7 @@ Bir e-posta mesajı göndermek için `Mail::send` metodu kullanılabilir:
 		$message->to('falan@numune.com', 'Can Simitci')->subject('Hoş geldiniz!');
 	});
 
-Burada `send` metoduna geçilen ilk parametre e-posta gövde metni olarak kullanılacak görünümün ("view"in) ismidir ve ikinci parametre `$data` ise bu görünüme geçilecek veriyi temsil eder. Üçüncü parametremiz e-posta mesajında çeşitli seçenekler belirlemize imkan veren bir bitirme fonksiyonudur.
+Burada `send` metoduna geçilen ilk parametre e-posta gövde metni olarak kullanılacak görünümün ("view"in) ismidir ve ikinci parametre `$data` ise bu görünüme geçilecek veriyi temsil eder. Üçüncü parametremiz e-posta mesajında çeşitli seçenekler belirlememize imkan veren bir anonim fonksiyondur.
 
 > **Not:** E-posta görünümlerine mutlaka bir `$message` değişkeni geçilir ve bu değişken bize ataşmanların yazı içine gömülmesi imkanı verir. Dolayısıyla sizin görünüm elemanlarınız arasında bir `message` değişkeni olmaması iyi olur.
 
@@ -48,14 +48,14 @@ Bir mesaja dosya eklediğinizde, bir MIME tipi ve / veya ne adla görüneceğini
 
 	$message->attach($eklenecekDosya, array('as' => $gorunecekAd, 'mime' => $mime));
 
-> **Not:** Bir `Mail::send` bitirme fonksiyonuna geçilen "message" olgusu, SwiftMailer'in message sınıfını genişleterek, e-posta mesajlarınızı oluşturmak için sınıf üzerinden her türlü metodu çağırabilmenize imkan verir.
+> **Not:** Bir `Mail::send` closure fonksiyonuna geçilen "message" olgusu, SwiftMailer'in message sınıfını genişleterek, e-posta mesajlarınızı oluşturmak için sınıf üzerinden her türlü metodu çağırabilmenize imkan verir.
 
 <a name="embedding-inline-attachments"></a>
 ## Ataşmanların Yazı İçine Gömülmesi
 
 Ataşmanların yazı içine gömülmesi tipik olarak zahmetlidir; ama Laravel size e-postalarınıza resimler eklemek ve uygun CID elde etmeniz için pratik bir yol sağlar.
 
-#### EBir E-Posta Görünümüne Bir Resim Gömülmesi
+#### Bir E-Posta Görünümüne Bir Resim Gömülmesi
 
 	<body>
 		İşte bir resim:
@@ -76,9 +76,9 @@ Ataşmanların yazı içine gömülmesi tipik olarak zahmetlidir; ama Laravel si
 <a name="queueing-mail"></a>
 ## Postaların Sıraya Sokulması
 
-E-mail mesajlarının gönderilmesi uygulamanızın cevap zamanını önemli ölçüde uzatabileceği için, birçok geliştirici e-posta mesajlarını arka planda gönderilmek üzere kuyruğa sokmayı tercih eder. Laravel, dahili [tekleşmiş kuyruk API](/docs/queues)'sini kullanarak bunu kolaylaştırır. Bir e-posta mesajını kuyruğa sokmak için tek yapmanız gereken şey, `Mail` sınıfının `queue` metodunu kullanmaktır:
+E-mail mesajlarının gönderilmesi uygulamanızın cevap zamanını önemli ölçüde uzatabileceği için, birçok geliştirici e-posta mesajlarını arka planda gönderilmek üzere kuyruğa sokmayı tercih eder. Laravel, dahili [kuyruk API](/docs/queues)'sini kullanarak bunu kolaylaştırır. Bir e-posta mesajını kuyruğa sokmak için tek yapmanız gereken şey, `Mail` sınıfının `queue` metodunu kullanmaktır:
 
-**Bir Mail Mesajının Kuyruğa Sokulması**
+#### Bir Mail Mesajının Kuyruğa Sokulması
 
 	Mail::queue('emails.welcome', $data, function($message)
 	{
@@ -102,8 +102,8 @@ Mesajı yollamak için belirli bir kuyruk veya "tüpgeçit" belirlemek istiyorsa
 <a name="mail-and-local-development"></a>
 ## Posta & Yerel Geliştirme
 
-E-posta gönderen bir uygulama geliştirilirken, genelde lokal veya geliştirme ortamında mesaj göndermenin devre dışı bırakılması arzu edilmektedir. bunu yapmak için, ya `Mail::pretend` metodunu çağırın ya da `app/config/mail.php` yapılandırma dosyanızdaki `pretend` seçeneğini `true` olarak ayarlayın. Mailer `pretend` modunda olduğu zaman, mesajlar alıcıya gönderilmek yerine uygulamanızın günlük dosyalarına yazılacaktır.
+E-posta gönderen bir uygulama geliştirilirken, genelde lokal veya geliştirme ortamında mesaj göndermenin devre dışı bırakılması arzu edilmektedir. Bunu yapmak için, ya `Mail::pretend` metodunu çağırın ya da `app/config/mail.php` yapılandırma dosyanızdaki `pretend` seçeneğini `true` olarak ayarlayın. Mailer `pretend` modunda olduğu zaman, mesajlar alıcıya gönderilmek yerine uygulamanızın günlük dosyalarına yazılacaktır.
 
-**Taklit Posta Modunun Etkinleştirilmesi**
+#### Taklit Posta Modunun Etkinleştirilmesi
 
 	Mail::pretend();

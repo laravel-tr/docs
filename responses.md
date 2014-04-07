@@ -5,7 +5,7 @@
 - [Görünümler (Views)](#views)
 - [Görünüm Kompozitörleri](#view-composers)
 - [Özel Cevaplar](#special-responses)
-- [Response Macros](#response-macros)
+- [Cevap Makroları](#response-macros)
 
 <a name="basic-responses"></a>
 ## Temel Cevaplar
@@ -27,7 +27,7 @@ Bir cevap (`Response`) olgusu `Symfony\Component\HttpFoundation\Response` sını
 
 	return $cevap;
 
-If you need access to the `Response` class methods, but want to return a view as the response content, you may use the `Response::view` method for convenience:
+Eğer `Response` sınıfının metodlarına erişmeniz gerekiyor, ama cevap içeriği olarak bir view döndürmek istiyorsanız, kolaylık açısından `Response::view` metodunu kullanabilirsiniz:
 
 	return Response::view('hello')->header('Content-Type', $type);
 
@@ -48,7 +48,7 @@ If you need access to the `Response` class methods, but want to return a view as
 
 	return Redirect::to('uye/giris')->with('mesaj', 'Giriş başarısız!');
 
-> **Not:** `with` metodu veriyi oturum bilgisine flaşlayacağından, veriyi tipik `Session::get` metodu ile alabilirsiniz.
+> **Not:** `with` metodu veriyi oturum bilgisine flaşlayacağından, bu veriyi tipik `Session::get` metodu ile alabilirsiniz.
 
 #### İsimli Bir Rotaya Yönlendirme Döndürme
 
@@ -77,7 +77,7 @@ If you need access to the `Response` class methods, but want to return a view as
 <a name="views"></a>
 ## Görünümler (Views)
 
-Görünümler tipik olarak uygulamanızın HTML'sini içerirler ve kontrolörünüzün ve etki alanı mantığınızın gösterim mantığınızdan ayrı tutulmasının uygun bir yoludur. Görünümler `app/views` dizininde saklanmaktadır.
+Görünümler tipik olarak uygulamanızın HTML'sini içerirler ve kontrolörünüzün ve etki alanı mantığınızın gösterim mantığınızdan ayrık tutulmasının uygun bir yoludur. Görünümler `app/views` dizininde saklanmaktadır.
 
 Basit bir görünüm şuna benzer:
 
@@ -100,10 +100,10 @@ Bu görünüm web tarayıcısına şu şekilde döndürülebilir:
 
 #### Görünümlere Veri Geçilmesi
 
-	// Using conventional approach
+	// Geleneksel yaklaşım kullanmak
 	$view = View::make('selamlama')->with('isim', 'Tuana Şeyma');
 
-	// Using Magic Methods
+	// Sihirli Metodları kullanmak
 	$view = View::make('selamlama')->withIsim('Tuana Şeyma');
 
 Yukarıdaki örnekte `$isim` değişkeni görünümden erişilebilir olacak ve `Tuana Şeyma` bilgisini taşıyacaktır.
@@ -122,7 +122,7 @@ Bazen bir görünümü başka bir görünümün içine geçirmek isteyebilirsini
 
 	$view = View::make('selamlama')->nest('evlat', 'evlat.view');
 
-	$view = View::make('selamlama')->nest('evlat', 'evlat.view', $veri);
+	$view = View::make('selamlama')->nest('evlat', 'evlat.view', $data);
 
 Bundan sonra bu alt görünüm ebeveyn görünümde gösterilebilir:
 
@@ -136,7 +136,7 @@ Bundan sonra bu alt görünüm ebeveyn görünümde gösterilebilir:
 <a name="view-composers"></a>
 ## Görünüm Kompozitörleri
 
-Görünüm kompozitörleri görünüm oluşturulduğu zaman çağrılan bitirme fonksiyonları veya sınıf metodlarıdır. Eğer belli bir görünüm, uygulamanız boyunca her oluşturulduğunda bu görünüme bağlamak istediğiniz bir veri varsa, bir görünüm kompozitörü kodun tek bir yere koyulabilmesi imkanı verebilir. Bu nedenle, görünüm kompozitörleri "görünüm modelleri" veya "sunum yapıcı" gibi iş görürler.
+Görünüm kompozitörleri görünüm oluşturulduğu zaman çağrılan isimsiz fonksiyonlar veya sınıf metodlarıdır. Eğer belli bir görünüm, uygulamanız boyunca her oluşturulduğunda bu görünüme bağlamak istediğiniz bir veri varsa, bir görünüm kompozitörü kodun tek bir yere koyulabilmesi imkanı verebilir. Bu nedenle, görünüm kompozitörleri "görünüm modelleri" veya "sunum yapıcı" gibi iş görürler.
 
 #### Bir Görünüm Kompozitörü Tanımlanması
 
@@ -169,16 +169,16 @@ Bir görünüm kompozitörü sınıfı şöyle tanımlanmalıdır:
 
 	}
 
-#### Defining Multiple Composers
+#### Birden Çok Composer Tanımlanması
 
-You may use the `composers` method to register a group of composers at the same time:
+Bir grup composer'i bir defada kayda geçirmek için `composers` metodunu kullanabilirsiniz:
 
 	View::composers(array(
 		'AdminComposer' => array('admin.index', 'admin.profile'),
 		'UserComposer' => 'user',
 	));
 
-> **Not:** Kompozitör sınıfının nerede saklanacağı konusunda bir adet olmadığına dikkat edin. `composer.json` dosyanızdaki yönergeleri kullanarak otomatik yüklenebildikleri sürece, bunları istediğiniz yerde depolayabilirsiniz.
+> **Not:** Kompozitör sınıfının nerede saklanacağı konusunda bir gelenek olmadığına dikkat edin. `composer.json` dosyanızdaki yönergeleri kullanarak otomatik yüklenebildikleri sürece, bunları istediğiniz yerde depolayabilirsiniz.
 
 ### Görünüm Oluşturucular
 
@@ -206,20 +206,20 @@ Görünüm **oluşturucuları** tam olarak görünüm kompozitörleri gibi çal�
 
 	return Response::download($indirilecekDosyaYolu, $isim, $basliklar);
 
-> **Note:** Symfony HttpFoundation, which manages file downloads, requires the file being downloaded to have an ASCII file name.
+> **Not:** Dosya indirmelerini yöneten Symfony HttpFoundation, indirilecek olan dosyanın bir ASCII dosya ismi olmasını gerektirir.
 
 <a name="response-macros"></a>
-## Response Macros
+## Cevap Makroları
 
-If you would like to define a custom response that you can re-use in a variety of your routes and controllers, you may use the `Response::macro` method:
+Çeşitli rota ve controllerlerinizde tekrar tekrar kullanabileceğiniz özel bir cevap tanımlamak isterseniz, `Response::macro` metodunu kullanabilirsiniz:
 
 	Response::macro('caps', function($value)
 	{
 		return Response::make(strtoupper($value));
 	});
 
-The `macro` function accepts a name as its first argument, and a Closure as its second. The macro's Closure will be executed when calling the macro name on the `Response` class:
+Bu `macro` fonksiyonu birinci parametre olarak bir isim ve ikinci parametre olarak bir Closure kabul eder. `Response` sınıfı üzerinde makro ismi çağrıldığı zaman makronun Closure fonksiyonu çalıştırılacaktır:
 
-	return Response::caps('foo');
+	return Response::caps('falan');
 
-You may define your macros in one of your `app/start` files. Alternatively, you may organize your macros into a separate file which is included from one of your `start` files.
+Makrolarınızı `app/start` dosyalarınızın birinde tanımlayabilirsiniz. Alternatif olarak, makrolarınızı ayrı bir dosya içerisinde organize edip, bu dosyayı `start` dosyalarınızın birisinden "include" edebilirsiniz.

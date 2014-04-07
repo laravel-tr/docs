@@ -30,11 +30,11 @@ Uygulamanızdaki rotaların çoğu `app/routes.php` dosyasında tanımlanır. En
 		return 'Merhaba Laravel!';
 	});
 
-#### Registering A Route For Multiple Verbs
+#### Bir Rotanın Birden Çok HTTP Fiili İçin Kayda Geçirilmesi
 
 	Route::match(array('GET', 'POST'), '/', function()
 	{
-		return 'Hello World';
+		return 'Merhaba Laravel!';
 	});
 
 #### Tüm HTTP Metodları (GET, POST gibi) İçin Rota Yazımı
@@ -91,7 +91,7 @@ Uygulamanızdaki rotaların çoğu `app/routes.php` dosyasında tanımlanır. En
 	})
 	->where('id', '[0-9]+');
 
-#### Passing An Array Of Wheres
+#### Bir Where'ler Dizisi Geçilmesi
 
 Tabii ki kuralları bir dizi hâlinde tanımlayabilirsiniz:
 
@@ -101,22 +101,22 @@ Tabii ki kuralları bir dizi hâlinde tanımlayabilirsiniz:
 	})
 	->where(array('id' => '[0-9]+', 'isim' => '[a-z]+'))
 
-#### Defining Global Patterns
+#### Global Desenler Tanımlanması
 
-If you would like a route parameter to always be constrained by a given regular expression, you may use the `pattern` method:
+Bir rota parametresinin her zaman için verilen bir düzenli ifadeyle sınırlandırılmasını istiyorsanız, `pattern` metodunu kullanabilirsiniz:
 
 	Route::pattern('id', '[0-9]+');
 
-	Route::get('user/{id}', function($id)
+	Route::get('kullanici/{id}', function($id)
 	{
-		// Only called if {id} is numeric.
+		// Sadece {id} sayısal ise çağrılır.
 	});
 
-#### Accessing A Route Parameter Value
+#### Bir Rota Parametre Değerine Erişmek
 
-If you need to access a route parameter value outside of a route, you may use the `Route::input` method:
+Bir rotanın dışında bir rota parametre değerine erişmeniz gerekirse `Route::input` metodunu kullanabilirsiniz:
 
-	Route::filter('foo', function()
+	Route::filter('falan', function()
 	{
 		if (Route::input('id') == 1)
 		{
@@ -127,7 +127,7 @@ If you need to access a route parameter value outside of a route, you may use th
 <a name="route-filters"></a>
 ## Rota Filtreleri
 
-Rota filtreleri, sitenizin yetkilendirme gereken alanlarına erişimi kısıtlamak için uygun bir yoldur. Laravel'de `auth`, `auth.basic`, `guest`, `csrf` gibi `app/filters.php` dosyasında tanımlı filtreler vardır.
+Rota filtreleri, sitenizin yetkilendirme gereken alanlarına erişimi kısıtlamak için uygun bir yoldur. Laravel frameworkte aralarında bir `auth` filtresi, bir `auth.basic` filtresi, bir `guest`filtresi ve bir `csrf` filtresinden oluşan birkaç filtre dahil edilmiştir. Bunlar `app/filters.php` dosyasında bulunmaktadır.
 
 #### Rota Filtresi Tanımlama
 
@@ -139,36 +139,36 @@ Rota filtreleri, sitenizin yetkilendirme gereken alanlarına erişimi kısıtlam
 		}
 	});
 
-Eğer filtreden bir yanıt (`Redirect::to` gibi) döndürülürse, bu cevap olarak kabul edilecek ve rota çalıştırılmayacaktır, rotada olabilecek `after` filtreleri de iptal edilecektir.
+Eğer filtreden bir yanıt (`Redirect::to` gibi) döndürülürse, bu cevap cevap olarak kabul edilecek ve rota çalıştırılmayacaktır. Rotada olabilecek `after` filtreleri de iptal edilecektir.
 
-#### Rotaya Filtre Ekleme
+#### Bir Rotaya Bir Filtre Bağlanması
 
 	Route::get('kullanici', array('before' => 'yas', function()
 	{
 		return '200 yaş üzerisin!';
 	}));
 
-#### Attaching A Filter To A Controller Action
+#### Bir Controller Eylemine Bir Filtre Bağlanması
 
-	Route::get('user', array('before' => 'old', 'uses' => 'UserController@showProfile'));
+	Route::get('kullanici', array('before' => 'yas', 'uses' => 'UserController@showProfile'));
 
-#### Rotaya Birden Çok Filtre Ekleme
+#### Rotaya Birden Çok Filtre Bağlanması
 
-	Route::get('user', array('before' => 'auth|yas', function()
+	Route::get('kullanici', array('before' => 'auth|yas', function()
 	{
 		return '200 yaşın üzerisin ve giriş yetkin var!';
 	}));
 
-#### Filtre Parametrelerini Belirtme
+#### Birden Çok Filtrenin Dizi Yoluyla Bağlanması
 
-	Route::filter('yas', function($rota, $istek, $deger)
+	Route::get('kullanici', array('before' => array('auth', 'yas'), function()
 	{
-		//
-	});
+		return '200 yaşın üzerisin ve giriş yetkin var!';
+	}));
 
-#### Specifying Filter Parameters
+#### Filtre Parametrelerinin Belirtilmesi
 
-	Route::filter('age', function($route, $request, $value)
+	Route::filter('yas', function($route, $request, $value)
 	{
 		//
 	});
@@ -178,14 +178,14 @@ Eğer filtreden bir yanıt (`Redirect::to` gibi) döndürülürse, bu cevap olar
 		return 'Merhaba Laravel!';
 	}));
 
-After filtreleri filtreye üçüncü parametre olarak geçilen bir `$yanit` parametresi alırlar:
+After filtreleri filtreye üçüncü parametre olarak geçilen bir `$response` parametresi alırlar:
 
-	Route::filter('log', function($rota, $istek, $yanit, $deger)
+	Route::filter('log', function($route, $request, $response, $value)
 	{
 		//
 	});
 
-#### Desenli Filtreler
+#### Desen Temelli Filtreler
 
 URL desenine göre de rotalara filtre ataması yapabilirsiniz.
 
@@ -204,13 +204,13 @@ Filtreleri HTTP metodlarına (GET, POST gibi) göre uygulayabilirsiniz.
 
 #### Filtre Sınıfları
 
-Daha gelişmiş filtreler için closure yerine sınıfları kullanmak isteyebilirsiniz. Filtre sınıfları uygulama [IoC Konteyneri](/docs/ioc)nde çözümlendikleri için, daha fazla test edilebilirlik için bu filtrelerde bağımlılık enjeksiyonu kullanmanız mümkün olabilecektir.
+Daha gelişmiş filtreler için Closure yerine sınıfları kullanmak isteyebilirsiniz. Filtre sınıfları uygulama [IoC Konteyneri](/docs/ioc)nde çözümlendikleri için, daha fazla test edilebilirlik için bu filtrelerde bağımlılık enjeksiyonu kullanmanız mümkün olabilecektir.
 
-#### Sınıf Temelli Filtre Oluşturma
+#### Sınıf Temelli Filtrenin Kayda Geçirilmesi
 
-	Route::filter('foo', 'FalanFiltresi');
+	Route::filter('falan', 'FalanFiltresi');
 
-By default, the `filter` method on the `FalanFiltresi` class will be called:
+Ön tanımlı olarak, `FalanFiltresi` sınıfındaki `filter` metodu çağrılacaktır:
 
 	class FalanFiltresi {
 
@@ -221,7 +221,7 @@ By default, the `filter` method on the `FalanFiltresi` class will be called:
 
 	}
 
-If you do not wish to use the `filter` method, just specify another method:
+Bu `filter` metodunu kullanmak istemiyorsanız, başka bir metod belirtebilirsiniz:
 
 	Route::filter('falan', 'FalanFiltresi');
 
@@ -267,7 +267,7 @@ Bazen bir grup rotaya filtre atamanız gerekebilir. Her birine ayrı filtre atam
 		});
 	});
 
-You may also use the `namespace` parameter within your `group` array to specify all controllers within that group as being in a given namespace:
+Ayrıca, grup içindeki tüm controllerlerin verilen bir aduzayında olacağını belirtmek için `group` array'iniz içerisinde `namespace` parametresini kullanabilirsiniz:
 
 	Route::group(array('namespace' => 'Admin'), function()
 	{
@@ -277,9 +277,9 @@ You may also use the `namespace` parameter within your `group` array to specify 
 <a name="sub-domain-routing"></a>
 ## Alt Alanadı (Subdomain) Rotalaması
 
-Laravel rotaları ile alt-alanadlarını yakalayabilir ve parametre olarak kullanabilirsiniz.
+Laravel rotaları joker alt alanadlarını da işleyebilirler ve joker parmetreleri alanadına geçebilirsiniz.
 
-#### Alt-alanadı Rotası Tanımlama
+#### Alt Alanadı Rotası Tanımlama
 
 	Route::group(array('domain' => '{hesapadi}.uygulamam.com'), function()
 	{
@@ -328,16 +328,16 @@ Daha sonra, `{kullanici}` parametresini içeren bir rota belirleyin:
 
 > **Not:**  Eğer model için veritabanında eşleşme yapılamazsa, 404 hatası fırlatılır.
 
-Eğer eşleşmeme durumunda yapılacak işlemi kendiniz belirlemek istiyorsanız, `model` metoduna 3. argüman olarak bir closure ekleyebilirsiniz:
+Eğer eşleşmeme durumunda yapılacak işlemi kendiniz belirlemek istiyorsanız, `model` metoduna 3. argüman olarak bir Closure ekleyebilirsiniz:
 
 	Route::model('kullanici', 'Kullanici', function()
 	{
 		throw new NotFoundException;
 	});
 
-Modeller yerine kendi tanımlayıcınızı kullanmak isteyebilirsiniz. Bunun için `Route::bind` metodu kullanılır:
+Bazen, rota parametreleri için kendi çüzümleyicinizi kullanmak isteyebilirsiniz. Bunun için `Route::bind` metodu kullanılır:
 
-	Route::bind('kullanici', function($deger, $rota)
+	Route::bind('kullanici', function($deger, $route)
 	{
 		return Kullanici::where('isim', $deger)->first();
 	});
@@ -356,6 +356,6 @@ Rotadan 404 hatasını fırlatmanın iki yolu vardır. İlk olarak, `App::abort`
 <a name="routing-to-controllers"></a>
 ## Denetçilere (Controller) Rotalama
 
-Laravel sadece closure'lara değil, aynı zamanda denetçi sınıflarına rotalamaya da imkan verir ve hatta [kaynak denetçileri](/docs/controllers#resource-controllers) oluşturulması da mümkündür.
+Laravel sadece Closure'lara değil, aynı zamanda denetçi sınıflarına rotalamaya da imkan verir ve hatta [kaynak denetçileri](/docs/controllers#resource-controllers) oluşturulması da mümkündür.
 
 Daha fazla bilgi için [Denetçiler](/docs/controllers) konusunu inceleyin.

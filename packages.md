@@ -4,12 +4,12 @@
 - [Bir Paket Oluşturma](#creating-a-package)
 - [Paket Yapısı](#package-structure)
 - [Hizmet Sağlayıcıları](#service-providers)
-- [Deferred Providers](#deferred-providers)
+- [Ertelenmiş Sağlayıcılar](#deferred-providers)
 - [Paket Gelenekleri](#package-conventions)
 - [Geliştirme İş Akışı](#development-workflow)
-- [Paket Yönlendirme (Routing)](#package-routing)
+- [Paket Rotaları](#package-routing)
 - [Paket Yapılandırması](#package-configuration)
-- [Package Views](#package-views)
+- [Paket View'leri](#package-views)
 - [Paket Migrasyonları](#package-migrations)
 - [Paket Varlıkları](#package-assets)
 - [Paketlerin Yayımlanması](#publishing-packages)
@@ -17,7 +17,7 @@
 <a name="introduction"></a>
 ## Giriş
 
-Paketler Laravel'e işlevsellik eklemenin esas yollarıdır. Paketler tarihlerle çalışmanın harika bir yolu olan [Carbon](https://github.com/briannesbitt/Carbon) gibi bir şey ya da [Behat](https://github.com/Behat/Behat) gibi tam bir BDD test framework'ı olabilir.
+Paketler Laravel'e işlevsellik eklemenin esas yollarıdır. Paketler tarihlerle çalışmanın harika bir yolu olan [Carbon](https://github.com/briannesbitt/Carbon) gibi bir şey ya da [Behat](https://github.com/Behat/Behat) gibi tam bir BDD test framework'ü olabilir.
 
 Farklı paket türleri bulunmaktadır. Bazı paketler kendi başınadır, yani sadece Laravel değil herhangi bir framework ile çalışırlar: Carbon ve Behat her ikisi de bu tür stand-alone paket örnekleridir. Bu paketler sadece `composer.json` dosyasında istek yapılmak suretiyle Laravel'le kullanılabilmektedir.
 
@@ -65,9 +65,9 @@ Bu yapıyı biraz daha açalım. Buradaki `src/Satici/Paket` dizini sizin paketi
 <a name="service-providers"></a>
 ## Hizmet Sağlayıcıları
 
-Hizmet sağlayıcıları paketleriniz için tamamen önceden yükleme (bootstrap) sınıflarıdır. Ön tanımlı olarak bunlar iki metod taşırlar: `boot` ve `register`. Bu metodların içerisinde, istediğiniz her şeyi yapabilirsiniz: bir rota dosyası dahil etmek, IoC konteynerinde bağlayıcı kayda geçirmek, olaylara tutturmak veya istediğiniz daha başka bir şey.
+Hizmet sağlayıcıları paketleriniz için tamamen önceden yükleme (bootstrap) sınıflarıdır. Ön tanımlı olarak bunlar iki metod taşırlar: `boot` ve `register`. Bu metodların içerisinde, istediğiniz her şeyi yapabilirsiniz: bir rota dosyası dahil etmek, IoC konteynerinde bağlayıcı kayda geçirmek, olaylar tutturmak veya istediğiniz daha başka bir şey.
 
-Bunlardan `register` metodu, hizmet sağlayıcı kayıt edilir edilmez çağrılır, `boot` komutu ise sadece bir istek yönlendirilmeden önce çağrılır. Bu nedenle, eğer sizin hizmet sağlayıcınızdaki eylemler, zaten kaydı yapılmış başka bir hizmet sağlayıcısına dayanıyorsa veya başka bir sağlayıcı tarafından bağlanan hizmetleri geçersiz bırakıyorsanız, `boot` metodunu kullanmalısınız.
+Bunlardan `register` metodu, hizmet sağlayıcı kayıt edilir edilmez çağrılır, `boot` komutu ise sadece bir istek rotalandırılmadan önce çağrılır. Bu nedenle, eğer sizin hizmet sağlayıcınızdaki eylemler, zaten kaydı yapılmış başka bir hizmet sağlayıcısına dayanıyorsa veya başka bir sağlayıcı tarafından bağlanan hizmetleri geçersiz bırakıyorsanız, `boot` metodunu kullanmalısınız.
 
 `workbench` kullanarak bir paket oluşturulurken, `boot` komutu zaten bir eylem içerir:
 
@@ -75,40 +75,40 @@ Bunlardan `register` metodu, hizmet sağlayıcı kayıt edilir edilmez çağrıl
 
 Bu metod Laravel'in uygulamanız için görünüm, konfigürasyon ve diğer kaynakları nasıl düzgünce yükleyeceğini bilmesine imkan verir. Genelde, paket kurulumunu workbench gelenekleri kullanarak yapacağı için bu kod satırını değiştirmenin bir gereği yoktur.
 
-By default, after registering a package, its resources will be available using the "package" half of `vendor/package`. However, you may pass a second argument into the `package` method to override this behavior. For example:
+Ön tanımlı olarak, bir paketin kayda geçirilmesinden sonra, onun kaynakları `satici/paket`'in "paket" yarısı kullanılarak erişilebilir olacaktır. Bununla birlikte, bu davranışı geçersiz kılıp değiştirmek için `package` metoduna ikinci bir parametre geçebilirsiniz. Örneğin:
 
-	// Passing custom namespace to package method
-	$this->package('vendor/package', 'custom-namespace');
+	// Package metoduna özel aduzayı geçilmesi
+	$this->package('satici/paket', 'ozel-aduzay');
 
-	// Package resources now accessed via custom-namespace
-	$view = View::make('custom-namespace::foo');
+	// Paket kaynaklarına artık özel aduzayı aracılıyla erişilir
+	$view = View::make('ozel-aduzay::falan');
 
-Servis sağlayıcı sınıfları için "varsayılan yer" mevcut değildir. Bunları istediğiniz yere konumlandırabilirsiniz, belki bunları `app` dizini içinde `Providers` aduzayı ile organize edersiniz. Dosya, Composer'ın [otomatik-yükleme olanakları](http://getcomposer.org/doc/01-basic-usage.md#autoloading) sınıfı yükleyebilmek için dosyanın nerede bulunduğunu bildiği sürece istediğiniz yere konumlandırılabilir.
+Servis sağlayıcı sınıfları için "varsayılan yer" söz konusu değildir. Bunları istediğiniz yere konumlandırabilirsiniz, belki bunları `app` dizini içinde `Providers` aduzayı ile organize edersiniz. Dosya, Composer'ın [otomatik yükleme araçları](http://getcomposer.org/doc/01-basic-usage.md#autoloading) sınıfı yükleyebilmek için dosyanın nerede bulunduğunu bildiği sürece istediğiniz yere konumlandırılabilir.
 
-If you have changed the location of your package's resources, such as configuration files or views, you should pass a third argument to the `package` method which specifies the location of your resources:
+Paketinizin kaynaklarının, örneğin yapılandırma dosyaları veya view'lerin konumunu değiştirirseniz, `package` metoduna kaynaklarınızın konumunu belirten üçüncü bir parametre geçmelisiniz:
 
-	$this->package('vendor/package', null, '/path/to/resources');
+	$this->package('satici/paket', null, '/kaynaklara/dosya/yolu');
 
 <a name="deferred-providers"></a>
-## Deferred Providers
+## Ertelenmiş Sağlayıcılar
 
-If you are writing a service provider that does not register any resources such as configuration or views, you may choose to make your provider "deferred". A deferred service provider is only loaded and registered when one of the services it provides is actually needed by the application IoC container. If none of the provider's services are needed for a given request cycle, the provider is never loaded.
+Eğer yapılandırma dosyaları ve view'ler gibi hiçbir kaynağı kayda geçirmeyen bir hizmet sağlayıcı yazıyorsanız, sağlayıcınızı "ertelenmiş (deferred)" yapmayı seçebilirsiniz. Ertelenmiş bir servis sağlayıcı sadece sağladığı hizmetlerden birisi uygulamanın IoC konteyneri tarafından gerçekten gerektiği zaman yüklenecek ve kayda geçirilecektir. Verilen bir istek döngüsü boyunca bu sağlayıcının servislerinden hiçbirisi gerekli olmazsa, sağlayıcı asla yüklenmeyecektir.
 
-To defer the execution of your service provider, set the `defer` property on the provider to `true`:
+Servis sağlayıcınızın çalışmasını ertelemek için sağlayıcının `defer` özelliğini `true` olarak ayarlayın:
 
 	protected $defer = true;
 
-Next you should override the `provides` method from the base `Illuminate\Support\ServiceProvider` class and return an array of all of the bindings that your provider adds to the IoC container. For example, if your provider registers `package.service` and `package.another-service` in the IoC container, your `provides` method should look like this:
+Ondan sonra da taban `Illuminate\Support\ServiceProvider` sınıfından gelen `provides` metodunu override etmeniz ve sağlayıcınızın IoC konteynerine eklediği bağlamaların tamamından oluşan bir dizi döndürmeniz gerekiyor. Örneğin, eğer sizin sağlayıcınız IoC konteynerine `paket.hizmet` ve `paket.diger-hizmet` kayda geçiriyorsa, sizin `provides` metodu bunun gibi gözükmelidir:
 
 	public function provides()
 	{
-		return array('package.service', 'package.another-service');
+		return array('paket.hizmet', 'paket.diger-hizmet');
 	}
 
 <a name="package-conventions"></a>
 ## Paket Gelenekleri
 
-Bir paketten gelen kaynaklar kullanılırken, örneğin yapılandırma öğeleri veya görünümler için genelde çift iki nokta üst üste söz dizimi kullanılır:
+Bir paketten gelen kaynaklar kullanılırken, örneğin yapılandırma öğeleri veya görünümler için genelde çift iki nokta üst üste sözdizimi kullanılır:
 
 #### Bir Paketteki Bir Görünümü Yükleme
 
@@ -118,7 +118,7 @@ Bir paketten gelen kaynaklar kullanılırken, örneğin yapılandırma öğeleri
 
 	return Config::get('package::grup.secenek');
 
-> **Not:** Eğer paketinizde migrasyonlar varsa, sınıf adının başka paketlerle olası sınıf adı çatışmalarını önlemek amacıyla migrasyon isimlerine paketinizin adını ön ek vermeyi düşünün.
+> **Not:** Eğer paketinizde migrasyonlar varsa, başka paketlerle olası sınıf adı çatışmalarını önlemek amacıyla migrasyon isimlerine paketinizin adını ön ek vermeyi düşünün.
 
 <a name="development-workflow"></a>
 ## Geliştirme İş Akışı
@@ -136,7 +136,7 @@ Eğer paketinizin autoload dosyalarını tekrar üretmeniz gerekirse, `php artis
 	php artisan dump-autoload
 
 <a name="package-routing"></a>
-## Paket Yönlendirme (Routing)
+## Paket Rotaları
 
 Laravel'in önceki sürümlerinde, bir paketin hangi URI'lere cevap vereceğini belirtmek için `handles` cümleciği kullanılırdı. Ancak, Laravel 4'te, bir paket her URI'ye cevap verebilir. Paketiniz için bir rota dosyasını yüklemek için, hizmet sağlayıcınızın `boot` metodu içerisinde onu `include` etmeniz yeterlidir.
 
@@ -154,7 +154,7 @@ Laravel'in önceki sürümlerinde, bir paketin hangi URI'lere cevap vereceğini 
 <a name="package-configuration"></a>
 ## Paket Yapılandırması
 
-Bazı paketler yapılandırma dosyaları gerektirebilir. Bu dosyalar tipik uygulama yapılandırma dosyalarıyla aynı şekilde tanımlanmalıdır. Ve, hizmet sağlayıcınızda kaynakları kayda geçirmede ön tanımlı `$this->package` metodunu kullanıyorken, olağan "çift iki nokta üst üste" söz dizimini kullanarak erişebilirsiniz:
+Bazı paketler yapılandırma dosyaları gerektirebilir. Bu dosyalar tipik uygulama yapılandırma dosyalarıyla aynı şekilde tanımlanmalıdır. Ve, hizmet sağlayıcınızda kaynakları kayda geçirmede ön tanımlı `$this->package` metodunu kullanıyorken, olağan "çift iki nokta üst üste" sözdizimini kullanarak erişebilirsiniz:
 
 #### Paket Yapılandırma Dosyalarına Erişme
 
@@ -170,7 +170,7 @@ Bazen, görünümler gibi paket kaynaklarınızı tipik `$this->package` metodun
 
 #### Bir Kaynak Aduzayının Elle Kayda Geçirilmesi
 
-	View::addNamespace('paket', __DIR__.'/path/to/views');
+	View::addNamespace('paket', __DIR__.'/views/dosya/yolu');
 
 Aduzayı kayda geçirildikten sonra, kaynağa erişmek için aduzayının adını ve "çift iki nokta üst üste" söz dizimini kullanabilirsiniz:
 
@@ -188,16 +188,16 @@ Diğer geliştiriciler sizin paketlerinizi yükledikleri zaman yapılandırma se
 
 Bu komut çalıştırıldığında, sizin uygulamanız için olan konfigürasyon dosyaları `app/config/packages/satici/paket` dizinine kopyalanacak, burada geliştiriciler tarafından güvenle değiştirilebilecektir!
 
-> **Not:**  Geliştiriciler ayrıca onları `app/config/packages/satici/paket/environment`'e koyarak sizin paketiniz için ortama özgü yapılandırma dosyaları da oluşturabilirler.
+> **Not:**  Geliştiriciler ayrıca onları `app/config/packages/satici/paket/environment`'a koyarak sizin paketiniz için ortama özgü yapılandırma dosyaları da oluşturabilirler.
 
 <a name="package-views"></a>
-## Package Views
+## Paket View'leri
 
-If you are using a package in your application, you may occasionally wish to customize the package's views. You can easily export the package views to your own `app/views` directory using the `view:publish` Artisan command:
+Eğer uygulamanızda bir paket kullanıyorsanız, kimi zaman paketin view'lerini özelleştirmek isteyebilirsiniz. Artisan `view:publish` komutunu kullanarak paket view'lerini sizin kendi `app/views` dizininize kolaylıkla ihraç edebilirsiniz:
 
-	php artisan view:publish vendor/package
+	php artisan view:publish satici/paket
 
-This command will move the package's views into the `app/views/packages` directory. If this directory doesn't already exist, it will be created when you run the command. Once the views have been published, you may tweak them to your liking! The exported views will automatically take precendence over the package's own view files.
+Bu komut paketin view'lerini `app/views/packages` dizinine taşıyacaktır. Şayet bu dizin önceden mevcut değilse, komutu çalıştırıldığınız zaman oluşturulacaktır. View'leri bu şekilde yayımladıktan sonra, onlarda kendi zevkinize göre değişiklikler yapabilirsiniz! İhraç edilen view'ler, paketin kendi view dosyalarına göre otomatik olarak öncelik alacaktır.
 
 <a name="package-migrations"></a>
 ## Paket Migrasyonları

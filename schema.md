@@ -26,7 +26,7 @@ Yeni bir veritabanı tablosu oluşturmak için `Schema::create` metodu kullanıl
 		$table->increments('id');
 	});
 
-Bu `create` metoduna geçilen ilk parametre tablonun adıdır ve ikincisi bu yeni tabloyu tanımlamakta kullanılabilecek bir proje (`Blueprint`) nesnesi alacak bir bitirme (`Closure`) fonksiyonudur.
+Bu `create` metoduna geçilen ilk parametre tablonun adıdır ve ikincisi bu yeni tabloyu tanımlamakta kullanılabilecek bir proje (`Blueprint`) nesnesi alacak bir anonim fonksiyondur (`Closure`) .
 
 Mevcut bir veritabanı tablosunun adını değiştirmek için `rename` metodu kullanılabilir:
 
@@ -69,13 +69,13 @@ Komut         | Açıklama
 `$table->double('column', 15, 8);`  |  DOUBLE eşdeğeri sütun
 `$table->enum('tercihler', array('falan', 'filan'));` | ENUM eşdeğeri sütun
 `$table->float('miktar');`  |  FLOAT eşdeğeri sütun
-`$table->increments('id');`  |  Giderek artan ID alanı ekler (esas key).
+`$table->increments('id');`  |  Giderek artan ID alanı ekler (birincil anahtar).
 `$table->integer('puan');`  |  INTEGER eşdeğeri sütun
-`$table->longText('description');`  |  LONGTEXT equivalent to the table
-`$table->mediumText('description');`  |  MEDIUMTEXT equivalent to the table
-`$table->morphs('taggable');`  |  Adds INTEGER `taggable_id` and STRING `taggable_type`
+`$table->longText('description');`  |  LONGTEXT eşdeğeri
+`$table->mediumText('description');`  |  MEDIUMTEXT eşdeğeri
+`$table->morphs('taggable');`  |  INTEGER `taggable_id` ve STRING `taggable_type` alanlarını ekler
 `$table->smallInteger('puan');`  |  SMALLINT eşdeğeri sütun
-`$table->tinyInteger('numbers');`  |  TINYINT equivalent to the table
+`$table->tinyInteger('numbers');`  |  TINYINT eşdeğeri
 `$table->softDeletes();`  |  Belirsiz silmeler için **deleted\_at** sütunu ekler
 `$table->string('email');`  |  VARCHAR eşdeğeri sütun
 `$table->string('isim', 100);`  |  belli uzunlukta VARCHAR eşdeğeri sütun
@@ -156,7 +156,7 @@ Ya da, ayrı satırlarda indeks ekleme yolunu seçebilirsiniz. Aşağıda, kulla
 
 Komut         | Açıklama
 ------------- | -------------
-`$table->primary('id');`  |  Bir esas key eklenmesi
+`$table->primary('id');`  |  Bir birincil anahtar eklenmesi
 `$table->primary(array('ilk', 'son'));`  |  Bileşik keylerin eklenmesi
 `$table->unique('email');`  |  Benzersiz bir indeks eklenmesi
 `$table->index('il');`  |  Basit bir indeks eklenmesi
@@ -166,7 +166,7 @@ Komut         | Açıklama
 
 Laravel, tablolarınıza yabancı key sınırlaması eklemeniz için de destek verir:
 
-#### Bir Tabloya Bir Yabcancı Key Eklenmesi
+#### Bir Tabloya Bir Yabancı Key Eklenmesi
 
 	$table->foreign('uye_id')->references('id')->on('uyeler');
 

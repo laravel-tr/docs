@@ -5,9 +5,9 @@
 - [Test Ortamı](#test-environment)
 - [Testlerin İçerisinden Rotaları Çağırmak](#calling-routes-from-tests)
 - [Facade'ları Taklit Etmek](#mocking-facades)
-- [Çatı "Assert" Metodları](#framework-assertions)
+- [Çatının "Assert" Metodları](#framework-assertions)
 - [Yardımcı Metodlar](#helper-methods)
-- [Refreshing The Application](#refreshing-the-application)
+- [Application'ın Tazelenmesi](#refreshing-the-application)
 
 <a name="introduction"></a>
 ## Giriş
@@ -68,11 +68,11 @@ Ayrıca bir test dosyasından denetçileri de çağırabilirsiniz:
 
 	$view = $response->original;
 
-	$this->assertEquals('John', $view['name']);
+	$this->assertEquals('Tuana Şeyma', $view['name']);
 
 Bir HTTPS rotayı çağırmak için, `callSecure` metodunu kullanabilirsiniz.
 
-	$response = $this->callSecure('GET', 'foo/bar');
+	$response = $this->callSecure('GET', 'falan/filan');
 
 > **Not:** Testing ortamında olduğunuzda rota filtreleri devre dışı bırakılır. Bunları etkinleştirmek için testinize `Route::enableFilters()` ekleyin.
 
@@ -95,26 +95,26 @@ Test yaparken, sabit Laravel facadelarını taklit etmeniz gerekecektir. Örneğ
 
 	public function getIndex()
 	{
-		Event::fire('foo', array('name' => 'Dayle'));
+		Event::fire('falan', array('name' => 'Sergin Arı'));
 
-		return 'All done!';
+		return 'Herşey yolunda!';
 	}
 
-`Event` sınıfına yapılan çağrıyı taklit edebilmek için Facade üzerinde `shouldReceive` metodunu kullanabilirsiniz, bu metod bir [Mockery](https://github.com/padraic/mockery) örneği döndürecek.
+`Event` sınıfına yapılan çağrıyı taklit edebilmek için Facade üzerinde `shouldReceive` metodunu kullanabilirsiniz, bu metod bir [Mockery](https://github.com/padraic/mockery) olgusu döndürecek.
 
 #### Bir Facade'ı Taklit Etmek
 
 	public function testGetIndex()
 	{
-		Event::shouldReceive('fire')->once()->with(array('name' => 'Dayle'));
+		Event::shouldReceive('fire')->once()->with(array('name' => 'Sergin Arı'));
 
 		$this->call('GET', '/');
 	}
 
-> **Note:** `Request` metodunu taklit etmemelisiniz. Bunun yerine, testlerinizi çalıştırırken istediğiniz girdileri `call` metodunda belirtin.
+> **Not:** `Request` metodunu taklit etmemelisiniz. Bunun yerine, testlerinizi çalıştırırken istediğiniz girdileri `call` metodunda belirtin.
 
 <a name="framework-assertions"></a>
-## Çatı `Assert` Metodları
+## Çatının `Assert` Metodları
 
 Laravel test yapımını kolaylaştırmak için halihazırda bazı `assert` metodlarıyla gelir:
 
@@ -133,7 +133,7 @@ Laravel test yapımını kolaylaştırmak için halihazırda bazı `assert` meto
 
 #### Yanıtın Bir Yönlendirme Olduğunu Ispatlamak
 
-	$this->assertRedirectedTo('foo');
+	$this->assertRedirectedTo('falan');
 
 	$this->assertRedirectedToRoute('route.name');
 
@@ -175,7 +175,7 @@ Test yapımını kolaylaştırmak için `TestCase` sınıfı bazı yardımcı me
 
 #### Test İçerisinden Oturum Tanımlamak ve Silmek
 
-	$this->session(['foo' => 'bar']);
+	$this->session(['falan' => 'filan']);
 
 	$this->flushSession();
 
@@ -183,7 +183,7 @@ Test yapımını kolaylaştırmak için `TestCase` sınıfı bazı yardımcı me
 
 Mevcut oturum açmış kullanıcıyı `be` metodu ile belirleyebilirsiniz.
 
-	$user = new User(array('name' => 'John'));
+	$user = new User(array('name' => 'Tuana Şeyma'));
 
 	$this->be($user);
 
@@ -198,6 +198,6 @@ Bir test içerisinden `seed` metoduyla veritabanınıza yeniden veri ekebilirsin
 Veri Ekmeyle ilgili daha fazla bilgiyi dökümantasyonun [migrasyon ve veri ekme](/docs/migrations#database-seeding) bölümünde bulabilirsiniz.
 
 <a name="refreshing-the-application"></a>
-## Refreshing The Application
+## Application'ın Tazelenmesi
 
-As you may already know, you can access your Laravel `Application` / IoC Container via `$this->app` from any test method. This Application instance is refreshed for each test class. If you wish to manually force the Application to be refreshed for a given method, you may use the `refreshApplication` method from your test method. This will reset any extra bindings, such as mocks, that have been placed in the IoC container since the test case started running.
+Belki de zaten bildiğiniz gibi, Laravel `Application` / IoC Konteynerinize herhangi bir test metodundan `$this->app` aracılığıyla erişebilirsiniz. Bu Application olgusu her test sınıfı için tazelenir. Şayet siz Application'ı verilen bir metod için elle tazelenmeye zorlamak istiyorsanız, test metodunuzdan `refreshApplication` metodunu kullanabilirsiniz. Bu, test durumu çalıştırılmaya başlandıktan itibaren IoC konteynerine konmuş olan herhangi bir ekstra bağlamayı, örneğin mocks (taklit)'ları resetleyecektir.

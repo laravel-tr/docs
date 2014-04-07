@@ -10,36 +10,36 @@
 <a name="installation"></a>
 ## Kurulum
 
-### Via Laravel Installer
+### Laravel Installer Aracılığıyla
 
-First, download the [Laravel installer PHAR archive](http://laravel.com/laravel.phar). For convenience, rename the file to `laravel` and move it to `/usr/local/bin`. Once installed, the simple `laravel new` command will create a fresh Laravel installation in the directory you specify. For instance, `laravel new blog` would create a directory named `blog` containing a fresh Laravel installation with all dependencies installed. This method of installation is much faster than installing via Composer.
+İlk olarak, [Laravel installer PHAR arşivini indirin](http://laravel.com/laravel.phar). Kolaylık açısından ismini `laravel` olarak değiştirin ve `/usr/local/bin` yoluna taşıyın. Bir kere kurduktan sonra, `laravel new` komutu, istediğiniz klasöre yeni bir laravel kurulumunu yapacaktır. Örneğin, `laravel new blog` komutu, içinde tüm bağımlılıkları yüklenmiş yeni bir laravel kurulumu barındıran `blog` klasörünü oluşturacaktır. Bu yolla kurulum yapmak Composer ile yapmaktan çok daha hızlıdır.
 
-### Via Composer
+### Composer Aracılığıyla
 
-The Laravel framework utilizes [Composer](http://getcomposer.org) for installation and dependency management. If you haven't already, start by [installing Composer](http://getcomposer.org/doc/00-intro.md).
+Laravel framework kurulumu ve bağımlılık yönetimi için [Composer](http://getcomposer.org) kullanır. Şayet sizde yoksa [Composer yüklemesi](http://getcomposer.org/doc/00-intro.md) ile başlayın.
 
-Now you can install Laravel by issuing the following command from your terminal:
+Artık terminalinizden aşağıdaki komutu vermek suretiyle Laravel yükleyebilirsiniz:
 
-	composer create-project laravel/laravel your-project-name --prefer-dist
+	composer create-project laravel/laravel sizin-projenizin-ismi --prefer-dist
 
-This command will download and install a fresh copy of Laravel in a new `your-project-name` folder within your current directory.
+Bu komut sizin geçerli dizininiz içerisindeki yeni bir `sizin-projenizin-ismi` klasörüne Laravel'in yepyeni bir kopyasını indirecek ve yükleyecektir.
 
-If you prefer, you can alternatively download a copy of the [Laravel repository from Github](https://github.com/laravel/laravel/archive/master.zip) manually. Next run the `composer install` command in the root of your manually created project directory. This command will download and install the framework's dependencies.
+Eğer isterseniz, alternatif olarak [Github'daki Laravel ambarının](https://github.com/laravel/laravel/archive/master.zip) bir kopyasını elle indirebilirsiniz. Sonra da elle oluşturduğunuz proje dizininizin kökünde `composer install` komutunu çalıştırın. Bu komut, frameworkün bağımlılıklarını indirecek ve yükleyecektir.
 
-### Permissions
+### İzinler
 
-After installing Laravel, you may need to grant the web server write permissions to the `app/storage` directories. See the [Installation](/docs/installation) documentation for more details on configuration.
+Laravel yüklenmesinden sonra, `app/storage` dizinlerine web sunucu yazma izinleri hakları tanımanız gerekebilir. Yapılandırma konusunda daha fazla ayrıntılar için [Kurulum](/docs/installation) dokümantasyonuna bakınız.
 
-### Serving Laravel
+### Laravel'in Hizmete Sokulması
 
-Typically, you may use a web server such as Apache or Nginx to serve your Laravel applications. If you are on PHP 5.4+ and would like to use PHP's built-in development server, you may use the `serve` Artisan command:
+Tipik olarak, Laravel uygulamalarınızı sunmak için Apache veya Nginx gibi bir web sunucusu kullanabilirsiniz. Eğer sizde PHP 5.4+ var ve PHP'nin yerleşik geliştirme sunucusunu kullanmak isterseniz, `serve` Artisan komutunu kullanabilirsiniz:
 
 	php artisan serve
 
 <a name="directories"></a>
-### Directory Structure
+### Dizin Yapısı
 
-After installing the framework, take a glance around the project to familiarize yourself with the directory structure. The `app` directory contains folders such as `views`, `controllers`, and `models`. Most of your application's code will reside somewhere in this directory. You may also wish to explore the `app/config` directory and the configuration options that are available to you.
+Frameworkün yüklenmesinden sonra, dizin yapısıyla aşina olmak için projenize bir göz atın. Projenizdeki `app` dizini `views`, `controllers` ve `models` gibi klasörler içerir. Uygulamanızın kodlarının çoğu bu dizin içindeki bir yerlerde ikamet eder. Ayrıca, `app/config` dizinini de inceleyip sizin için sunulmuş yapılandırma seçeneklerini keşfetmek isteyebilirsiniz.
 
 <a name="routing"></a>
 ## Rotalandırma (Routing)
@@ -80,7 +80,7 @@ Bu Route Laravel'e şunu belirtiyor: `/kullanicilar`  rotasına yapılan bir ist
 		Kullanıcılar!
 	@stop
 
-Bu syntax size ilk etapta biraz yabancı gelebilir. Bunun sebebi Laravel'in güçlü templating sisteminin (Blade) kullanılmasıdır. Blade son derece hızlı çalışır çünkü sadece birkaç tane regex kodları kullanıp Blade syntaxını PHP scriptlerine dönüştürür. Blade kullanıcılarına çok büyük fonksiyonellik sağlar. Şablon kalıtımı (Template inheritance) ve PHP'nin `if` ve `for` gibi temel kontrol yapılarını Blade üzerinden kullanabilirsiniz. Daha fazla bilgi için [Blade Dökümantasyonu'na](/docs/templates) bakınız.
+Bu sözdizimi size ilk etapta biraz yabancı gelebilir. Bunun sebebi Laravel'in güçlü şablonlama sisteminin (Blade) kullanılmasıdır. Blade son derece hızlı çalışır çünkü sadece birkaç tane regex kodları kullanıp Blade sözdizimini PHP skriptlerine dönüştürür. Blade kullanıcılarına çok büyük fonksiyonellik sağlar. Şablon kalıtımı (Template inheritance) ve PHP'nin `if` ve `for` gibi temel kontrol yapılarını Blade üzerinden kullanabilirsiniz. Daha fazla bilgi için [Blade Dökümantasyonu'na](/docs/templates) bakınız.
 
 Şimdi gerekli view dosyalarımızı oluşturduğumuza göre, oluşturduğumuz viewi `/kullanicilar` isteğine bir cevap olarak döndürelim. `Kullanıcılar!` stringini döndürmek yerine, bu kez oluşturduğumuz view dosyalarını döndüreceğiz:
 
@@ -94,15 +94,15 @@ Harika! Bir layoutu genişleten bir view oluşturdunuz. Bir sonraki bölümümü
 <a name="creating-a-migration"></a>
 ## Bir Migrasyon Oluşturma
 
-Bir veritabanı tablosu oluşturmak için Laravel'in (migrasyon) migration özelliğini kullanacağız. Migrationlar çok kolay bir şekilde veritabanında değişiklikler yapmayı ve bunları takım arkadaşlarınızla paylaşmanızı sağlar.
+Bir veritabanı tablosu oluşturmak için Laravel'in migrasyon (migration) özelliğini kullanacağız. Migrationlar çok kolay bir şekilde veritabanında değişiklikler yapmayı ve bunları takım arkadaşlarınızla paylaşmanızı sağlar.
 
-Öncelikle bir veritabanı konfigürasyonu ayarlayalım. Tüm veritabanı konfigürasyonlarınızı  `app/config/database.php` dosyası içerisinde değiştirebilirsiniz. Laravel öntanımlı olarak MySQL kullanmaya ayarlanmıştır, veritabanı konfigürasyonlarınızı  `app/config/database.php` dosyası içerisine tanımlamanız gerekecektir. Dilerseniz `driver` değerini `sqlite` yapıp `app/database` dizininde bulunan SQLite veritabanını kullanabilirsiniz.
+Öncelikle bir veritabanı konfigürasyonu ayarlayalım. Tüm veritabanı konfigürasyonlarınızı `app/config/database.php` dosyası içerisinde değiştirebilirsiniz. Laravel öntanımlı olarak MySQL kullanmaya ayarlanmıştır, veritabanı konfigürasyonlarınızı  `app/config/database.php` dosyası içerisinde tanımlamanız gerekecektir. Dilerseniz `driver` değerini `sqlite` yapıp `app/database` dizininde bulunan SQLite veritabanını kullanabilirsiniz.
 
 Sonra, bir migration oluşturmak için [Artisan CLI](/docs/artisan) kullanacağız. Projenizin ana dizinine gelerek, aşağıdaki kodu terminal üzerinde yazın:
 
 	php artisan migrate:make create_users_table
 
-Şimdi, oluşturulan migration dosyasını `app/database/migrations` dizininde bulun. Bu dosya 2 methoddan oluşmaktadır: `up` ve `down`. `up` methodunda, tablonuzdaki değişiklikleri yapmalısınız. `down` methodunda ise yaptığınız değişiklikleri geri almalısınız.
+Şimdi, oluşturulan migration dosyasını `app/database/migrations` dizininde bulun. Bu dosya 2 metoddan oluşmaktadır: `up` ve `down`. `up` metodunda, tablonuzdaki değişiklikleri yapmalısınız. `down` metodunda ise yaptığınız değişiklikleri geri almalısınız.
 
 Şuna benzeyen bir migration oluşturalım:
 
@@ -126,7 +126,7 @@ Sonra, bir migration oluşturmak için [Artisan CLI](/docs/artisan) kullanacağ�
 
 	php artisan migrate
 
-Eğer bir migrationu geri almak isterseniz `migrate:rollback` komutunu çalıştırmanız yeterli olacaktır. Şimdi bir veritabanı tablosu oluşturduğumza göre, tablomuzdan veri çekmeyi öğrenerek devam edelim!
+Eğer bir migrationu geri almak isterseniz `migrate:rollback` komutunu çalıştırmanız yeterli olacaktır. Şimdi bir veritabanı tablosu oluşturduğumuza göre, tablomuzdan veri çekmeyi öğrenerek devam edelim!
 
 <a name="eloquent-orm"></a>
 ## Eloquent ORM
@@ -137,27 +137,27 @@ Laravel mükemmel bir ORM aracıyla beraber gelmektedir: Eloquent. Eğer daha ö
 
 	class User extends Eloquent {}
 
-Lütfen dikkat edin, herhangi bir veritabanı tablosu belirtmedik. Eloquent'in içerisinde birçok hüküm vardır, bunlardan birisi model adının çoğul yapısını veritabanı tablosu olarak kullandırmaktır. Kullanışlı, değil mi?
+Lütfen dikkat edin, herhangi bir veritabanı tablosu belirtmedik. Eloquent'in içerisinde çeşitli gelenekler vardır, bunlardan birisi modelin veritabanı tablosu olarak model adının çoğul halini kullanmaktır. Kullanışlı, değil mi?
 
 Tercih ettiğiniz veritabanı yönetim aracını kullanarak, `users` tablosuna birkaç satır ekleyin. Ondan sonra Eloquent'i kullanarak o tablodan bazı verileri çekip view dosyamıza göndereceğiz.
 
-Şimdi `/users` routemizi editleyelim, ve şuna benzer bir hale getirelim:
+Şimdi `/kullanicilar` rotamızda değişiklik yapalım ve şuna benzer bir hale getirelim:
 
-	Route::get('users', function()
+	Route::get('kullanicilar', function()
 	{
 		$users = User::all(); //Users tablosundaki tüm verileri $users değişkenine atar
 
-		return View::make('users')->with('users', $users);
+		return View::make('kullanicilar')->with('users', $users);
 	});
 
-Şimdi bu scripti biraz inceleyelim. Öncelikle, `User` modelindeki `all` methodu `users` tablosundaki tüm verileri çekecektir. Daha sonra bu veriler `with` methodu kullanılarak view dosyasına gönderilir. `with` methodu bir anahtar ve bir değer almaktadır, böylece gönderilen veriyi view dosyası tanıyabilir.
+Şimdi bu scripti biraz inceleyelim. Öncelikle, `User` modelindeki `all` metodu `users` tablosundaki tüm verileri çekecektir. Daha sonra bu veriler `with` metodu kullanılarak view dosyasına gönderilir. `with` metodu bir anahtar ve bir değer almaktadır, böylece gönderilen veriyi view dosyası tanıyabilir.
 
 Harika. Artık kullanıcıları view dosyamızda göstermeye hazırız!
 
 <a name="displaying-data"></a>
 ## Veri Gösterme
 
-Artık `users` objesini view dosyamıza yönlendirdiğimiz için ekrana bastırabiliriz:
+Şimdi view'imizde `users` değişkenini kullanılabilir yaptığımıza göre, onu şuna benzer bir şekilde gösterebiliriz:
 
 	@extends('layout')
 
@@ -167,6 +167,6 @@ Artık `users` objesini view dosyamıza yönlendirdiğimiz için ekrana bastıra
 		@endforeach
 	@stop
 
-`echo` ifadesinin nerede olduğunu merak ediyor olabilirsiniz. Blade kullanırken, küme parantezi arasına yazılan değişkenler aynı `echo` ifadesindeki gibi ekrana bastırılır. Şimdi `/users` adresine girip veritabanınızda kayıtlı olan tüm kullanıcıların listesinin ekrana bastırıldığını görebilirsiniz.
+`echo` ifadesinin nerede olduğunu merak ediyor olabilirsiniz. Blade kullanırken, küme parantezi arasına yazılan değişkenler aynı `echo` ifadesindeki gibi ekrana bastırılır. Şimdi `/kullanicilar` adresine girip veritabanınızda kayıtlı olan tüm kullanıcıların listesinin ekrana bastırıldığını görebilirsiniz.
 
-Bu sadece bir başlangıç. Bu derste Laravel'in en temel konularını gördünüz, ancak daha göreceğiniz birçok heyecan verici özellikler var! Dökümantasyonu okumaya devam edin ve Laravel içerisinde gelen birçok farklı özellik hakkında daha fazla bilgiye sahip olun. Örneğin [Eloquent](/docs/eloquent) ve [Blade](/docs/templates). Belkide sizin ilginizi [Queues](/docs/queues) ve [Unit Testing](/docs/testing) çekiyordur?. Yada [IoC Container](/docs/ioc) kullanarak uygulamanızın mimarisini güçlendirmek istiyorsunuzdur? Seçim sizin!
+Bu sadece bir başlangıç. Bu derste Laravel'in en temel konularını gördünüz, ancak daha göreceğiniz birçok heyecan verici özellikler var! Dökümantasyonu okumaya devam edin ve Laravel içerisinde gelen birçok farklı özellik hakkında daha fazla bilgiye sahip olun. Örneğin [Eloquent](/docs/eloquent) ve [Blade](/docs/templates). Belkide sizin ilginizi [Queues](/docs/queues) ve [Unit Testing](/docs/testing) çekiyordur?. Ya da [IoC Container](/docs/ioc) kullanarak uygulamanızın mimarisini güçlendirmek istiyorsunuzdur? Seçim sizin!

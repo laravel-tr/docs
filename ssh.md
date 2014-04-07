@@ -1,56 +1,56 @@
 # SSH
 
-- [Configuration](#configuration)
-- [Basic Usage](#basic-usage)
-- [Tasks](#tasks)
-- [SFTP Downloads](#sftp-downloads)
-- [SFTP Uploads](#sftp-uploads)
-- [Tailing Remote Logs](#tailing-remote-logs)
-- [Envoy Task Runner](#envoy-task-runner)
+- [Yapýlandýrma](#configuration)
+- [Temel Kullaným](#basic-usage)
+- [Görevler](#tasks)
+- [SFTP Dosya Ýndirmeleri](#sftp-downloads)
+- [SFTP Dosya Göndermeleri](#sftp-uploads)
+- [Uzak Günlüklerin Ýzlenmesi](#tailing-remote-logs)
+- [Envoy Görev Çalýþtýrýcýsý](#envoy-task-runner)
 
 <a name="configuration"></a>
-## Configuration
+## Yapýlandýrma
 
-Laravel includes a simple way to SSH into remote servers and run commands, allowing you to easily build Artisan tasks that work on remote servers. The `SSH` facade provides the access point to connecting to your remote servers and running commands.
+Laravel uzak sunuculara SSH (Secure Shell) iletiþimi ve komutlar çalýþtýrmak için basit bir yol içerir ve uzak sunucularda çalýþan Artisan görevlerini kolayca inþa etmenize imkan verir. `SSH` facade'ý uzak sunucularýnýza baðlanmanýz ve komutlar çalýþtýrmanýz için eriþim noktasý saðlar.
 
-The configuration file is located at `app/config/remote.php`, and contains all of the options you need to configure your remote connections. The `connections` array contains a list of your servers keyed by name. Simply populate the credentials in the `connections` array and you will be ready to start running remote tasks. Note that the `SSH` can authenticate using either a password or an SSH key.
+Yapýlandýrma dosyasý `app/config/remote.php` konumundadýr ve uzak baðlantýlarýnýzý yapýlandýrmak için gerekli tüm seçenekleri içerir. Bu dosyadaki `connections` dizisi, sürücülerinizin isimlerine göre anahtarlanmýþ bir listesini taþýr. Bu `connections` dizisindeki host, username, password, key gibi eriþim güven bilgilerini (credentials) doldurduktan sonra uzak görevleri çalýþtýrmaya hazýr olacaksýnýz. Unutmayýn, `SSH`, ya bir password ya da bir SSH key kullanarak kimlik doðrulamasý yapabilmektedir.
 
-> **Note:** Need to easily run a variety of tasks on your remote server? Check out the [Envoy task runner](#envoy-task-runner)!
+> **Not:** Uzak sunucunuzda çeþitli görevleri kolayca çalýþtýrma ihtiyacýnýz mý var? [Envoy görev çalýþtýrýcýsýna](#envoy-task-runner) bir bakýn!
 
 <a name="basic-usage"></a>
-## Basic Usage
+## Temel Kullaným
 
-#### Running Commands On The Default Server
+#### Komutlarý Default Sunucuda Çalýþtýrmak
 
-To run commands on your `default` remote connection, use the `SSH::run` method:
+Komutlarýnýzý `default` uzak baðlantýnýzda çalýþtýrmak için `SSH::run` metodunu kullanýn:
 
 	SSH::run(array(
 		'cd /var/www',
 		'git pull origin master',
 	));
 
-#### Running Commands On A Specific Connection
+#### Komutlarý Belirli Bir Baðlantýda Çalýþtýrmak
 
-Alternatively, you may run commands on a specific connection using the `into` method:
+Alternatif olarak, `into` metodunu kullanmak suretiyle komutlarý belirli bir baðlantý üzerinde çalýþtýrabilirsiniz:
 
 	SSH::into('staging')->run(array(
 		'cd /var/www',
 		'git pull origin master',
 	));
 
-#### Catching Output From Commands
+#### Komut Çýktýlarýný Yakalamak
 
-You may catch the "live" output of your remote commands by passing a Closure into the `run` method:
+`run` metoduna bir Closure geçmek suretiyle, uzak komutlarýnýzýn "canlý" çýktýsýný yakalayabilirsiniz:
 
 	SSH::run($commands, function($line)
 	{
 		echo $line.PHP_EOL;
 	});
 
-## Tasks
+## Görevler
 <a name="tasks"></a>
 
-If you need to define a group of commands that should always be run together, you may use the `define` method to define a `task`:
+Eðer her zaman birlikte çalýþmasý gereken bir grup komut tanýmlamanýz gerekiyorsa, bir `task` (görev) tanýmlamak için `define` metodunu kullanabilirsiniz:
 
 	SSH::into('staging')->define('deploy', array(
 		'cd /var/www',
@@ -58,7 +58,7 @@ If you need to define a group of commands that should always be run together, yo
 		'php artisan migrate',
 	));
 
-Once the task has been defined, you may use the `task` method to run it:
+Bu þekilde bir task tanýmladýktan sonra, onu çalýþtýrmak için `task` metodunu kullanabilirsiniz:
 
 	SSH::into('staging')->task('deploy', function($line)
 	{
@@ -66,74 +66,78 @@ Once the task has been defined, you may use the `task` method to run it:
 	});
 
 <a name="sftp-downloads"></a>
-## SFTP Downloads
+## SFTP Dosya Ýndirmeleri
 
-The `SSH` class includes a simple way to download files using the `get` and `getString` methods:
+`SSH` sýnýfý `get` ve `getString` metodlarý kullanýlarak, dosyalar indirmek için basit bir yol saðlar:
 
 	SSH::into('staging')->get($remotePath, $localPath);
 
 	$contents = SSH::into('staging')->getString($remotePath);
 
 <a name="sftp-uploads"></a>
-## SFTP Uploads
+## SFTP Dosya Göndermeleri
 
-The `SSH` class also includes a simple way to upload files, or even strings, to the server using the `put` and `putString` methods:
+`SSH` sýnýfý ayný zamanda `put` ve `putString` metodlarý kullanýlarak sunucuya dosyalar, hatta stringler upload etmek için de basit bir yol içerir:
 
 	SSH::into('staging')->put($localFile, $remotePath);
 
-	SSH::into('staging')->putString($remotePath, 'Foo');
+	SSH::into('staging')->putString($remotePath, 'Falan');
 
 <a name="tailing-remote-logs"></a>
-## Tailing Remote Logs
+## Uzak Günlüklerin Ýzlenmesi
 
-Laravel includes a helpful command for tailing the `laravel.log` files on any of your remote connections. Simply use the `tail` Artisan command and specify the name of the remote connection you would like to tail:
+Laravel sizin uzak baðlantýlarýnýzýn herhangi birindeki `laravel.log` dosyalarýnýn izlenmesi için yararlý bir komut içermektedir. Bunun için basitçe `tail` Artisan komutunu kullanýn ve izlemek istediðiniz uzak baðlantýnýn adýný belirtin:
 
 	php artisan tail staging
 
 	php artisan tail staging --path=/path/to/log.file
 
 <a name="envoy-task-runner"></a>
-## Envoy Task Runner
+## Envoy Görev Çalýþtýrýcýsý
 
-- [Installation](#envoy-installation)
-- [Running Tasks](#envoy-running-tasks)
-- [Multiple Servers](#envoy-multiple-servers)
-- [Parallel Execution](#envoy-parallel-execution)
-- [Task Macros](#envoy-task-macros)
-- [Notifications](#envoy-notifications)
-- [Updating Envoy](#envoy-updating-envoy)
+- [Yükleme](#envoy-installation)
+- [Görevlerin Çalýþtýrýlmasý](#envoy-running-tasks)
+- [Birden Çok Sunucu](#envoy-multiple-servers)
+- [Paralel Çalýþtýrma](#envoy-parallel-execution)
+- [Task Makrolarý](#envoy-task-macros)
+- [Bildirimler](#envoy-notifications)
+- [Envoy'in Güncellenmesi](#envoy-updating-envoy)
 
-Laravel Envoy provides a clean, minimal syntax for defining common tasks you run on your remote servers. Using a [Blade](/docs/templates#blade-templating) style syntax, you can easily setup tasks for deployment, Artisan commands, and more.
+Laravel Envoy, uzak sunucularýnýzda ortak görevler tanýmlanmasý için temiz, minimal bir sözdizimi saðlar. [Blade](/docs/templates#blade-templating) tarzý bir sözdizimi kullanarak yayýmlama, Artisan komutlarý ve baþka þeyler için kolayca görevler inþa edebilirsiniz.
 
-> **Note:** Envoy requires PHP version 5.4 or greater, and only runs on Mac / Linux operating systems.
+> **Not:** Envoy, PHP versiyon 5.4 veya daha üstünü gerektirir ve sadece Mac / Linux iþletim sistemlerinde çalýþýr.
 
 <a name="envoy-installation"></a>
-### Installation
+### Yükleme
 
-First, download the Envoy [Phar archive](https://github.com/laravel/envoy/raw/master/envoy.phar) and place it in `/usr/local/bin` as `envoy` for easy access. Before running tasks, you may need to grant execute permissions to the `envoy` file.
+Ýlk olarak Envoy [Phar arþivini](https://github.com/laravel/envoy/raw/master/envoy.phar) indirin ve eriþim kolaylýðý için onu `envoy` olarak `/usr/local/bin` konumuna koyun. Görevleri çalýþtýrabilmeniz için, bu `envoy` dosyasýna çalýþtýrma izinleri vermeniz gerekebilir.
 
-Next, create an `Envoy.blade.php` file in the root of your project. Here's an example to get you started:
+Sonra da, projenizin kökünde bir `Envoy.blade.php` dosyasý oluþturun. Ýþte baþlayabileceðiniz bir örnek:
 
 	@servers(['web' => '192.168.1.1'])
 
-	@task('foo', ['on' => 'web'])
+	@task('falan', ['on' => 'web'])
 		ls -la
 	@endtask
 
-As you can see, an array of `@servers` is defined at the top of the file. You can reference these servers in the `on` option of your task declarations. Within your `@task` declarations you should place the Bash code that will be run on your server when the task is executed.
+Görebileceðiniz gibi, dosyanýn en üstünde bir `@servers` dizisi tanýmlanýr. Bu sunucularý, task (görev) deklarasyonlarýnýzýn `on` seçeneðinde refere edebilirsiniz. Bu `@task` deklarasyonlarýnýzýn içerisine, task çalýþtýrýldýðý zaman sunucunuzda çalýþtýrýlacak olan Bash kodunu koyacaksýnýz.
+
+Bir iskelet Envoy dosyasýný kolayca oluþturmak için `init` komutu kullanýlabilir:
+
+	envoy init user@192.168.1.1
 
 <a name="envoy-running-tasks"></a>
-### Running Tasks
+### Görevlerin Çalýþtýrýlmasý
 
-To run a task, use the `run` command of your Envoy installation:
+Bir görevi çalýþtýrmak için Envoy yüklemenizin `run` komutunu kullanýn:
 
-	envoy run foo
+	envoy run falan
 
-If needed, you may pass variables into the Envoy file using command line switches:
+Eðer gerekliyse, komut satýrý seçeneklerini kullanarak Envoy dosyasýna deðiþkenler geçebilirsiniz:
 
 	envoy run deploy --branch=master
 
-You may use the options via the Blade syntax you are used to:
+Bu seçenekleri, kullandýðýnýz Blade sözdizimi aracýlýðýyla kullanabilirsiniz:
 
 	@servers(['web' => '192.168.1.1'])
 
@@ -143,10 +147,24 @@ You may use the options via the Blade syntax you are used to:
 		php artisan migrate
 	@endtask
 
-<a name="envoy-multiple-servers"></a>
-### Multiple Servers
+#### Bootstrapping
 
-You may easily run a task across multiple servers. Simply list the servers in the task declaration:
+Envoy dosyasýnýn içinde deðiþkenler deklare etmek ve genel PHP iþi yapmak için ```@setup``` direktifini kullanabilirsiniz:
+
+	@setup
+		$now = new DateTime();
+
+		$environment = isset($env) ? $env : "testing";
+	@endsetup
+
+Ayrýca bir PHP dosyasý include etmek için ```@include``` kullanabilirsiniz:
+
+	@include('vendor/autoload.php');
+
+<a name="envoy-multiple-servers"></a>
+### Birden Çok Sunucu
+
+Bir görevi birden çok sunucuda kolaylýkla çalýþtýrabilirsiniz. Sadece task deklarasyonunda sunucularý listeleyin:
 
 	@servers(['web-1' => '192.168.1.1', 'web-2' => '192.168.1.2'])
 
@@ -156,12 +174,12 @@ You may easily run a task across multiple servers. Simply list the servers in th
 		php artisan migrate
 	@endtask
 
-By default, the task will be executed on each server serially. Meaning, the task will finish running on the first server before proceeding to execute on the next server.
+Ön tanýmlý olarak, ilgili görev her bir sunucuda seri olarak çalýþtýrýlacaktýr. Yani, görev bir sonraki sunucuda çalýþmaya baþlamadan önce, önceki çalýþmasýný tamamlayacaktýr.
 
 <a name="envoy-parallel-execution"></a>
-### Parallel Execution
+### Paralel Çalýþtýrma
 
-If you would like to run a task across multiple servers in parallel, simply add the `parallel` option to your task declaration:
+Eðer bir görevi birden çok sunucuda paralel olarak çalýþtýrmak istiyorsanýz, yapmanýz gereken tek þey task deklarasyonunuza `parallel` seçeneðini eklemektir:
 
 	@servers(['web-1' => '192.168.1.1', 'web-2' => '192.168.1.2'])
 
@@ -172,40 +190,40 @@ If you would like to run a task across multiple servers in parallel, simply add 
 	@endtask
 
 <a name="envoy-task-macros"></a>
-### Task Macros
+### Task Makrolarý
 
-Macros allow you to define a set of tasks to be run in sequence using a single command. For instance:
+Makrolar basit bir komut kullanarak sýralý bir biçimde çalýþacak bir görev kümesi tanýmlamanýza imkan verirler. Örneðin:
 
 	@servers(['web' => '192.168.1.1'])
 
 	@macro('deploy')
-		foo
-		bar
+		falan
+		filan
 	@endmacro
 
-	@task('foo')
-		echo "HELLO"
+	@task('falan')
+		echo "MERHABA"
 	@endtask
 
-	@task('bar')
-		echo "WORLD"
+	@task('filan')
+		echo "DÜNYA"
 	@endtask
 
-The `deploy` macro can now be run via a single, simple command:
+Artýk bu `deploy` makrosu tek, basit bir komut aracýlýðý ile çalýþtýrýlabilecektir:
 
 	envoy run deploy
 
 <a name="envoy-notifications"></a>
 <a name="envoy-hipchat-notifications"></a>
-### Notifications
+### Bildirimler
 
 #### HipChat
 
-After running a task, you may send a notification to your team's HipChat room using the simple `@hipchat` directive:
+Bir görevi çalýþtýrdýktan sonra, basit `@hipchat` direktifini kullanarak ekibinizin HipChat odasýna bir bildirim gönderebilirsiniz:
 
 	@servers(['web' => '192.168.1.1'])
 
-	@task('foo', ['on' => 'web'])
+	@task('falan', ['on' => 'web'])
 		ls -la
 	@endtask
 
@@ -213,23 +231,29 @@ After running a task, you may send a notification to your team's HipChat room us
 		@hipchat('token', 'room', 'Envoy')
 	@endafter
 
-This is an amazingly simple way to keep your team notified of the tasks being run on the server.
+Ayrýca hipchat odasýna, özel bir mesaj da belirtebilirsiniz. ```@setup``` içinde deklare edilen veya ```@include``` ile dahil edilen her deðiþkenin mesajda kullanýlmasý mümkündür:
+
+	@after
+		@hipchat('token', 'room', 'Envoy', "$task ran on [$environment]")
+	@endafter
+
+Bu, ekibinizi sunucu üzerinde çalýþtýrýlan görevler hakkýnda haberdar tutmak için inanýlmaz basit bir yoludur.
 
 #### Slack
 
-The following syntax may be used to send a notification to [Slack](https://slack.com):
+[Slack'a](https://slack.com) bir bildirim göndermek için aþaðýdaki sözdizimi kullanýlabilir:
 
 	@after
 		@slack('team', 'token', 'channel')
 	@endafter
 
 <a name="envoy-updating-envoy"></a>
-### Updating Envoy
+### Envoy'un Güncellenmesi
 
-To update Envoy, simply run the `self-update` command:
+Envoy'u güncellemek için, tek yapacaðýnýz `self-update` komutunu çalýþtýrmaktýr:
 
 	envoy self-update
 
-If your Envoy installation is in `/usr/local/bin`, you may need to use `sudo`:
+Eðer Envoy yüklediðiniz yer `/usr/local/bin` ise, `sudo` kullanmanýz gerekebilir:
 
 	sudo envoy self-update
