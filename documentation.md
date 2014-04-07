@@ -36,7 +36,7 @@
     - [Basit Kullanım](/docs/database)
     - [Sorgu Oluşturucusu](/docs/queries)
     - [Eloquent ORM](/docs/eloquent)
-    - [Şema (Schema) Kurucu](/docs/schema)
+    - [Şema (Schema) Oluşturucusu](/docs/schema)
     - [Migrasyon (Migration) ve Veri Ekme (Seeding)](/docs/migrations)
     - [Redis](/docs/redis)
 - Artisan Komut Satırı Arayüzü

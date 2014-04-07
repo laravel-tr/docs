@@ -1,56 +1,56 @@
 # SSH
 
-- [Yapılandırma](#configuration)
-- [Temel Kullanım](#basic-usage)
-- [Görevler](#tasks)
-- [SFTP Dosya İndirmeleri](#sftp-downloads)
-- [SFTP Dosya Göndermeleri](#sftp-uploads)
-- [Uzak Günlüklerin İzlenmesi](#tailing-remote-logs)
-- [Envoy Görev Çalıştırıcısı](#envoy-task-runner)
+- [YapÄ±landÄ±rma](#configuration)
+- [Temel KullanÄ±m](#basic-usage)
+- [GÃ¶revler](#tasks)
+- [SFTP Dosya Ä°ndirmeleri](#sftp-downloads)
+- [SFTP Dosya GÃ¶ndermeleri](#sftp-uploads)
+- [Uzak GÃ¼nlÃ¼klerin Ä°zlenmesi](#tailing-remote-logs)
+- [Envoy GÃ¶rev Ã‡alÄ±ÅŸtÄ±rÄ±cÄ±sÄ±](#envoy-task-runner)
 
 <a name="configuration"></a>
-## Yapılandırma
+## YapÄ±landÄ±rma
 
-Laravel uzak sunuculara SSH (Secure Shell) iletişimi ve komutlar çalıştırmak için basit bir yol içerir ve uzak sunucularda çalışan Artisan görevlerini kolayca inşa etmenize imkan verir. `SSH` facade'ı uzak sunucularınıza bağlanmanız ve komutlar çalıştırmanız için erişim noktası sağlar.
+Laravel uzak sunuculara SSH (Secure Shell) iletiÅŸimi ve komutlar Ã§alÄ±ÅŸtÄ±rmak iÃ§in basit bir yol iÃ§erir ve uzak sunucularda Ã§alÄ±ÅŸan Artisan gÃ¶revlerini kolayca inÅŸa etmenize imkan verir. `SSH` facade'Ä± uzak sunucularÄ±nÄ±za baÄŸlanmanÄ±z ve komutlar Ã§alÄ±ÅŸtÄ±rmanÄ±z iÃ§in eriÅŸim noktasÄ± saÄŸlar.
 
-Yapılandırma dosyası `app/config/remote.php` konumundadır ve uzak bağlantılarınızı yapılandırmak için gerekli tüm seçenekleri içerir. Bu dosyadaki `connections` dizisi, sürücülerinizin isimlerine göre anahtarlanmış bir listesini taşır. Bu `connections` dizisindeki host, username, password, key gibi erişim güven bilgilerini (credentials) doldurduktan sonra uzak görevleri çalıştırmaya hazır olacaksınız. Unutmayın, `SSH`, ya bir password ya da bir SSH key kullanarak kimlik doğrulaması yapabilmektedir.
+YapÄ±landÄ±rma dosyasÄ± `app/config/remote.php` konumundadÄ±r ve uzak baÄŸlantÄ±larÄ±nÄ±zÄ± yapÄ±landÄ±rmak iÃ§in gerekli tÃ¼m seÃ§enekleri iÃ§erir. Bu dosyadaki `connections` dizisi, sÃ¼rÃ¼cÃ¼lerinizin isimlerine gÃ¶re anahtarlanmÄ±ÅŸ bir listesini taÅŸÄ±r. Bu `connections` dizisindeki host, username, password, key gibi eriÅŸim gÃ¼ven bilgilerini (credentials) doldurduktan sonra uzak gÃ¶revleri Ã§alÄ±ÅŸtÄ±rmaya hazÄ±r olacaksÄ±nÄ±z. UnutmayÄ±n, `SSH`, ya bir password ya da bir SSH key kullanarak kimlik doÄŸrulamasÄ± yapabilmektedir.
 
-> **Not:** Uzak sunucunuzda çeşitli görevleri kolayca çalıştırma ihtiyacınız mı var? [Envoy görev çalıştırıcısına](#envoy-task-runner) bir bakın!
+> **Not:** Uzak sunucunuzda Ã§eÅŸitli gÃ¶revleri kolayca Ã§alÄ±ÅŸtÄ±rma ihtiyacÄ±nÄ±z mÄ± var? [Envoy gÃ¶rev Ã§alÄ±ÅŸtÄ±rÄ±cÄ±sÄ±na](#envoy-task-runner) bir bakÄ±n!
 
 <a name="basic-usage"></a>
-## Temel Kullanım
+## Temel KullanÄ±m
 
-#### Komutları Default Sunucuda Çalıştırmak
+#### KomutlarÄ± Default Sunucuda Ã‡alÄ±ÅŸtÄ±rmak
 
-Komutlarınızı `default` uzak bağlantınızda çalıştırmak için `SSH::run` metodunu kullanın:
+KomutlarÄ±nÄ±zÄ± `default` uzak baÄŸlantÄ±nÄ±zda Ã§alÄ±ÅŸtÄ±rmak iÃ§in `SSH::run` metodunu kullanÄ±n:
 
 	SSH::run(array(
 		'cd /var/www',
 		'git pull origin master',
 	));
 
-#### Komutları Belirli Bir Bağlantıda Çalıştırmak
+#### KomutlarÄ± Belirli Bir BaÄŸlantÄ±da Ã‡alÄ±ÅŸtÄ±rmak
 
-Alternatif olarak, `into` metodunu kullanmak suretiyle komutları belirli bir bağlantı üzerinde çalıştırabilirsiniz:
+Alternatif olarak, `into` metodunu kullanmak suretiyle komutlarÄ± belirli bir baÄŸlantÄ± Ã¼zerinde Ã§alÄ±ÅŸtÄ±rabilirsiniz:
 
 	SSH::into('staging')->run(array(
 		'cd /var/www',
 		'git pull origin master',
 	));
 
-#### Komut Çıktılarını Yakalamak
+#### Komut Ã‡Ä±ktÄ±larÄ±nÄ± Yakalamak
 
-`run` metoduna bir Closure geçmek suretiyle, uzak komutlarınızın "canlı" çıktısını yakalayabilirsiniz:
+`run` metoduna bir Closure geÃ§mek suretiyle, uzak komutlarÄ±nÄ±zÄ±n "canlÄ±" Ã§Ä±ktÄ±sÄ±nÄ± yakalayabilirsiniz:
 
 	SSH::run($commands, function($line)
 	{
 		echo $line.PHP_EOL;
 	});
 
-## Görevler
+## GÃ¶revler
 <a name="tasks"></a>
 
-Eğer her zaman birlikte çalışması gereken bir grup komut tanımlamanız gerekiyorsa, bir `task` (görev) tanımlamak için `define` metodunu kullanabilirsiniz:
+EÄŸer her zaman birlikte Ã§alÄ±ÅŸmasÄ± gereken bir grup komut tanÄ±mlamanÄ±z gerekiyorsa, bir `task` (gÃ¶rev) tanÄ±mlamak iÃ§in `define` metodunu kullanabilirsiniz:
 
 	SSH::into('staging')->define('deploy', array(
 		'cd /var/www',
@@ -58,7 +58,7 @@ Eğer her zaman birlikte çalışması gereken bir grup komut tanımlamanız gerekiyors
 		'php artisan migrate',
 	));
 
-Bu şekilde bir task tanımladıktan sonra, onu çalıştırmak için `task` metodunu kullanabilirsiniz:
+Bu ÅŸekilde bir task tanÄ±mladÄ±ktan sonra, onu Ã§alÄ±ÅŸtÄ±rmak iÃ§in `task` metodunu kullanabilirsiniz:
 
 	SSH::into('staging')->task('deploy', function($line)
 	{
@@ -66,53 +66,53 @@ Bu şekilde bir task tanımladıktan sonra, onu çalıştırmak için `task` metodunu ku
 	});
 
 <a name="sftp-downloads"></a>
-## SFTP Dosya İndirmeleri
+## SFTP Dosya Ä°ndirmeleri
 
-`SSH` sınıfı `get` ve `getString` metodları kullanılarak, dosyalar indirmek için basit bir yol sağlar:
+`SSH` sÄ±nÄ±fÄ± `get` ve `getString` metodlarÄ± kullanÄ±larak, dosyalar indirmek iÃ§in basit bir yol saÄŸlar:
 
 	SSH::into('staging')->get($remotePath, $localPath);
 
 	$contents = SSH::into('staging')->getString($remotePath);
 
 <a name="sftp-uploads"></a>
-## SFTP Dosya Göndermeleri
+## SFTP Dosya GÃ¶ndermeleri
 
-`SSH` sınıfı aynı zamanda `put` ve `putString` metodları kullanılarak sunucuya dosyalar, hatta stringler upload etmek için de basit bir yol içerir:
+`SSH` sÄ±nÄ±fÄ± aynÄ± zamanda `put` ve `putString` metodlarÄ± kullanÄ±larak sunucuya dosyalar, hatta stringler upload etmek iÃ§in de basit bir yol iÃ§erir:
 
 	SSH::into('staging')->put($localFile, $remotePath);
 
 	SSH::into('staging')->putString($remotePath, 'Falan');
 
 <a name="tailing-remote-logs"></a>
-## Uzak Günlüklerin İzlenmesi
+## Uzak GÃ¼nlÃ¼klerin Ä°zlenmesi
 
-Laravel sizin uzak bağlantılarınızın herhangi birindeki `laravel.log` dosyalarının izlenmesi için yararlı bir komut içermektedir. Bunun için basitçe `tail` Artisan komutunu kullanın ve izlemek istediğiniz uzak bağlantının adını belirtin:
+Laravel sizin uzak baÄŸlantÄ±larÄ±nÄ±zÄ±n herhangi birindeki `laravel.log` dosyalarÄ±nÄ±n izlenmesi iÃ§in yararlÄ± bir komut iÃ§ermektedir. Bunun iÃ§in basitÃ§e `tail` Artisan komutunu kullanÄ±n ve izlemek istediÄŸiniz uzak baÄŸlantÄ±nÄ±n adÄ±nÄ± belirtin:
 
 	php artisan tail staging
 
 	php artisan tail staging --path=/path/to/log.file
 
 <a name="envoy-task-runner"></a>
-## Envoy Görev Çalıştırıcısı
+## Envoy GÃ¶rev Ã‡alÄ±ÅŸtÄ±rÄ±cÄ±sÄ±
 
-- [Yükleme](#envoy-installation)
-- [Görevlerin Çalıştırılması](#envoy-running-tasks)
-- [Birden Çok Sunucu](#envoy-multiple-servers)
-- [Paralel Çalıştırma](#envoy-parallel-execution)
-- [Task Makroları](#envoy-task-macros)
+- [YÃ¼kleme](#envoy-installation)
+- [GÃ¶revlerin Ã‡alÄ±ÅŸtÄ±rÄ±lmasÄ±](#envoy-running-tasks)
+- [Birden Ã‡ok Sunucu](#envoy-multiple-servers)
+- [Paralel Ã‡alÄ±ÅŸtÄ±rma](#envoy-parallel-execution)
+- [Task MakrolarÄ±](#envoy-task-macros)
 - [Bildirimler](#envoy-notifications)
-- [Envoy'in Güncellenmesi](#envoy-updating-envoy)
+- [Envoy'in GÃ¼ncellenmesi](#envoy-updating-envoy)
 
-Laravel Envoy, uzak sunucularınızda ortak görevler tanımlanması için temiz, minimal bir sözdizimi sağlar. [Blade](/docs/templates#blade-templating) tarzı bir sözdizimi kullanarak yayımlama, Artisan komutları ve başka şeyler için kolayca görevler inşa edebilirsiniz.
+Laravel Envoy, uzak sunucularÄ±nÄ±zda ortak gÃ¶revler tanÄ±mlanmasÄ± iÃ§in temiz, minimal bir sÃ¶zdizimi saÄŸlar. [Blade](/docs/templates#blade-templating) tarzÄ± bir sÃ¶zdizimi kullanarak yayÄ±mlama, Artisan komutlarÄ± ve baÅŸka ÅŸeyler iÃ§in kolayca gÃ¶revler inÅŸa edebilirsiniz.
 
-> **Not:** Envoy, PHP versiyon 5.4 veya daha üstünü gerektirir ve sadece Mac / Linux işletim sistemlerinde çalışır.
+> **Not:** Envoy, PHP versiyon 5.4 veya daha Ã¼stÃ¼nÃ¼ gerektirir ve sadece Mac / Linux iÅŸletim sistemlerinde Ã§alÄ±ÅŸÄ±r.
 
 <a name="envoy-installation"></a>
-### Yükleme
+### YÃ¼kleme
 
-İlk olarak Envoy [Phar arşivini](https://github.com/laravel/envoy/raw/master/envoy.phar) indirin ve erişim kolaylığı için onu `envoy` olarak `/usr/local/bin` konumuna koyun. Görevleri çalıştırabilmeniz için, bu `envoy` dosyasına çalıştırma izinleri vermeniz gerekebilir.
+Ä°lk olarak Envoy [Phar arÅŸivini](https://github.com/laravel/envoy/raw/master/envoy.phar) indirin ve eriÅŸim kolaylÄ±ÄŸÄ± iÃ§in onu `envoy` olarak `/usr/local/bin` konumuna koyun. GÃ¶revleri Ã§alÄ±ÅŸtÄ±rabilmeniz iÃ§in, bu `envoy` dosyasÄ±na Ã§alÄ±ÅŸtÄ±rma izinleri vermeniz gerekebilir.
 
-Sonra da, projenizin kökünde bir `Envoy.blade.php` dosyası oluşturun. İşte başlayabileceğiniz bir örnek:
+Sonra da, projenizin kÃ¶kÃ¼nde bir `Envoy.blade.php` dosyasÄ± oluÅŸturun. Ä°ÅŸte baÅŸlayabileceÄŸiniz bir Ã¶rnek:
 
 	@servers(['web' => '192.168.1.1'])
 
@@ -120,24 +120,24 @@ Sonra da, projenizin kökünde bir `Envoy.blade.php` dosyası oluşturun. İşte başla
 		ls -la
 	@endtask
 
-Görebileceğiniz gibi, dosyanın en üstünde bir `@servers` dizisi tanımlanır. Bu sunucuları, task (görev) deklarasyonlarınızın `on` seçeneğinde refere edebilirsiniz. Bu `@task` deklarasyonlarınızın içerisine, task çalıştırıldığı zaman sunucunuzda çalıştırılacak olan Bash kodunu koyacaksınız.
+GÃ¶rebileceÄŸiniz gibi, dosyanÄ±n en Ã¼stÃ¼nde bir `@servers` dizisi tanÄ±mlanÄ±r. Bu sunucularÄ±, task (gÃ¶rev) deklarasyonlarÄ±nÄ±zÄ±n `on` seÃ§eneÄŸinde refere edebilirsiniz. Bu `@task` deklarasyonlarÄ±nÄ±zÄ±n iÃ§erisine, task Ã§alÄ±ÅŸtÄ±rÄ±ldÄ±ÄŸÄ± zaman sunucunuzda Ã§alÄ±ÅŸtÄ±rÄ±lacak olan Bash kodunu koyacaksÄ±nÄ±z.
 
-Bir iskelet Envoy dosyasını kolayca oluşturmak için `init` komutu kullanılabilir:
+Bir iskelet Envoy dosyasÄ±nÄ± kolayca oluÅŸturmak iÃ§in `init` komutu kullanÄ±labilir:
 
 	envoy init user@192.168.1.1
 
 <a name="envoy-running-tasks"></a>
-### Görevlerin Çalıştırılması
+### GÃ¶revlerin Ã‡alÄ±ÅŸtÄ±rÄ±lmasÄ±
 
-Bir görevi çalıştırmak için Envoy yüklemenizin `run` komutunu kullanın:
+Bir gÃ¶revi Ã§alÄ±ÅŸtÄ±rmak iÃ§in Envoy yÃ¼klemenizin `run` komutunu kullanÄ±n:
 
 	envoy run falan
 
-Eğer gerekliyse, komut satırı seçeneklerini kullanarak Envoy dosyasına değişkenler geçebilirsiniz:
+EÄŸer gerekliyse, komut satÄ±rÄ± seÃ§eneklerini kullanarak Envoy dosyasÄ±na deÄŸiÅŸkenler geÃ§ebilirsiniz:
 
 	envoy run deploy --branch=master
 
-Bu seçenekleri, kullandığınız Blade sözdizimi aracılığıyla kullanabilirsiniz:
+Bu seÃ§enekleri, kullandÄ±ÄŸÄ±nÄ±z Blade sÃ¶zdizimi aracÄ±lÄ±ÄŸÄ±yla kullanabilirsiniz:
 
 	@servers(['web' => '192.168.1.1'])
 
@@ -149,7 +149,7 @@ Bu seçenekleri, kullandığınız Blade sözdizimi aracılığıyla kullanabilirsiniz:
 
 #### Bootstrapping
 
-Envoy dosyasının içinde değişkenler deklare etmek ve genel PHP işi yapmak için ```@setup``` direktifini kullanabilirsiniz:
+Envoy dosyasÄ±nÄ±n iÃ§inde deÄŸiÅŸkenler deklare etmek ve genel PHP iÅŸi yapmak iÃ§in ```@setup``` direktifini kullanabilirsiniz:
 
 	@setup
 		$now = new DateTime();
@@ -157,14 +157,14 @@ Envoy dosyasının içinde değişkenler deklare etmek ve genel PHP işi yapmak için `
 		$environment = isset($env) ? $env : "testing";
 	@endsetup
 
-Ayrıca bir PHP dosyası include etmek için ```@include``` kullanabilirsiniz:
+AyrÄ±ca bir PHP dosyasÄ± include etmek iÃ§in ```@include``` kullanabilirsiniz:
 
 	@include('vendor/autoload.php');
 
 <a name="envoy-multiple-servers"></a>
-### Birden Çok Sunucu
+### Birden Ã‡ok Sunucu
 
-Bir görevi birden çok sunucuda kolaylıkla çalıştırabilirsiniz. Sadece task deklarasyonunda sunucuları listeleyin:
+Bir gÃ¶revi birden Ã§ok sunucuda kolaylÄ±kla Ã§alÄ±ÅŸtÄ±rabilirsiniz. Sadece task deklarasyonunda sunucularÄ± listeleyin:
 
 	@servers(['web-1' => '192.168.1.1', 'web-2' => '192.168.1.2'])
 
@@ -174,12 +174,12 @@ Bir görevi birden çok sunucuda kolaylıkla çalıştırabilirsiniz. Sadece task dekla
 		php artisan migrate
 	@endtask
 
-Ön tanımlı olarak, ilgili görev her bir sunucuda seri olarak çalıştırılacaktır. Yani, görev bir sonraki sunucuda çalışmaya başlamadan önce, önceki çalışmasını tamamlayacaktır.
+Ã–n tanÄ±mlÄ± olarak, ilgili gÃ¶rev her bir sunucuda seri olarak Ã§alÄ±ÅŸtÄ±rÄ±lacaktÄ±r. Yani, gÃ¶rev bir sonraki sunucuda Ã§alÄ±ÅŸmaya baÅŸlamadan Ã¶nce, Ã¶nceki Ã§alÄ±ÅŸmasÄ±nÄ± tamamlayacaktÄ±r.
 
 <a name="envoy-parallel-execution"></a>
-### Paralel Çalıştırma
+### Paralel Ã‡alÄ±ÅŸtÄ±rma
 
-Eğer bir görevi birden çok sunucuda paralel olarak çalıştırmak istiyorsanız, yapmanız gereken tek şey task deklarasyonunuza `parallel` seçeneğini eklemektir:
+EÄŸer bir gÃ¶revi birden Ã§ok sunucuda paralel olarak Ã§alÄ±ÅŸtÄ±rmak istiyorsanÄ±z, yapmanÄ±z gereken tek ÅŸey task deklarasyonunuza `parallel` seÃ§eneÄŸini eklemektir:
 
 	@servers(['web-1' => '192.168.1.1', 'web-2' => '192.168.1.2'])
 
@@ -190,9 +190,9 @@ Eğer bir görevi birden çok sunucuda paralel olarak çalıştırmak istiyorsanız, yap
 	@endtask
 
 <a name="envoy-task-macros"></a>
-### Task Makroları
+### Task MakrolarÄ±
 
-Makrolar basit bir komut kullanarak sıralı bir biçimde çalışacak bir görev kümesi tanımlamanıza imkan verirler. Örneğin:
+Makrolar basit bir komut kullanarak sÄ±ralÄ± bir biÃ§imde Ã§alÄ±ÅŸacak bir gÃ¶rev kÃ¼mesi tanÄ±mlamanÄ±za imkan verirler. Ã–rneÄŸin:
 
 	@servers(['web' => '192.168.1.1'])
 
@@ -206,10 +206,10 @@ Makrolar basit bir komut kullanarak sıralı bir biçimde çalışacak bir görev kümes
 	@endtask
 
 	@task('filan')
-		echo "DÜNYA"
+		echo "DÃœNYA"
 	@endtask
 
-Artık bu `deploy` makrosu tek, basit bir komut aracılığı ile çalıştırılabilecektir:
+ArtÄ±k bu `deploy` makrosu tek, basit bir komut aracÄ±lÄ±ÄŸÄ± ile Ã§alÄ±ÅŸtÄ±rÄ±labilecektir:
 
 	envoy run deploy
 
@@ -219,7 +219,7 @@ Artık bu `deploy` makrosu tek, basit bir komut aracılığı ile çalıştırılabilecekt
 
 #### HipChat
 
-Bir görevi çalıştırdıktan sonra, basit `@hipchat` direktifini kullanarak ekibinizin HipChat odasına bir bildirim gönderebilirsiniz:
+Bir gÃ¶revi Ã§alÄ±ÅŸtÄ±rdÄ±ktan sonra, basit `@hipchat` direktifini kullanarak ekibinizin HipChat odasÄ±na bir bildirim gÃ¶nderebilirsiniz:
 
 	@servers(['web' => '192.168.1.1'])
 
@@ -231,29 +231,29 @@ Bir görevi çalıştırdıktan sonra, basit `@hipchat` direktifini kullanarak ekibini
 		@hipchat('token', 'room', 'Envoy')
 	@endafter
 
-Ayrıca hipchat odasına, özel bir mesaj da belirtebilirsiniz. ```@setup``` içinde deklare edilen veya ```@include``` ile dahil edilen her değişkenin mesajda kullanılması mümkündür:
+AyrÄ±ca hipchat odasÄ±na, Ã¶zel bir mesaj da belirtebilirsiniz. ```@setup``` iÃ§inde deklare edilen veya ```@include``` ile dahil edilen her deÄŸiÅŸkenin mesajda kullanÄ±lmasÄ± mÃ¼mkÃ¼ndÃ¼r:
 
 	@after
 		@hipchat('token', 'room', 'Envoy', "$task ran on [$environment]")
 	@endafter
 
-Bu, ekibinizi sunucu üzerinde çalıştırılan görevler hakkında haberdar tutmak için inanılmaz basit bir yoludur.
+Bu, ekibinizi sunucu Ã¼zerinde Ã§alÄ±ÅŸtÄ±rÄ±lan gÃ¶revler hakkÄ±nda haberdar tutmak iÃ§in inanÄ±lmaz basit bir yoludur.
 
 #### Slack
 
-[Slack'a](https://slack.com) bir bildirim göndermek için aşağıdaki sözdizimi kullanılabilir:
+[Slack'a](https://slack.com) bir bildirim gÃ¶ndermek iÃ§in aÅŸaÄŸÄ±daki sÃ¶zdizimi kullanÄ±labilir:
 
 	@after
 		@slack('team', 'token', 'channel')
 	@endafter
 
 <a name="envoy-updating-envoy"></a>
-### Envoy'un Güncellenmesi
+### Envoy'un GÃ¼ncellenmesi
 
-Envoy'u güncellemek için, tek yapacağınız `self-update` komutunu çalıştırmaktır:
+Envoy'u gÃ¼ncellemek iÃ§in, tek yapacaÄŸÄ±nÄ±z `self-update` komutunu Ã§alÄ±ÅŸtÄ±rmaktÄ±r:
 
 	envoy self-update
 
-Eğer Envoy yüklediğiniz yer `/usr/local/bin` ise, `sudo` kullanmanız gerekebilir:
+EÄŸer Envoy yÃ¼klediÄŸiniz yer `/usr/local/bin` ise, `sudo` kullanmanÄ±z gerekebilir:
 
 	sudo envoy self-update
