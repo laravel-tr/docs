@@ -107,7 +107,7 @@ Bir işi tekrar kuyruğa devretmek isterseniz, bunu `release` metodu aracılığ
 		//
 	}
 
-#### Bir İşin ID'ine Erişme
+#### Bir İşin ID'sine Erişme
 
 İş tanımlayıcılarına da erişebilirsiniz:
 
