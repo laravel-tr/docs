@@ -22,9 +22,9 @@ Diğer frameworkler'de, sayfalama oldukça sıkıntılı olabilir. Laravel bu i�
 
 	$uyeler = DB::table('uyeler')->paginate(15);
 
-[Eloquent](/docs/eloquent) modellerini de sayfalandırabilirsiniz:
-
 #### Bir Eloquent Modelinin Sayfalandırılması
+
+[Eloquent](/docs/eloquent) modellerini de sayfalandırabilirsiniz:
 
 	$uyeler = User::paginate(15);
 
@@ -56,9 +56,9 @@ Ayrıca aşağıdaki metodlar aracılığıyla diğer sayfalama bilgilerine eri�
 - `getTo`
 - `count`
 
-Bazen bir sayfalama olgusunu kendiniz bir öğeler dizisi geçerek oluşturmak isteyebilirsiniz. Bunu `Paginator::make` metodunu kullanarak yapabilirsiniz:
+#### Elle Bir Sayfalandırıcı Oluşturmak
 
-#### Elle Sayfalandırıcı Oluşturmak
+Bazen bir sayfalama olgusunu kendiniz bir öğeler dizisi geçerek oluşturmak isteyebilirsiniz. Bunu `Paginator::make` metodunu kullanarak yapabilirsiniz:
 
 	$sayfalandirici = Paginator::make($ogeler, $toplamOgeAdedi, $sayfaBasinaAdet);
 
@@ -129,5 +129,5 @@ Laravelle geldiği haliyle ön tanımlı sayfalama sunumcusu Bootstrap uyumludur
 Önce `app/views` dizininizde sizin özel sunumcunuz olarak hizmet edecek bir view oluşturun. Ondan sonra, `app/config/view.php` yapılandırma dosyasındaki `pagination` seçeneğini yeni view'in adıyla değiştirin. Son olarak, özel sunumcu view'inizde aşağıdaki kodu koyacaksınız:
 
     <ul class="pagination">
-        <?php echo with(new ZurbPrensenter($paginator))->render(); ?>
+        <?php echo with(new ZurbPresenter($paginator))->render(); ?>
     </ul>

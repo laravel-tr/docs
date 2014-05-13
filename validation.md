@@ -22,9 +22,9 @@ Laravel, `Validation` sınıfı aracığıyla verilerin geçerlilik denetimi ve 
 
 Buradaki `make` metoduna geçilen ilk parametre, geçerli olup olmadığına bakılacak veridir. İkinci parametre ise, bu veriye tatbik edilecek geçerlilik kurallarıdır.
 
-Birden çok kural ya bir "pipe" karakteri (|) ile ayrılır, ya da ayrı dizi elemanları olarak verilebilir.
-
 #### Kuralları Belirtmek İçin Dizi Kullanımı
+
+Birden çok kural ya bir "pipe" karakteri (|) ile ayrılır, ya da ayrı dizi elemanları olarak verilebilir.
 
 	$gecerlilikYoklayici = Validator::make(
 		array('isim' => 'Tuana Şeyma'),
@@ -305,7 +305,7 @@ Geçerlilik bakılan alan bir IP adresi olarak biçimlendirilmiş olmalıdır.
 <a name="rule-max"></a>
 #### max: _deger_
 
-Geçerlilik bakılan alan bir maksimum _deger_'den az olmalıdır. Stringler, sayılar ve dosyalar `size` kuralıyla aynı tarzda değerlendirilir.
+Geçerlilik bakılan alan bir maksimum _deger_'e eşit veya ondan az olmalıdır. Stringler, sayılar ve dosyalar `size` kuralıyla aynı tarzda değerlendirilir.
 
 <a name="rule-mimes"></a>
 #### mimes: _falan_, _filan_,...
@@ -459,7 +459,7 @@ Gerek duyduğunuzda, geçerlilik için ön tanımlı hata mesajları yerine öze
 
 	$gecerlilikYoklayici = Validator::make($input, $kurallar, $mesajlar);
 
-*Not:* Buradaki `:attribute` yer tutucusu geçerlilik bakılan alanın gerçek adıyla değiştirilecektir. Geçerlilik mesajlarınızda diğer yer tutucuları da kullanabilirsiniz.
+> *Not:* Buradaki `:attribute` yer tutucusu geçerlilik bakılan alanın gerçek adıyla değiştirilecektir. Geçerlilik mesajlarınızda diğer yer tutucuları da kullanabilirsiniz.
 
 #### Diğer Geçerlilik Yer Tutucuları
 
@@ -470,18 +470,18 @@ Gerek duyduğunuzda, geçerlilik için ön tanımlı hata mesajları yerine öze
 		'in'      => ':attribute şu tiplerden birisi olmalıdır: :values',
 	);
 
-Bazen sadece belirli bir alan için özel hata mesajları belirlemek isteyebilirsiniz:
-
 #### Belli Bir Attribute İçin Özel Mesaj Belirlenmesi
+
+Bazen sadece belirli bir alan için özel hata mesajları belirlemek isteyebilirsiniz:
 
 	$mesajlar = array(
 		'email.required' => 'e-mail adresinizi bilmemiz gerekiyor!',
 	);
 
-Bazı durumlarda, özel hata mesajlarınızı doğrudan `Validator`'e geçirmek yerine bir dil dosyasında belirtmek isteyebilirsiniz. Bunu yapmak için, mesajlarınızı `app/lang/xx/validation.php` dil dosyasındaki `custom` dizisine ekleyiniz.
-
 <a name="localization"></a>
 #### Özel Mesajların Dil Dosyalarında Belirtilmesi
+
+Bazı durumlarda, özel hata mesajlarınızı doğrudan `Validator`'e geçirmek yerine bir dil dosyasında belirtmek isteyebilirsiniz. Bunu yapmak için, mesajlarınızı `app/lang/xx/validation.php` dil dosyasındaki `custom` dizisine ekleyiniz.
 
 	'custom' => array(
 		'email' => array(
@@ -492,9 +492,9 @@ Bazı durumlarda, özel hata mesajlarınızı doğrudan `Validator`'e geçirmek 
 <a name="custom-validation-rules"></a>
 ## Özel Geçerlilik Kuralları
 
-Laravel'de her biri yararlı çok sayıda geçerlilik kuralı bulunmaktadır; bununla birlikte siz kendiniz de bazı kurallar belirlemek isteyebilirsiniz. Özel geçerlilik kuralı kayda geçirmenin bir yolu `Validator::extend` metodunu kullanmaktır:
-
 #### Özel Bir Geçerlilik Kuralını Kayda Geçirme
+
+Laravel'de her biri yararlı çok sayıda geçerlilik kuralı bulunmaktadır; bununla birlikte siz kendiniz de bazı kurallar belirlemek isteyebilirsiniz. Özel geçerlilik kuralı kayda geçirmenin bir yolu `Validator::extend` metodunu kullanmaktır:
 
 	Validator::extend('falan', function($attribute, $value, $parameters)
 	{
@@ -509,9 +509,9 @@ Bu `extend` metoduna bir isimsiz fonksiyon yerine bir sınıf ve metod da geçeb
 
 Özel kurallarınız için aynı zamanda bir hata mesajı da tanımlamanız gerekeceğini unutmayın. Bunu, ya aynı satırda özel hata mesaj dizisi kullanarak ya da geçerlilik dil dosyasına bir giriş eklemek suretiyle yapabilirsiniz.
 
-Validator'ü genişletmek için bir isimsiz fonksiyon çağrısı kullanmak yerine, Validator sınıfının kendisini de genişletebilirsiniz. Bunu yapmak için, `Illuminate\Validation\Validator`'ü genişleten bir Validator sınıfı yazın. Validation metodlarınızı, başına `validate` getirerek bu sınıfa ekleyebilirsiniz:
-
 #### Validator Sınıfının Genişletilmesi
+
+Validator'ü genişletmek için bir isimsiz fonksiyon çağrısı kullanmak yerine, Validator sınıfının kendisini de genişletebilirsiniz. Bunu yapmak için, `Illuminate\Validation\Validator`'ü genişleten bir Validator sınıfı yazın. Validation metodlarınızı, başına `validate` getirerek bu sınıfa ekleyebilirsiniz:
 
 	<?php
 
@@ -524,9 +524,9 @@ Validator'ü genişletmek için bir isimsiz fonksiyon çağrısı kullanmak yeri
 
 	}
 
-Daha sonra, özel Validator uzantınızı kayda geçirmeniz gerekiyor:
-
 #### Özel Bir Validator Çözümleyicisinin Kayda Geçirilmesi
+
+Daha sonra, özel Validator uzantınızı kayda geçirmeniz gerekiyor:
 
 	Validator::resolver(function($translator, $data, $rules, $messages)
 	{

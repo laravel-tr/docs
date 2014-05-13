@@ -110,7 +110,11 @@ Laravel Envoy, uzak sunucularınızda ortak görevler tanımlanması için temiz
 <a name="envoy-installation"></a>
 ### Yükleme
 
-İlk olarak Envoy [Phar arşivini](https://github.com/laravel/envoy/raw/master/envoy.phar) indirin ve erişim kolaylığı için onu `envoy` olarak `/usr/local/bin` konumuna koyun. Görevleri çalıştırabilmeniz için, bu `envoy` dosyasına çalıştırma izinleri vermeniz gerekebilir.
+Önce, Composer `global` komutunu kullanarak Envoy'u yükleyin:
+
+	composer global require "laravel/envoy=~1.0"
+
+Terminalinizde `envoy` komutunu çalıştırdığınız zaman `envoy` çalıştırılabilir dosyasının bulunabilmesi için PATH ayarınızda `~/.composer/vendor/bin` dizininin yer aldığından emin olun.
 
 Sonra da, projenizin kökünde bir `Envoy.blade.php` dosyası oluşturun. İşte başlayabileceğiniz bir örnek:
 

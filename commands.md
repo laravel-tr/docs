@@ -117,15 +117,15 @@ Kullanıcıdan bir girdi talep etmek için, `ask` (sor) ve `confirm` (onayla) me
 <a name="registering-commands"></a>
 ## Komutların Kayıt Ettirilmesi
 
-Komutunuzun inşa edilmesi tamamlandığında, kullanılmaya hazır olabilmesi için, Artisan'da kayıt ettirmeniz gerekir. Bu, genelde `app/start/artisan.php` dosyası içerisinde yapılır. Bu dosya içerisinde, kayıt ettirmek için `Artisan::add` metodunu kullanabilirsiniz.
-
 #### Bir Artisan Komutunun Kayıt Ettirilişi
+
+Komutunuzun inşa edilmesi tamamlandığında, kullanılmaya hazır olabilmesi için, Artisan'da kayıt ettirmeniz gerekir. Bu, genelde `app/start/artisan.php` dosyası içerisinde yapılır. Bu dosya içerisinde, kayıt ettirmek için `Artisan::add` metodunu kullanabilirsiniz.
 
 	Artisan::add(new FalancaKomut);
 
-Eğer komutunuz [IoC container](/docs/ioc) uygulamasında kayıtlı ise, Artisan'da da kullanılabilir olması için `Artisan::resolve` metodunu kullanabilirsiniz.
-
 #### IoC Container'da Olan Bir Komutun Kayıt Ettirilişi
+
+Eğer komutunuz [IoC container](/docs/ioc) uygulamasında kayıtlı ise, Artisan'da da kullanılabilir olması için `Artisan::resolve` metodunu kullanabilirsiniz.
 
 	Artisan::resolve('binding.ismi');
 
@@ -133,7 +133,5 @@ Eğer komutunuz [IoC container](/docs/ioc) uygulamasında kayıtlı ise, Artisan
 ## Diğer Komutların Çağırılması
 
 Bazı durumlarda, komutunuzun içerisinden başka bir komutu çağırmak isteyebilirsiniz. Bunu, `call` metodunu kullanarak yapabilirsiniz:
-
-#### Başka Bir Komutun Çağırılışı
 
 	$this->call('command.ismi', array('argument' => 'falan', '--option' => 'filan'));

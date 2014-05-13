@@ -102,7 +102,7 @@ Ayrıca varsayılan bir değer, üçüncü eleman olarak geçilebilir:
 
 	$array = array('names' => array('joe' => array('programmer')));
 
-	$array = array_forget($array, 'names.joe');
+	array_forget($array, 'names.joe');
 
 ### array_get
 

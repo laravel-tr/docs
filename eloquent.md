@@ -86,9 +86,9 @@ Bu hata işleyicinin kaydını yapmak için `ModelNotFoundException`'i dinlemek 
 		var_dump($uye->isim);
 	}
 
-Tabi ki, sorgu oluşturucusunun kümeleme fonksiyonlarını da kullanabilirsiniz.
-
 #### Eloquent Küme Metodları
+
+Tabi ki, sorgu oluşturucusunun kümeleme fonksiyonlarını da kullanabilirsiniz.
 
 	$adet = Uye::where('puan', '>', 100)->count();
 
@@ -123,9 +123,9 @@ Yeni bir model oluşturulurken model oluşturucuya niteliklerden oluşan bir diz
 
 Başlamak için modelinizde `fillable` veya `guarded` özelliğini ayarlayınız.
 
-Bunlardan `fillable` özelliği hangi niteliklerin toplu atanacaklarını belirler. Bu işlem sınıf ya da olgu düzeyinde ayarlanabilir.
-
 #### Bir Modelde Fillable Niteliklerin Tanımlanması
+
+Bunlardan `fillable` özelliği hangi niteliklerin toplu atanacaklarını belirler. Bu işlem sınıf ya da olgu düzeyinde ayarlanabilir.
 
 	class Uye extends Eloquent {
 
@@ -135,9 +135,9 @@ Bunlardan `fillable` özelliği hangi niteliklerin toplu atanacaklarını belirl
 
 Bu örnekte, sadece belirttiğimiz üç nitelik toplu atanabilecektir.
 
-`fillable`'in tersi `guarded`'dır ve bir "beyaz-liste" yerine bir "kara-liste" olarak iş görür:
-
 #### Bir Modelde Guarded Niteliklerin Tanımlanması
+
+`fillable`'in tersi `guarded`'dır ve bir "beyaz-liste" yerine bir "kara-liste" olarak iş görür:
 
 	class Uye extends Eloquent {
 
@@ -145,9 +145,9 @@ Bu örnekte, sadece belirttiğimiz üç nitelik toplu atanabilecektir.
 
 	}
 
-Yukardaki örneğe göre `id` ve `parola` nitelikleri toplu atana **mayacaktır**. Diğer tüm nitelikler toplu atanabilecektir. Toplu atamayı niteliklerin **hepsi** için bloke etmeyi de seçebilirsiniz:
-
 #### Toplu Atamanın Tüm Nitelikler İçin Engellenmesi
+
+Yukardaki örneğe göre `id` ve `parola` nitelikleri toplu atana **mayacaktır**. Diğer tüm nitelikler toplu atanabilecektir. Toplu atamayı niteliklerin **hepsi** için bloke etmeyi de seçebilirsiniz:
 
 	protected $guarded = array('*');
 
@@ -191,9 +191,9 @@ Otomatik artan IDler kullanan yeni bir modelin kaydedilmesi (olgu oluşturup, de
 	// Bazı alanlarına göre üyeyi getir ya da yeni bir üye olgusu başlat...
 	$user = User::firstOrNew(array('name' => 'John'));
 
-Bir modeli güncellemek için onu getirir, bir niteliğini değiştirir, sonra da `save` metodunu kullanabilirsiniz:
-
 #### Getirilen Bir Modelin Güncellenmesi
+
+Bir modeli güncellemek için onu getirir, bir niteliğini değiştirir, sonra da `save` metodunu kullanabilirsiniz:
 
 	$uye = Uye::find(1);
 
@@ -201,9 +201,9 @@ Bir modeli güncellemek için onu getirir, bir niteliğini değiştirir, sonra d
 
 	$uye->save();
 
-Bazen sadece bir modeli değil, onun bütün ilişkilerini de kaydetmek isteyebilirsiniz. Bunu yapmak için `push` metodunu kullanın:
-
 #### Bir Model ve İlişkilerinin Kaydedilmesi
+
+Bazen sadece bir modeli değil, onun bütün ilişkilerini de kaydetmek isteyebilirsiniz. Bunu yapmak için `push` metodunu kullanın:
 
 	$uye->push();
 
@@ -211,9 +211,11 @@ Ayrıca, bir modeller kümesinde güncelleme sorguları da çalıştırabilirsin
 
 	$satirSayisi = Uye::where('puan', '>', 100)->update(array('durum' => 2));
 
-Bir modeli silmek için olgu üzerinde `delete` metodunu çağırın:
+> **Not:** Eloquent sorgu oluşturucu aracılığıyla bir modeller kümesi güncellendiği zaman herhangi bir model olayı ateşlenmez.
 
 #### Mevcut Bir Modelin Silinmesi
+
+Bir modeli silmek için olgu üzerinde `delete` metodunu çağırın:
 
 	$uye = Uye::find(1);
 
@@ -231,9 +233,9 @@ Elbette, bir modeller kümesinde bir silme sorgusu da çalıştırabilirsiniz:
 
 	$satirSayisi = Uye::where('puan', '>', 100)->delete();
 
-Eğer bir modelde sadece zaman damgalarını güncellemek istiyorsanız, `touch` metodunu kullanabilirsiniz:
-
 #### Bir Modelin Sadece Zaman Damgalarının Güncellenmesi
+
+Eğer bir modelde sadece zaman damgalarını güncellemek istiyorsanız, `touch` metodunu kullanabilirsiniz:
 
 	$uye->touch();
 
@@ -254,9 +256,11 @@ Tablonuza bir `deleted_at` sütunu eklemek için ise, bir migrasyondan `softDele
 
 	$table->softDeletes();
 
-Şimdi, artık modelinizde `delete` metodunu çağırdığınız zaman, bu `deleted_at` sütunu güncel zaman damgasına ayarlanacaktır. Belirsiz silme kullanılan bir model sorgulandığında, "silinmiş olan" modeller sorgu sonuçlarına dahil edilmeyecektir. Bir sonuç kümesinde belirsiz silinmiş modellerin gözükmesini zorlamak için sorgunuzda `withTrashed` metodunu kullanınız:
+Şimdi, artık modelinizde `delete` metodunu çağırdığınız zaman, bu `deleted_at` sütunu güncel zaman damgasına ayarlanacaktır. Belirsiz silme kullanılan bir model sorgulandığında, "silinmiş olan" modeller sorgu sonuçlarına dahil edilmeyecektir. 
 
 #### Belirsiz Silinmiş Modelleri Sonuçlara Girmeye Zorlama
+
+Bir sonuç kümesinde belirsiz silinmiş modellerin gözükmesini zorlamak için sorgunuzda `withTrashed` metodunu kullanınız:
 
 	$uyeler = Uye::withTrashed()->where('hesap_no', 1)->get();
 
@@ -310,9 +314,9 @@ Belli bir model olgusunun belirsiz silme özelliğine sahip olup olmadığını 
 
 	}
 
-Zaman damgalarınızın biçimini özelleştirmek isterseniz, modelinizdeki `freshTimestamp` metodunu ezebilirsiniz (override):
-
 #### Özel Bir Zaman Damgası Biçiminin Şart Koşulması
+
+Zaman damgalarınızın biçimini özelleştirmek isterseniz, modelinizdeki `freshTimestamp` metodunu ezebilirsiniz (override):
 
 	class Uye extends Eloquent {
 
@@ -326,9 +330,9 @@ Zaman damgalarınızın biçimini özelleştirmek isterseniz, modelinizdeki `fre
 <a name="query-scopes"></a>
 ## Sorgu Kapsamları
 
-Kapsamlar size sorgu mantığınızı modellerinizde tekrar tekrar kullanma imkanı verir. Bir kapsam tanımlamak için bir model metodunun başına `scope` getirmeniz yeterlidir:
-
 #### Bir Sorgu Kapsamının Tanımlanması
+
+Kapsamlar size sorgu mantığınızı modellerinizde tekrar tekrar kullanma imkanı verir. Bir kapsam tanımlamak için bir model metodunun başına `scope` getirmeniz yeterlidir:
 
 	class Uye extends Eloquent {
 
@@ -380,9 +384,9 @@ Pek tabii, veritabanı tablolarınız büyük ihtimalle bir diğeriyle ilişkili
 <a name="one-to-one"></a>
 ### Birden Bire
 
-Birden bire şeklindeki bir ilişki çok basit bir ilişkidir. Örneğin, bir `Uye` modelinin bir `Telefon`'u olabilir. Eloquent'de bu ilişkiyi şöyle tanımlayabiliriz:
-
 #### Birden Bire Tarzı İlişki Tanımlama
+
+Birden bire şeklindeki bir ilişki çok basit bir ilişkidir. Örneğin, bir `Uye` modelinin bir `Telefon`'u olabilir. Eloquent'de bu ilişkiyi şöyle tanımlayabiliriz:
 
 	class Uye extends Eloquent {
 
@@ -472,9 +476,9 @@ Tıpkı hasOne'de olduğu gibi konvansiyonel yabancı key varsayımını `hasMan
 
 	return $this->hasMany('Yorum', 'foreign_key', 'local_key');
 
-İlişkinin tersini `Yorum` modelinde tanımlamak için, `belongsTo` metodu kullanılmaktadır:
-
 #### Bir İlişkinin Tersinin Tanımlanması
+
+İlişkinin tersini `Yorum` modelinde tanımlamak için, `belongsTo` metodu kullanılmaktadır:
 
 	class Yorum extends Eloquent {
 
@@ -597,9 +601,9 @@ Eğer ilişkinin keylerini elle belirtmek isterseniz, metoda üçüncü ve dörd
 
 	}
 
-Artık bir personel ya da siparişe ait fotoları elde edebiliriz:
-
 #### Çokbiçimli Bir İlişkinin Getirilmesi
+
+Artık bir personel ya da siparişe ait fotoları elde edebiliriz:
 
 	$personel = Personel::find(1);
 
@@ -618,9 +622,9 @@ Ancak, "çokbiçimli" ilişkinin gerçek farkını bir personel veya siparişe `
 
 `Foto` modelindeki `resim` ilişkisi, fotonun sahibi olan modele bağlı olarak ya bir `Personel` ya da bir `Siparis` olgusu döndürecektir.
 
-Bunun nasıl çalıştığını anlamanıza yardımcı olmak için bir polimorfik ilişkinin veritabanı yapısını keşfedelim:
-
 #### Çokbiçimli İlişki Tablo Yapısı
+
+Bunun nasıl çalıştığını anlamanıza yardımcı olmak için bir polimorfik ilişkinin veritabanı yapısını keşfedelim:
 
 	personel
 		id - integer
@@ -641,9 +645,9 @@ Buradaki anahtar alanların `fotolar` tablosundaki `resim_id` and `resim_type` o
 <a name="many-to-many-polymorphic-relations"></a>
 ### Birçoktan Birçoğa Çokbiçimli İlişkiler
 
-Geleneksel çokbiçimli ilişkilere ek olarak, birçoktan birçoğa çokbiçimli ilişkiler de belirleyebilirsiniz. Örneğin, bir blog `Post` ve `Video` modeli bir `Tag` modeline polimorfik bir ilişki paylaşabilirler. Önce, tablo yapısını inceleyelim:
-
 #### Çokbiçimli Birçoktan Birçoğa İlişkilerin Tablo Yapısı
+
+Geleneksel çokbiçimli ilişkilere ek olarak, birçoktan birçoğa çokbiçimli ilişkiler de belirleyebilirsiniz. Örneğin, bir blog `Post` ve `Video` modeli bir `Tag` modeline polimorfik bir ilişki paylaşabilirler. Önce, tablo yapısını inceleyelim:
 
 	posts
 		id - integer
@@ -692,9 +696,9 @@ Sonra da, model üzerinde ilişkileri kurmaya geçelim. `Post` ve `Video` modell
 <a name="querying-relations"></a>
 ## İlişkilerin Sorgulanması
 
-Bir modelin kayıtlarına erişirken, sonuçları bir ilişki varlığına göre sınırlamak isteyebilirsiniz. Diyelim ki, en az bir yorum yapılmış tüm blog makalelerini çekmek istediniz. Bunu yapmak için `has` metodunu kullanabilirsiniz:
-
 #### Seçerken İlişkilerin Yoklanması
+
+Bir modelin kayıtlarına erişirken, sonuçları bir ilişki varlığına göre sınırlamak isteyebilirsiniz. Diyelim ki, en az bir yorum yapılmış tüm blog makalelerini çekmek istediniz. Bunu yapmak için `has` metodunu kullanabilirsiniz:
 
 	$makaleler = Makale::has('yorumlar')->get();
 
@@ -800,7 +804,7 @@ Tabii ki, ateşli yükleme Closure'ları "sınırlamalara" sınırlı değildir.
 
 	$uyeler = Uye::with(array('makaleler' => function($query)
 	{
-		$query->orderBy('created_at', 'desc')
+		$query->orderBy('created_at', 'desc');
 
 	}))->get();
 
@@ -815,9 +819,9 @@ Tabii ki, ateşli yükleme Closure'ları "sınırlamalara" sınırlı değildir.
 <a name="inserting-related-models"></a>
 ## İlişkili Modelleri Ekleme
 
-Yeni ilişkili model ekleme ihtiyacınız çok olacaktır. Örneğin, bir makale için yeni bir yorum eklemek isteyebilirsiniz. Model üzerinde `makale_id` yabancı key alanını elle ayarlamak yerine, doğrudan ebeveyn `Makale` modelinden yeni yorum ekleyebilirsiniz:
-
 #### İlişkili Bir Modelin Eklenmesi
+
+Yeni ilişkili model ekleme ihtiyacınız çok olacaktır. Örneğin, bir makale için yeni bir yorum eklemek isteyebilirsiniz. Model üzerinde `makale_id` yabancı key alanını elle ayarlamak yerine, doğrudan ebeveyn `Makale` modelinden yeni yorum ekleyebilirsiniz:
 
 	$yorum = new Yorum(array('mesaj' => 'Yeni bir yorum.'));
 
@@ -855,15 +859,15 @@ Tabii, `attach`'in ters işlemi `detach`'tir:
 
 	$uye->roller()->detach(1);
 
-İlişkili modelleri bağlamak için `sync` metodunu da kullanabilirsiniz. Bu `sync` metodu parametre olarak pivot tablodaki yerlerin id'lerinden oluşan bir dizi geçirilmesini ister. Bu işlem tamamlandıktan sonra, model için kullanılacak ara tabloda sadece bu id'ler olacaktır:
-
 #### Birçoktan Birçoğa Model Bağlamak İçin Sync Kullanımı
+
+İlişkili modelleri bağlamak için `sync` metodunu da kullanabilirsiniz. Bu `sync` metodu parametre olarak pivot tablodaki yerlerin id'lerinden oluşan bir dizi geçirilmesini ister. Bu işlem tamamlandıktan sonra, model için kullanılacak ara tabloda sadece bu id'ler olacaktır:
 
 	$uye->roller()->sync(array(1, 2, 3));
 
-Belli id değerleri olan başka pivot tabloyu da ilişkilendirebilirsiniz:
-
 #### Sync Yaparken Pivot Veri Eklenmesi
+
+Belli id değerleri olan başka pivot tabloyu da ilişkilendirebilirsiniz:
 
 	$uye->roller()->sync(array(1 => array('sonaerme' => true)));
 
@@ -925,9 +929,9 @@ Eğer pivot tablonuzun `created_at` ve `updated_at` zaman damgalarını otomatik
 
 	return $this->belongsToMany('Rol')->withTimestamps();
 
-Bir modelin pivot tablosundaki tüm kayıtları silmek için, `detach` metodunu kullanabilirsiniz:
-
 #### Bir Pivot Tablodaki Kayıtların Silinmesi
+
+Bir modelin pivot tablosundaki tüm kayıtları silmek için, `detach` metodunu kullanabilirsiniz:
 
 	Uye::find(1)->roller()->detach();
 
@@ -947,9 +951,9 @@ Laravel size özel bir Pivot model tanımlama imkanı da verir. Özel bir model 
 
 Eloquent tarafından `get` metodu veya bir `relationship` (ilişki) aracılığıyla döndürülen tüm çoklu sonuç kümeleri bir Eloquent `Collection` nesnesi döndürecektir. Bu nesne PHP'nin `IteratorAggregate` arayüzünün bir uygulama biçimidir ve tıpkı bir dizide dolaşır gibi dolaşılabilinmektedir. Bunun yanında, bu nesne sonuç kümeleriyle çalışırken işe yarayan başka bir takım metodlara da sahiptir.
 
-Örneğin biz `contains` metodunu kullanarak bir sonuç kümesinin belli bir primer key içerip içermediğini tespit edebiliriz:
-
 #### Bir Koleksiyonun Bir Key Taşıyıp Taşımadığının Yoklanması
+
+Örneğin biz `contains` metodunu kullanarak bir sonuç kümesinin belli bir primer key içerip içermediğini tespit edebiliriz:
 
 	$roller = Uye::find(1)->roller;
 
@@ -968,9 +972,9 @@ Eğer bir koleksiyon bir string kalıbına çevrilirse JSON olarak döndürülec
 
 	$roller = (string) Uye::find(1)->roller;
 
-Eloquent koleksiyonları içerdikleri elemanları dolaşmak ve filtre etmekle ilgili bazı metodlara da sahiptir:
-
 #### Koleksiyonlarda Tekrarlı İşlemler
+
+Eloquent koleksiyonları içerdikleri elemanları dolaşmak ve filtre etmekle ilgili bazı metodlara da sahiptir:
 
 	$roller = $uye->roller->each(function($rol)
 	{
@@ -1008,9 +1012,9 @@ Verilen Closure (callback) [array_filter()](http://php.net/manual/en/function.ar
 
 	$roller = $roller->sortBy('created_at');
 
-Bazen de, kendi eklediğiniz metodları olan özel bir koleksiyon nesnesi döndürmek isteyebilirsiniz. Bunu, Eloquent modeliniz üzerinde `newCollection` metodunu ezerek yapabilirsiniz:
-
 #### Özel Bir Koleksiyon Tipinin Döndürülmesi
+
+Bazen de, kendi eklediğiniz metodları olan özel bir koleksiyon nesnesi döndürmek isteyebilirsiniz. Bunu, Eloquent modeliniz üzerinde `newCollection` metodunu ezerek yapabilirsiniz:
 
 	class Uye extends Eloquent {
 
@@ -1024,9 +1028,9 @@ Bazen de, kendi eklediğiniz metodları olan özel bir koleksiyon nesnesi dönd�
 <a name="accessors-and-mutators"></a>
 ## Erişimciler & Değiştiriciler (Accessors & Mutators)
 
-Eloquent model niteliklerini alıp getirirken veya onları ayarlarken dönüşüm yapmak için uygun bir yol sağlar. Bir erişimci beyan etmek için modeliniz üzerinde sadece bir `getFilanAttribute` metodu tanımlamak yeterlidir. Yalnız unutmamanız gereken şey, veritabanı sütunlarınızın isimleri yılan tarzı (küçük harfli kelimelerin boşluk olmaksızın alt tire ile birbirine bağlanması) olsa dahi, metodlarınızın deve tarzı (birinci kelimenin tümü küçük harf olmak ve sonraki kelimelerin ilk harfi büyük diğer hafleri küçük olmak üzere boşluk olmaksızın kelimelerin yanyana dizilmesi) olması gerektiğidir:
-
 #### Bir Erişimci Tanımlanması
+
+Eloquent model niteliklerini alıp getirirken veya onları ayarlarken dönüşüm yapmak için uygun bir yol sağlar. Bir erişimci beyan etmek için modeliniz üzerinde sadece bir `getFilanAttribute` metodu tanımlamak yeterlidir. Yalnız unutmamanız gereken şey, veritabanı sütunlarınızın isimleri yılan tarzı (küçük harfli kelimelerin boşluk olmaksızın alt tire ile birbirine bağlanması) olsa dahi, metodlarınızın deve tarzı (birinci kelimenin tümü küçük harf olmak ve sonraki kelimelerin ilk harfi büyük diğer hafleri küçük olmak üzere boşluk olmaksızın kelimelerin yanyana dizilmesi) olması gerektiğidir:
 
 	class Uye extends Eloquent {
 
@@ -1039,9 +1043,9 @@ Eloquent model niteliklerini alıp getirirken veya onları ayarlarken dönüşü
 
 Yukarıdaki örnekte `soy_adi` sütununun bir erişimcisi vardır. Niteliğin değerinin erişimciye geçildiğine dikkat ediniz.
 
-Değiştiriciler de benzer şekilde deklare edilir:
-
 #### Bir Değiştirici Tanımlanması
+
+Değiştiriciler de benzer şekilde deklare edilir:
 
 	class Uye extends Eloquent {
 
@@ -1080,18 +1084,18 @@ Eloquent modelleri bazı olayları tetikleyerek, modelin yaşam döngüsündeki 
 
 Yeni bir öğe ilk defa kaydedilir kaydedilmez `creating` ve `created` olayları ateşlenecektir. Eğer bir öğe yeni değilse ve `save` metodu çağrılırsa, `updating` / `updated` olayları ateşlenecektir. Her iki durumda da `saving` / `saved` olayları ateşlenecektir.
 
-Eğer `creating`, `updating`, `saving` veya `deleting` olaylarından `false` döndürülürse, eylem iptal edilecektir:
-
 #### Saklama Operasyonlarının Olaylar Aracığıyla İptal Edilmesi
+
+Eğer `creating`, `updating`, `saving` veya `deleting` olaylarından `false` döndürülürse, eylem iptal edilecektir:
 
 	Uye::creating(function($uye)
 	{
 		if ( ! $uye->isValid()) return false;
 	});
 
-Eloquent modelleri bunun dışında static bir `boot` metodu içermekte olup, olay bağlamanızı kayıt etmeniz için uygun bir yerdir.
-
 #### Bir Model Boot Metodunun Ayarlanması
+
+Eloquent modelleri bunun dışında static bir `boot` metodu içermekte olup, olay bağlamanızı kayıt etmeniz için uygun bir yerdir.
 
 	class Uye extends Eloquent {
 
@@ -1132,9 +1136,9 @@ Modelinizde `observe` metodunu kullanarak bir gözlemci olgusu kaydı yapabilirs
 <a name="converting-to-arrays-or-json"></a>
 ## Diziye / JSON'a Çevirme
 
-JSON APIler oluşturulurken, çoğu defa modellerinizi ve ilişkilerini dizilere veya JSON'a çevirmeniz gerekecektir. Bu yüzden Eloquent bunları yapacak metodlar içermektedir. Bir modeli ve onun yüklenen ilişkilerini bir diziye çevirmek için `toArray` metodunu kullanabilirsiniz:
-
 #### Bir Modelin Bir Diziye Çevrilmesi
+
+JSON APIler oluşturulurken, çoğu defa modellerinizi ve ilişkilerini dizilere veya JSON'a çevirmeniz gerekecektir. Bu yüzden Eloquent bunları yapacak metodlar içermektedir. Bir modeli ve onun yüklenen ilişkilerini bir diziye çevirmek için `toArray` metodunu kullanabilirsiniz:
 
 	$uye = Uye::with('roller')->first();
 
@@ -1144,24 +1148,24 @@ Modellerin koleksiyonlarının da bütün olarak dizilere dönüştürülebildi�
 
 	return Uye::all()->toArray();
 
-Bir Modeli JSON'a çevirmek için, `toJson` metodunu kullanabilirsiniz:
-
 #### Bir Modelin JSON'a Çevrilmesi
+
+Bir Modeli JSON'a çevirmek için, `toJson` metodunu kullanabilirsiniz:
 
 	return Uye::find(1)->toJson();
 
-Bir model veya koleksiyon bir string kalıbına sokulduğu takdirde, JSON'a çevrileceğine dikkat ediniz. Yani Elequent nesnelerini direkt olarak uygulamanızın rotalarından döndürebilirsiniz!
-
 #### Bir Modelin Bir Rotadan Döndürülmesi
+
+Bir model veya koleksiyon bir string kalıbına sokulduğu takdirde, JSON'a çevrileceğine dikkat ediniz. Yani Elequent nesnelerini direkt olarak uygulamanızın rotalarından döndürebilirsiniz!
 
 	Route::get('uyeler', function()
 	{
 		return Uye:all();
 	});
 
-Bazen bazı nitelikleri (örneğin şifreleri) modelinizin dizi veya JSON biçimlerinden hariç tutmak isteyebilirsiniz. Bunu yapmak için modelinize bir `hidden` özelliği ekleyiniz:
-
 #### Niteliklerin Dizi veya JSON'a Çevrilmekten Saklanması
+
+Bazen bazı nitelikleri (örneğin şifreleri) modelinizin dizi veya JSON biçimlerinden hariç tutmak isteyebilirsiniz. Bunu yapmak için modelinize bir `hidden` özelliği ekleyiniz:
 
 	class Uye extends Eloquent {
 

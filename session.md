@@ -13,6 +13,10 @@ HTTP odaklı uygulamalar durum bilgisi taşımadıkları için, oturumlar istekl
 
 Oturum yapılandırma ayarları `app/config/session.php` dosyasında bulunmaktadır. Bu belgede size sunulan iyi belgelenmiş seçenekleri gözden geçirmeyi unutmayın. Ön tanımlı olarak, Laravel `file` oturum sürücüsünü kullanmak üzere yapılandırılmıştır ve bu yapılandırma uygulamaların çoğunda iyi çalışacaktır.
 
+#### Ayrılmış (Rezerve) Anahtarlar
+
+Laravel framework dahili olarak `flash` session anahtarını kullanır, bu nedenle siz oturuma bu isimle bir öğe eklememelisiniz.
+
 <a name="session-usage"></a>
 ## Oturum Kullanımı
 

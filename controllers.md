@@ -125,8 +125,6 @@ Eğer filtre olarak denetçi sınıfın bir metodunu kullanmak isterseniz, filtr
 
 Laravel size, basit TEDA (REST) isimlendirme gelenekleri kullanarak, belirleyeceğiniz tek bir rota ile, denetçilerinizin içindeki her eylemi kullanabilme imkanını tanır. İlk olarak, `Route::controller` metodu ile bu rotayı tanımlayınız:
 
-#### TEDA-uyumlu Bir Denetçi Oluşturulması
-
 	Route::controller('kullanicilar', 'KullaniciController');
 
 `controller` metodu iki argüman alır. Birincisi denetçinin yöneteceği taban URI olup, ikincisi denetçinin sınıf ismidir. Akabinde sadece, isimlerine HTTP eyleminin ön ek olarak ekleneceği ve bunlara cevap verecek olan metodlarınızı denetçinize ilave ediniz:
@@ -189,13 +187,13 @@ Ve, aynı zamanda rotasında da eylemlerin sadece bazılarını yönetmesini bel
 	Route::resource('foto', 'FotoController',
 			array('only' => array('index', 'show')));
 
-	Route::resource('photo', 'PhotoController',
+	Route::resource('foto', 'FotoController',
 			array('except' => array('create', 'store', 'update', 'destroy')));
 
 Varsayılan olarak tüm kaynak denetçilerinin bir rota ismi bulunur; ancak bu isimleri üçüncü parametrede gireceğiniz dizi ile kendiniz belirleyebilirsiniz.
 
-	Route::resource('photo', 'PhotoController',
-					array('names' => array('create' => 'photo.build'));
+	Route::resource('foto', 'FotoController',
+					array('names' => array('create' => 'foto.build')));
 
 <a name="handling-missing-methods"></a>
 ## Eksik Olan Metodların İşlenmesi

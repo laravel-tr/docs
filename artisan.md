@@ -11,26 +11,26 @@ Artisan, Laravel içerisinde gelen CLI'ın (Command-line Interface) adıdır. Ar
 <a name="usage"></a>
 ## Kullanım
 
-Tüm Artisan komutlarını görmek için `list` komutunu kullanabilirsiniz:
+#### Tüm Kullanılabilir Komutların Listelenmesi
 
-#### Tüm Kullanılabilir Komutları Listelemek
+Tüm Artisan komutlarının bir listesini görmek için `list` komutunu kullanabilirsiniz:
 
 	php artisan list
 
-Tüm komutların özel bir "yardım" ekranı vardır ve komut hakkındaki argüman sırası ile ayarlar gibi bilgilerin açıklanmasını sağlar. Bir yardım ekranını görüntülemek için komut adından önce `help` yazın:
+#### Bir Komut için Yardım Ekranının Görüntülenmesi
 
-#### Bir Komut için Yardım Ekranını Görmek
+Tüm komutların özel bir "yardım" ekranı vardır ve komut hakkındaki argüman sırası ile ayarlar gibi bilgilerin açıklanmasını sağlar. Bir yardım ekranını görüntülemek için komut adından önce `help` yazın:
 
 	php artisan help migrate
 
-Bir komut kullanırken kullanılacak olan Ortam Ayarları'nı `--env` komutuyla belirleyebilirsiniz:
+#### Yapılandırma Ortamının Belirtilmesi
 
-#### Ortam Ayarlarını Belirlemek
+`--env` anahtarını kullanarak bir komut çalıştırılırken kullanılacak olan yapılandırma ortamını belirtebilirsiniz:
 
 	php artisan migrate --env=local
 
-Ayrıca şu an kullanmakta olduğunuz Laravel'in sürümünü de `--version` seçeneğini kullanarak Artisan üzerinden görebilirsiniz:
+#### Güncel Laravel Sürümünüzün Gösterilmesi
 
-#### Laravel'in Sürümünü Görmek
+Ayrıca Laravel yüklemenizin güncel sürümünü de `--version` seçeneğini kullanarak görebilirsiniz:
 
 	php artisan --version

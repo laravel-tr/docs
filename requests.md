@@ -110,6 +110,13 @@ Girdinin geçici olarak oturuma yansıtılmasını, sık şekilde bir önceki sa
 
 Dosya `file` metodu tarafından döndürülen nesne, PHP `SplFileInfo` sınıfının bir uzantısı olan ve dosya ile etkileşim için çeşitli metodlar sağlayan `Symfony\Component\HttpFoundation\File\UploadedFile` sınıfının bir olgusudur.
 
+#### Yüklenmiş Olan Bir Dosyanın Geçerli Olup Olmadığının Belirlenmesi
+
+	if (Input::file('foto')->isValid())
+	{
+		//
+	}
+
 #### Yüklenmiş Olan Bir Dosyanın Taşınması
 
 	Input::file('foto')->move($hedefDizinPatikasi);

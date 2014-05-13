@@ -53,9 +53,9 @@ Start dosyaları her türlü "bootstrapping" kodun koyulacağı basit bir yer ol
 <a name="application-events"></a>
 ## Application Olayları (Events)
 
-Bunlara ek olarak `before`, `after`, `close`, `finish` ve `shutdown` uygulama olaylarını kayda geçirmek suretiyle istek öncesinde ve sonrasında bazı işlemler de yapabilirsiniz:
-
 #### Uygulama Olaylarının Kayda Geçirilmesi
+
+Bunlara ek olarak `before`, `after`, `close`, `finish` ve `shutdown` uygulama olaylarını kayda geçirmek suretiyle istek öncesinde ve sonrasında bazı işlemler de yapabilirsiniz:
 
 	App::before(function($request)
 	{

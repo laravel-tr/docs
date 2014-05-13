@@ -46,9 +46,9 @@ Formunuz dosya yüklemelerini kabul edecekse, diziye `files` seçeneğini ekleyi
 <a name="csrf-protection"></a>
 ## CSRF Koruması
 
-Laravel, uygulamanızı siteler arası istek sahtekarlıklarından korumak için kolay bir metot sunar. Öncelikle, kullanıcının oturumuna rastgele bir değer yerleştirilir. Merak etmeyin, bu otomatik olarak yapılır. CSRF değeri, formlarınıza gizli bir alan olarak otomatik olarak yerleştirilir. Yine de, gizli alan için HTML kodunu oluşturmak isterseniz, `token` metodunu kullanabilirsiniz:
-
 #### Bir Forma CSRF Değeri Eklemek
+
+Laravel, uygulamanızı siteler arası istek sahtekarlıklarından korumak için kolay bir metot sunar. Öncelikle, kullanıcının oturumuna rastgele bir değer yerleştirilir. Merak etmeyin, bu otomatik olarak yapılır. CSRF değeri, formlarınıza gizli bir alan olarak otomatik olarak yerleştirilir. Yine de, gizli alan için HTML kodunu oluşturmak isterseniz, `token` metodunu kullanabilirsiniz:
 
 	echo Form::token();
 
@@ -62,9 +62,9 @@ Laravel, uygulamanızı siteler arası istek sahtekarlıklarından korumak için
 <a name="form-model-binding"></a>
 ## Forma Model Bağlanması
 
-Sıklıkla, bir modelin içeriğine dayanan bir form oluşturmak isteyebilirsiniz. Bunu yapmak için, `Form::model` metodunu kullanın:
-
 #### Bir Model Formu Açmak
+
+Sıklıkla, bir modelin içeriğine dayanan bir form oluşturmak isteyebilirsiniz. Bunu yapmak için, `Form::model` metodunu kullanın:
 
 	echo Form::model($user, array('route' => array('user.update', $user->id)))
 
@@ -135,6 +135,8 @@ Bu size model değerlerine bağlanan formları sadece çabukça oluşturmanıza 
 
 	echo Form::file('resim');
 
+> **Not:** Bu form `files` opsiyonu `true` ayarlanmış olarak açılmış olmalıdır.
+
 <a name="drop-down-lists"></a>
 ## Aşağı Açılır Listeler
 
@@ -173,9 +175,9 @@ Bu size model değerlerine bağlanan formları sadece çabukça oluşturmanıza 
 <a name="custom-macros"></a>
 ## Özel Makrolar
 
-"Makrolar" denen kendi özel Form sınıf yardımcılarınızı tanımlamak kolaydır. Nasıl çalıştığını görün: Önce belli bir isim ve Closure fonksiyonu ile makroyu kayda geçirin:
-
 #### Bir Form Makrosunun Kayda Geçirilmesi
+
+"Makrolar" denen kendi özel Form sınıf yardımcılarınızı tanımlamak kolaydır. Nasıl çalıştığını görün: Önce belli bir isim ve Closure fonksiyonu ile makroyu kayda geçirin:
 
 	Form::macro('makroAlan', function()
 	{

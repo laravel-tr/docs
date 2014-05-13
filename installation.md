@@ -43,7 +43,11 @@ PHP 5.5 için, bazı OS yayımlamaları PHP JSON eklentisinin elle yüklenmesini
 <a name="configuration"></a>
 ## Yapılandırma
 
-Laravel'in çalışabilmesi için neredeyse hiç yapılandırma ayarı gerekmez. Geliştirmeye hemen başlayabilirsiniz! Ancak `app/config/app.php` dosyasını ve dokümantasyonunu gözden geçirebilirsiniz. Buradaki `timezone` (saat dilimi) ve `locale` (lisan) gibi değerleri uygulamanızın ihtiyaçlarına göre düzenleyebilirsiniz.
+Laravel'in çalışabilmesi için neredeyse hiç yapılandırma ayarı gerekmez. Geliştirmeye hemen başlayabilirsiniz! Ancak `app/config/app.php` dosyasını ve dokümantasyonunu gözden geçirebilirsiniz. Buradaki `timezone` (saat dilimi) ve `locale` gibi değerleri uygulamanızın ihtiyaçlarına göre düzenleyebilirsiniz.
+
+Laravel yüklendikten sonra, [local ortamınızı yapılandırmanız](/docs/configuration#environment-configuration) da gerekmektedir. Bu size local makinenizde geliştirme yaparken ayrıntılı hata mesajları alma imkanı verecektir. Ön tanımlı olarak, üretim yapılandırma dosyanızdaki ayrıntılı hata bildirimi devre dışı durumdadır.
+
+> **Not:** Bir üretim ortamında `app.debug` değerini asla `true` ayarlamamalısınız. Bunu hiçbir zaman yapmayın.
 
 <a name="permissions"></a>
 ### İzinler

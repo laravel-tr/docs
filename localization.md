@@ -24,9 +24,9 @@ Diller için kayıtlar `app/lang` dizininin içerisindeki dosyalarda tutulur. Bu
 			/tr
 				mesajlar.php
 
-Dil dosyaları basitçe anahtarlı bir şekilde kayıtları barındıran bir dizi döndürür. Örneğin:
-
 #### Örnek Dil Dosyası
+
+Dil dosyaları basitçe anahtarlı bir şekilde kayıtları barındıran bir dizi döndürür. Örneğin:
 
 	<?php
 
@@ -34,11 +34,17 @@ Dil dosyaları basitçe anahtarlı bir şekilde kayıtları barındıran bir diz
 		'hosgeldiniz' => 'Uygulamamıza hoş geldiniz!'
 	);
 
-Uygulamanız için varsayılan dil `app/config/app.php` ayar dosyasında tutulmaktadır. Bunun dışında, aktif dili `App::setLocale` metoduyla çalışma esnasında da değiştirebilirsiniz.
-
 #### Varsayılan Dili Çalışma Esnasında Değiştirmek
 
+Uygulamanız için varsayılan dil `app/config/app.php` ayar dosyasında tutulmaktadır. Bunun dışında, aktif dili `App::setLocale` metoduyla çalışma esnasında da değiştirebilirsiniz.
+
 	App::setLocale('tr');
+
+#### Yedek Dil Ayarı
+
+Etkin dil verilen bir dil satırını içermediğinde kullanılacak olan bir "yedek dil" de yapılandırabilirsiniz. Varsayılan dile benzer şekilde, yedek dil de `app/config/app.php` yapılandırma dosyasında yapılandırılır:
+
+	'fallback_locale' => 'en',
 
 <a name="basic-usage"></a>
 ## Temel Kullanım
@@ -85,7 +91,7 @@ Daha sonra `Lang::choise` metoduyla satırı alabilirsiniz:
 
 Ayrıca dili belirtmek için bir locale parametresi de verebilirsiniz. Örneğin, eğer Rusca (ru) dili kullanmak istiyorsanız:
 
-	echo Lang::choice('{0} нет товаров|{1} товар', 1, array(), 'ru');
+	echo Lang::choice('товар|товара|товаров', $count, array(), 'ru');
 
 Laravel'in tercümecisi gücünü Symfony'nin tercüme bileşeninden aldığı için, daha belirgin çoğullaştırma kuralları da belirleyebilirsiniz:
 

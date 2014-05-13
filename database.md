@@ -68,9 +68,9 @@ Veritabanı bağlantılarını bir kere yapılandırdıktan sonra `DB` sınıfı
 
 	DB::statement('drop table uyeler');
 
-`DB::listen` metodunu kullanarak sorgu olaylarını dinleyebilirsiniz:
-
 #### Sorgu Olaylarını Dinleme
+
+`DB::listen` metodunu kullanarak sorgu olaylarını dinleyebilirsiniz:
 
 	DB::listen(function($sql, $bindings, $time)
 	{

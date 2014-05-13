@@ -154,21 +154,21 @@ Laravel'in önceki sürümlerinde, bir paketin hangi URI'lere cevap vereceğini 
 <a name="package-configuration"></a>
 ## Paket Yapılandırması
 
-Bazı paketler yapılandırma dosyaları gerektirebilir. Bu dosyalar tipik uygulama yapılandırma dosyalarıyla aynı şekilde tanımlanmalıdır. Ve, hizmet sağlayıcınızda kaynakları kayda geçirmede ön tanımlı `$this->package` metodunu kullanıyorken, olağan "çift iki nokta üst üste" sözdizimini kullanarak erişebilirsiniz:
-
 #### Paket Yapılandırma Dosyalarına Erişme
+
+Bazı paketler yapılandırma dosyaları gerektirebilir. Bu dosyalar tipik uygulama yapılandırma dosyalarıyla aynı şekilde tanımlanmalıdır. Ve, hizmet sağlayıcınızda kaynakları kayda geçirmede ön tanımlı `$this->package` metodunu kullanıyorken, olağan "çift iki nokta üst üste" sözdizimini kullanarak erişebilirsiniz:
 
 	Config::get('paket::dosya.secenek');
 
-Ancak eğer paketiniz tek bir yapılandırma dosyası içeriyorsa, adına sadece `config.php` diyebilirsiniz. Böyle yapmışsanız, dosya adını belirtmenize gerek kalmadan seçeneklere doğrudan erişebilirsiniz:
-
 #### Tek Dosyalı Paket Yapılandırmasına Erişme
+
+Ancak eğer paketiniz tek bir yapılandırma dosyası içeriyorsa, adına sadece `config.php` diyebilirsiniz. Böyle yapmışsanız, dosya adını belirtmenize gerek kalmadan seçeneklere doğrudan erişebilirsiniz:
 
 	Config::get('paket::secenek');
 
-Bazen, görünümler gibi paket kaynaklarınızı tipik `$this->package` metodundan başka türlü kayda geçirmek isteyebilirsiniz. Tipik olarak bu sadece kaynaklar konvansiyonel bir yerleşimde olmadıkları takdirde yapılacaktır. Bu kaynakları elle kayda geçirmek için `View`, `Lang` ve `Config` sınıflarının `addNamespace` metodunu kullanabilirsiniz:
-
 #### Bir Kaynak Aduzayının Elle Kayda Geçirilmesi
+
+Bazen, görünümler gibi paket kaynaklarınızı tipik `$this->package` metodundan başka türlü kayda geçirmek isteyebilirsiniz. Tipik olarak bu sadece kaynaklar konvansiyonel bir yerleşimde olmadıkları takdirde yapılacaktır. Bu kaynakları elle kayda geçirmek için `View`, `Lang` ve `Config` sınıflarının `addNamespace` metodunu kullanabilirsiniz:
 
 	View::addNamespace('paket', __DIR__.'/views/dosya/yolu');
 
@@ -181,8 +181,6 @@ Aduzayı kayda geçirildikten sonra, kaynağa erişmek için aduzayının adın�
 ### Basamaklı Yapılandırma Dosyaları
 
 Diğer geliştiriciler sizin paketlerinizi yükledikleri zaman yapılandırma seçeneklerinden bir kısmını geçersiz kılmak ve değiştirmek isteyebilirler. Ancak, eğer sizin paket kaynak kodunuzdaki değerleri değiştirirlerse, Composer'in daha sonraki paket güncellemesinde bunun üzerine yazılacaktır, tekrar sizin yazdığınız hale gelecektir. O yüzden, bunun yerine `config:publish` artisan komutu kullanılmalıdır:
-
-#### Config Publish Komutunun Çalıştırılması
 
 	php artisan config:publish satici/paket
 
@@ -202,9 +200,9 @@ Bu komut paketin view'lerini `app/views/packages` dizinine taşıyacaktır. Şay
 <a name="package-migrations"></a>
 ## Paket Migrasyonları
 
-Paketleriniz için kolayca migrasyon oluşturabilir ve çalıştırabilirsiniz. workbench'de bir paket için bir migrasyon oluşturmak için `--bench` seçeneğini kullanın:
-
 #### Workbench Paketleri İçin Migrasyon Oluşturulması
+
+Paketleriniz için kolayca migrasyon oluşturabilir ve çalıştırabilirsiniz. workbench'de bir paket için bir migrasyon oluşturmak için `--bench` seçeneğini kullanın:
 
 	php artisan migrate:make create_users_table --bench="satici/paket"
 
@@ -212,18 +210,18 @@ Paketleriniz için kolayca migrasyon oluşturabilir ve çalıştırabilirsiniz. 
 
 	php artisan migrate --bench="satici/paket"
 
-`vendor` dizinine Composer tarafından yüklenmiş bitmiş bir paket için migrasyonlar çalıştırmak için `--package` yönergesini kullanabilirsiniz:
-
 #### Yüklenmiş Bir Paket İçin Migrasyonların Çalıştırılması
+
+`vendor` dizinine Composer tarafından yüklenmiş bitmiş bir paket için migrasyonlar çalıştırmak için `--package` yönergesini kullanabilirsiniz:
 
 	php artisan migrate --package="satici/paket"
 
 <a name="package-assets"></a>
 ## Paket Varlıkları
 
-Bazı paketlerde JavaScript, CSS ve resimler gibi varlıklar olabilir. Ancak biz `satici` veya `workbench` dizinlerinde varlıklara bağlanamayız, öyleyse bu varlıkları uygulamamızın `public` dizinine taşıyacak bir yola ihtiyacımız var. Sizin için bununla `asset:publish` komutu ilgilenecektir:
-
 #### Paket Varlıklarının Public Dizinine Taşınması
+
+Bazı paketlerde JavaScript, CSS ve resimler gibi varlıklar olabilir. Ancak biz `satici` veya `workbench` dizinlerinde varlıklara bağlanamayız, öyleyse bu varlıkları uygulamamızın `public` dizinine taşıyacak bir yola ihtiyacımız var. Sizin için bununla `asset:publish` komutu ilgilenecektir:
 
 	php artisan asset:publish
 

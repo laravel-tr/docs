@@ -44,9 +44,9 @@ Testleri çalıştırırken, Laravel otomatik olarak ortam yapılandırmasını 
 <a name="calling-routes-from-tests"></a>
 ## Testlerin İçerisinden Rotaları Çağırmak
 
-Testleriniz içerisinde `call` metodu ile rahatlıkla rotaları çağırabilirsiniz:
-
 #### Test Dosyasından Bir Rota Çağırmak
+
+Testleriniz içerisinde `call` metodu ile rahatlıkla rotaları çağırabilirsiniz:
 
 	$response = $this->call('GET', 'user/profile');
 
@@ -56,9 +56,9 @@ Daha sonra `Illuminate\Http\Response` nesnesini inceleyebilirsiniz:
 
 	$this->assertEquals('Hello World', $response->getContent());
 
-Ayrıca bir test dosyasından denetçileri de çağırabilirsiniz:
-
 #### Test Dosyasından Bir Denetçi Çağırmak
+
+Ayrıca bir test dosyasından denetçileri de çağırabilirsiniz:
 
 	$response = $this->action('GET', 'HomeController@index');
 
@@ -157,6 +157,21 @@ Laravel test yapımını kolaylaştırmak için halihazırda bazı `assert` meto
 
 		$this->assertSessionHas('name');
 		$this->assertSessionHas('age', $value);
+	}
+
+#### Session'da Hatalar Olup Olmadığını Ispatlama
+
+	public function testMethod()
+	{
+		$this->call('GET', '/');
+
+		$this->assertSessionHasErrors();
+
+		// Verilen bir anahtar için sessionda hata olup olmadığına bakmak...
+		$this->assertSessionHasErrors('name');
+
+		// Birkaç anahtar için sessionda hata olup olmadığına bakmak...
+		$this->assertSessionHasErrors(array('name', 'age'));
 	}
 
 #### Eski Girdide Veri Olduğunu Ispatlamak

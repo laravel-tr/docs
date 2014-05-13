@@ -10,7 +10,7 @@
 <a name="introduction"></a>
 ## Giriş
 
-Cepheler uygulamanızın [IoC konteynerinde](/docs/ioc) bulunan sınıflar için "statik" bir arayüz sağlar. Laravel birçok cephe ile gelmektedir ve büyük bir ihtimalle daha ne olduklarını bilmeden onları kullanıyorsunuzdur!
+Cepheler uygulamanızın [IoC konteynerinde](/docs/ioc) bulunan sınıflar için "statik" bir arayüz sağlar. Laravel birçok cephe ile gelmektedir ve büyük bir ihtimalle daha ne olduklarını bilmeden onları kullanıyorsunuzdur! Laravel "facade'ları" IoC konteynerindeki altta yatan sınıflara "static proksiler" olarak hizmet ederek, geleneksel static metodlardan daha fazla test edilebilirlik ve esneklik sürdürürken özlü ve anlamlı sözdizimi yararını sağlarlar.
 
 Zaman zaman, uygulama ve paketleriniz için kendi cephelerinizi oluşturmak isteyebilirsiniz, bu itibarla bu sınıfların kavramlarını, geliştirilmesini ve kullanımını inceleyelim.
 

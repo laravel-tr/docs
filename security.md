@@ -8,6 +8,7 @@
 - [HTTP Basic Kimlik Doğrulaması](#http-basic-authentication)
 - [Şifre Hatırlatıcıları & Sıfırlama](#password-reminders-and-reset)
 - [Kriptolama](#encryption)
+- [Kimlik Doğrulama Sürücüleri](#authentication-drivers)
 
 <a name="configuration"></a>
 ## Yapılandırma
@@ -17,6 +18,8 @@ Laravel, kimlik doğrulanması işlerini çok basit hale getirmeyi amaçlamaktad
 Ön tanımlı olarak, Laravel `app/models` dizininde bir `User` modeli içermektedir ve bu model ön tanımlı Eloquent kimlik doğrulama sürücüsü ile kullanıma hazırdır. Bu modelin şemasını oluştururken şifre alanının en az 60 karakter olmasını temin etmeniz gerektiğini unutmayın.
 
 Şayet sizin uygulamanız Eloquent kullanmıyorsa, Laravel sorgu oluşturucusunu kullanan `database` kimlik doğrulama sürücüsünü kullanabilirsiniz.
+
+> **Not:** Başlamadan önce `users` (veya dengi olan) tablonuzun 100 karakterlik string tipinde nullable bir `remember_token` sütunu taşıdığından emin olun. Bu sütun, uygulamanız tarafından sürdürülecek olan "remember me (beni hatırla)" session'ları için bir token saklamak amacıyla kullanılacaktır.
 
 <a name="storing-passwords"></a>
 ## Şifrelerin Saklanması
@@ -55,18 +58,18 @@ Buradaki `email`'in gerekli bir seçenek değil, sadece örnek olsun diye kullan
 
 `attempt` metodu çağrıldığında, `auth.attempt` [olayı](/docs/events) ateşlenecektir. Şayet kimlik doğrulama girişimi başarılı olur ve kullanıcı giriş yapmış olursa, `auth.login` olayı da ateşlenecektir.
 
-Bir kullanıcının uygulamanıza zaten giriş yapmış olduğunu tayin etmek için `check` metodunu kullanabilirsiniz:
-
 #### Bir Kullanıcının Doğrulanmış Olup Olmadığının Tayin Edilmesi
+
+Bir kullanıcının uygulamanıza zaten giriş yapmış olduğunu tayin etmek için `check` metodunu kullanabilirsiniz:
 
 	if (Auth::check())
 	{
 		// Kullanıcı giriş yapmıştır...
 	}
 
-Şayet uygulamanıza "beni hatırla" işlevselliği vermek istiyorsanız, `attempt` metoduna ikinci parametre olarak `true` geçebilirsiniz, böylece bu kullanıcı süresiz olarak "doğrulanmış" tutulacaktır (ya da manuel olarak çıkış işlemi yapıncaya kadar):
-
 #### Bir Kullanıcının Kimliğinin Doğrulanması ve "Hatırlanması"
+
+Şayet uygulamanıza "beni hatırla" işlevselliği vermek istiyorsanız, `attempt` metoduna ikinci parametre olarak `true` geçebilirsiniz, böylece bu kullanıcı süresiz olarak "doğrulanmış" tutulacaktır (ya da manuel olarak çıkış işlemi yapıncaya kadar). Tabi ki, `users` tablonuz "remember me" tokenini saklamakta kullanılacak olan string `remember_token` sütunu içermelidir.
 
 	if (Auth::attempt(array('email' => $email, 'password' => $parola), true))
 	{
@@ -76,7 +79,6 @@ Bir kullanıcının uygulamanıza zaten giriş yapmış olduğunu tayin etmek i�
 **Not:** `attempt` metodu `true` döndürürse, kullanıcı uygulamanıza girmiş kabul edilir.
 
 #### Kullanıcının Remember Aracılığıyla mı Doğrulanmış Olduğunun Tayin Edilmesi
-
 Eğer kullanıcı girişlerini "hatırlıyorsanız", bir kullanıcının "remember me" (beni hatırla) çerezi kullanılarak doğrulanmış olup olmadığını belirlemek için `viaRemember` metodunu kullanabilirsiniz:
 
 	if (Auth::viaRemember())
@@ -84,9 +86,9 @@ Eğer kullanıcı girişlerini "hatırlıyorsanız", bir kullanıcının "rememb
 		//
 	}
 
-Kimlik doğrulama sorgusuna ekstra şartlar da ekleyebilirsiniz:
-
 #### Bir Kullanıcının Ek Şartlara Göre Doğrulanması
+
+Kimlik doğrulama sorgusuna ekstra şartlar da ekleyebilirsiniz:
 
     if (Auth::attempt(array('email' => $email, 'password' => $parola, 'aktif' => 1)))
     {
@@ -95,9 +97,9 @@ Kimlik doğrulama sorgusuna ekstra şartlar da ekleyebilirsiniz:
 
 > **Not:** Oturum sabitlemesine karşı koruma amacıyla, kimlik doğrulaması sonrasında kullanıcının oturum ID'si otomatik olarak yeniden üretilecektir.
 
-Bir kullanıcının kimliği doğrulandıktan sonra, bu kullanıcının modeline / kaydına ulaşabilirsiniz:
-
 #### Login Yapmış Kullanıcıya Erişme
+
+Bir kullanıcının kimliği doğrulandıktan sonra, bu kullanıcının modeline / kaydına ulaşabilirsiniz:
 
 	$email = Auth::user()->email;
 
@@ -105,18 +107,18 @@ Bir kullanıcıyı sadece ID'i ile uygulamanıza giriş yaptırtmak için `login
 
 	Auth::loginUsingId(1);
 
-`validate` metodu gerçekte uygulamaya giriş yapılmaksızın bir kullanıcının kimlik bilgilerinin geçerlilik denetiminden geçirilmesine imkan verir:
-
 #### Login Olmaksızın Kullanıcı Bilgilerinin Geçerlilik Denetimi
+
+`validate` metodu gerçekte uygulamaya giriş yapılmaksızın bir kullanıcının kimlik bilgilerinin geçerlilik denetiminden geçirilmesine imkan verir:
 
 	if (Auth::validate($kimlikbilgileri))
 	{
 		//
 	}
 
-Bir kullanıcıyı uygulamanıza tek bir istek için giriş yapmak için de `once` metodunu kullanabilirsiniz. Bu durumda oturum veya çerezler kullanılmayacaktır.
-
 #### Bir Kullanıca Tek Bir İstek İçin Giriş Yapma
+
+Bir kullanıcıyı uygulamanıza tek bir istek için giriş yapmak için de `once` metodunu kullanabilirsiniz. Bu durumda oturum veya çerezler kullanılmayacaktır.
 
 	if (Auth::once($kimlikbilgileri))
 	{
@@ -184,9 +186,9 @@ HTTP Basic Kimlik Doğrulaması, kullanıcıları özel bir "giriş" sayfası a�
 		return Auth::basic('username');
 	});
 
-HTTP Basic Kimlik Doğrulamasını oturumda kullanıcı tanıtıcı bir çerez ayarlamadan da kullanabilirsiniz, bu daha çok API kimlik doğrulamalarında işe yarayacaktır. Bunu yapmak için, `onceBasic` metodu döndüren bir filtre tanımlayın:
-
 #### Durum Bilgisi Olmaksızın Bir HTTP Basic Filtresi Ayarlanması
+
+HTTP Basic Kimlik Doğrulamasını oturumda kullanıcı tanıtıcı bir çerez ayarlamadan da kullanabilirsiniz, bu daha çok API kimlik doğrulamalarında işe yarayacaktır. Bunu yapmak için, `onceBasic` metodu döndüren bir filtre tanımlayın:
 
 	Route::filter('basic.once', function()
 	{
@@ -216,9 +218,9 @@ Eğer PHP FastCGI kullanıyorsanız, HTTP Basic kimlik doğrulaması ön tanıml
 
 	}
 
-Daha sonra, şifre yenileme jetonlarının saklanacağı bir tablo oluşturulmalıdır. Bu tablo için bir migrasyon üretmek için yapacağınız tek şey `auth:reminders` Artisan komutunu çalıştırmaktır:
-
 #### Hatırlatıcı Tablo Migrasyonunun Üretilmesi
+
+Daha sonra, şifre yenileme jetonlarının saklanacağı bir tablo oluşturulmalıdır. Bu tablo için bir migrasyon üretmek için yapacağınız tek şey `auth:reminders-table` Artisan komutunu çalıştırmaktır:
 
 	php artisan auth:reminders-table
 
@@ -290,10 +292,15 @@ Laravel, mcrypt PHP uzantısı aracılığıyla güçlü AES-256 kriptolama imka
 
 	$cozuk = Crypt::decrypt($kriptolu);
 
-Ayrıca, kriptocu tarafından kullanılan cipher ve mod da ayarlayabilirsiniz
-
 #### Cipher ve Mod Ayarlanması
+
+Ayrıca, kriptocu tarafından kullanılan cipher ve mod da ayarlayabilirsiniz
 
 	Crypt::setMode('crt');
 
 	Crypt::setCipher($cipher);
+
+<a name="authentication-drivers"></a>
+## Kimlik Doğrulama Sürücüleri
+
+Laravel kutusunda `database` ve `eloquent` kimlik doğrulama sürücüleriyle gelir. Diğer kimlik doğrulama sürücüleri eklenmesiyle ilgili daha fazla bilgi için [Authentication genişletme dokümantasyonu](/docs/extending#authentication) kesimini kontrol ediniz.

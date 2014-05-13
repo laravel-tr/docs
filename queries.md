@@ -120,7 +120,8 @@ Sorgu oluşturucusu join cümleleri yazmak için de kullanılabilir. Şu örnekl
 	DB::table('uyeler')
 	            ->join('kisiler', 'uyeler.id', '=', 'kisiler.uye_id')
 	            ->join('siparisler', 'uyeler.id', '=', 'siparisler.uye_id')
-	            ->select('uyeler.id', 'kisiler.telefon', 'siparisler.fiyat');
+	            ->select('uyeler.id', 'kisiler.telefon', 'siparisler.fiyat')
+				->get();
 
 #### Left Join Cümlesi
 
@@ -150,9 +151,9 @@ Daha ileri join cümleleri de tanımlayabilirsiniz:
 <a name="advanced-wheres"></a>
 ## İleri Where Cümleleri
 
-Kimi zaman "where exists" veya içi içe parametre gruplaması gibi daha ileri where cümleleri oluşturmanız gerekebilir. Laravel sorgu oluşturucusu bunu da halledecektir:
-
 #### Parametre Gruplaması
+
+Kimi zaman "where exists" veya içi içe parametre gruplaması gibi daha ileri where cümleleri oluşturmanız gerekebilir. Laravel sorgu oluşturucusu bunu da halledecektir:
 
 	DB::table('uyeler')
 	            ->where('isim', '=', 'Can')
@@ -238,9 +239,9 @@ Ayrıca, güncellenecek ek sütunlar belirtebilirsiniz:
 		array('email' => 'can@numune.com', 'puan' => 0)
 	);
 
-Şayet tabloda otomatik artan bir id alanı varsa, bir kayıt eklemek ve oluşan otomatik id'i öğrenmek için `insertGetId` metodu kullanılabilir:
-
 #### Otomatik Artan Bir Id Alanı Olan Tabloya Kayıt Eklenmesi
+
+Şayet tabloda otomatik artan bir id alanı varsa, bir kayıt eklemek ve oluşan otomatik id'i öğrenmek için `insertGetId` metodu kullanılabilir:
 
 	$id = DB::table('uyeler')->insertGetId(
 		array('email' => 'can@numune.com', 'puan' => 0)
@@ -284,8 +285,6 @@ Ayrıca, güncellenecek ek sütunlar belirtebilirsiniz:
 
 Sorgu oluşturucusu, iki ayrı sorgunun tek bir "birlik" haline getirilmesi için de hızlı bir yol sağlamaktadır:
 
-#### Bir Birleştirme Sorgusu Yapılması
-
 	$ilksorgu = DB::table('uyeler')->whereNull('ismi');
 
 	$uyeler = DB::table('uyeler')->whereNull('soy_ismi')->union($ilksorgu)->get();
@@ -309,8 +308,6 @@ Bir SELECT cümlesinde "güncelleme için kilitlemek" için bir sorgu üzerinde 
 ## Sorguların Bellekte Saklanması
 
 Bir sorgunun sonuçları `remember` metodu kullanılarak bellekte saklanabilir:
-
-#### Bir Sorgu Sonucunun Bellekte Saklanması
 
 	$uyeler = DB::table('uyeler')->remember(10)->get();
 

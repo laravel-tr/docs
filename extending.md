@@ -177,7 +177,7 @@ Laravel frameworke dahil edilen hemen her hizmet sağlayıcı IoC konteynerine n
 
 Örneğin, `HashServiceProvider` IoC konteynerine bir `hash` anahtarı bağlar ve bu bir `Illuminate\Hashing\BcryptHasher` olgusuna çözümlenir. Siz kendi uygulamanız içinde bu sınıfı genişleletebilir ve bu IoC bağlamasını ezmek suretiyle bu sınıf yerine kendi genişletmenizi kullanabilirsiniz. Örneğin:
 
-	class SnappyHasherProvider extends Illuminate\Hashing\HashServiceProvider {
+	class SnappyHashProvider extends Illuminate\Hashing\HashServiceProvider {
 
 		public function boot()
 		{

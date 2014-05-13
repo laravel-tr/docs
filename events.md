@@ -24,17 +24,17 @@ Laravel'in `Event` sınıfı, uygulamanızdaki olaylara abone olmanıza ve dinle
 
 	$olay = Event::fire('uye.login', array($uye));
 
-Olaylara abone olurken bir öncelik de belirtebilirsiniz. Daha yüksek önceliği olan dinleyiciler daha önce çalışacak, aynı önceliğe sahip dinleyiciler ise abonelik sırasına göre çalışacaklardır.
-
 #### Bir Olaya Abone Olurken Öncelik Belirtme
+
+Olaylara abone olurken bir öncelik de belirtebilirsiniz. Daha yüksek önceliği olan dinleyiciler daha önce çalışacak, aynı önceliğe sahip dinleyiciler ise abonelik sırasına göre çalışacaklardır.
 
 	Event::listen('uye.login', 'LoginHandler', 10);
 
 	Event::listen('uye.login', 'DigerHandler', 5);
 
-Bazen bir olayın diğer dinleyicilere yayılmasını durdurmak isteyebilirsiniz. Dinleyicinizden `false` döndürerek bunu gerçekleştirebilirsiniz:
-
 #### Bir Olayın Yayılımının Durdurulması
+
+Bazen bir olayın diğer dinleyicilere yayılmasını durdurmak isteyebilirsiniz. Dinleyicinizden `false` döndürerek bunu gerçekleştirebilirsiniz:
 
 	Event::listen('uye.login', function($event)
 	{
@@ -52,9 +52,9 @@ Eğer `start` dosyalarınız çok kalabalık bir hale gelirse, bir `start` dosya
 <a name="wildcard-listeners"></a>
 ## Joker Dinleyiciler
 
-Bir olay dinleyiciyi kayda geçirirken, joker dinleyicileri belirtmek üzere yıldız işareti kullanabilirsiniz:
-
 #### Joker Olay Dinleyicilerin Kayda Geçirilmesi
+
+Bir olay dinleyiciyi kayda geçirirken, joker dinleyicileri belirtmek üzere yıldız işareti kullanabilirsiniz:
 
 	Event::listen('falan.*', function($param)
 	{
@@ -82,9 +82,9 @@ Bazı durumlarda, bir olayı işlemek için bir anonim fonksiyon yerine bir sın
 
 	Event::listen('uye.login', 'LoginIsleyici');
 
-Ön tanımlı olarak, `LoginIsleyici` sınıfındaki `handle` metodu çağrılacaktır:
-
 #### Bir Olay Dinleyici Sınıfının Tanımlanması
+
+Ön tanımlı olarak, `LoginIsleyici` sınıfındaki `handle` metodu çağrılacaktır:
 
 	class LoginIsleyici {
 
@@ -95,18 +95,18 @@ Bazı durumlarda, bir olayı işlemek için bir anonim fonksiyon yerine bir sın
 
 	}
 
-Eğer ön tanımlı `handle` metodunu kullanmak istemiyorsanız, abone olunacak metodu belirleyebilirsiniz:
-
 #### Hangi Metoda Abone Olunduğunun Tanımlanması
+
+Eğer ön tanımlı `handle` metodunu kullanmak istemiyorsanız, abone olunacak metodu belirleyebilirsiniz:
 
 	Event::listen('uye.login', 'LoginIsleyici@onLogin');
 
 <a name="queued-events"></a>
 ## Olayları Sıraya Sokma
 
-`queue` ve `flush` metodlarını kullanarak, bir olayı hemen ateşlemeyip, ateşlenmek üzere "sıraya" sokabilirsiniz:
-
 #### Sıralı Bir Olayın Kayda Geçirilmesi
+
+`queue` ve `flush` metodlarını kullanarak, bir olayı hemen ateşlemeyip, ateşlenmek üzere "sıraya" sokabilirsiniz:
 
 	Event::queue('falan', array($uye));
 
@@ -124,9 +124,9 @@ Son olarak, ilgili "flusher"ı çalıştırabilir ve `flush` metodunu kullanarak
 <a name="event-subscribers"></a>
 ## Olay Abonecileri
 
-Olay abonecileri, sınıfın kendi içinden birden çok olaya abone olabilen sınıflardır. Aboneciler bir `subscribe` metodu ile tanımlanırlar ve bu metoda parametre olarak bir olay sevkiyatçısı olgusu geçilecektir:
-
 #### Bir Olay Abonecisi Tanımlanması
+
+Olay abonecileri, sınıfın kendi içinden birden çok olaya abone olabilen sınıflardır. Aboneciler bir `subscribe` metodu ile tanımlanırlar ve bu metoda parametre olarak bir olay sevkiyatçısı olgusu geçilecektir:
 
 	class UyeOlayIsleyici {
 
@@ -161,10 +161,14 @@ Olay abonecileri, sınıfın kendi içinden birden çok olaya abone olabilen sı
 
 	}
 
-Aboneci tanımlandıktan sonra, `Event` sınıfı kullanılarak kayda geçirilebilir.
-
 #### Bir Olay Abonecisinin Kayda Geçirilmesi
 
-	$abone = new UyeOlayIsleyici;
+Aboneci tanımlandıktan sonra, `Event` sınıfı kullanılarak kayda geçirilebilir.
 
-	Event::subscribe($abone);
+	$aboneci = new UyeOlayIsleyici;
+
+	Event::subscribe($aboneci);
+
+Ayrıca abonecinizi çözümlemek için [Laravel IoC konteynerini](/docs/ioc) de kullanabilirsiniz. Bunu yapmak için `subscribe` metoduna sadece abonecinizin ismini geçiniz:
+
+	Event::subscribe('UyeOlayIsleyici');

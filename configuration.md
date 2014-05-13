@@ -21,9 +21,9 @@ Eğer yapılandırma değeri bulunamazsa dönecek değeri ise, ikinci bir parame
 
 	$timezone = Config::get('app.timezone', 'UTC');
 
-Lütfen dikkat edin, "nokta" şeklindeki kullanım biçimi tüm yapılandırma dosyalarına erişmenizi sağlar. Dilerseniz yapılandırma değerlerini run-time (çalışma anı) esnasında da ayarlayabilirsiniz:
-
 **Bir Yapılandırma Değeri Ayarlamak**
+
+Lütfen dikkat edin, "nokta" şeklindeki kullanım biçimi tüm yapılandırma dosyalarına erişmenizi sağlar. Dilerseniz yapılandırma değerlerini run-time (çalışma anı) esnasında da ayarlayabilirsiniz:
 
 	Config::set('database.default', 'sqlite');
 
@@ -67,9 +67,9 @@ Dilerseniz, `detectEnvironment` methoduna `Closure` ekleyip ortam algılama öze
 		return $_SERVER['MY_LARAVEL_ENV'];
 	});
 
-Şu anki uygulama ortamına `environment` metoduyla erişebilirsiniz:
-
 #### Şu anki Uygulama Ortamına Erişmek
+
+Şu anki uygulama ortamına `environment` metoduyla erişebilirsiniz:
 
 	$environment = App::environment();
 

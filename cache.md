@@ -95,9 +95,9 @@ Ayrıca, `remember` ve `forever` methodlarını birlikte kullanabilirsiniz.
 
 > **Not:** Önbellek bölümleri `file` ve `database` önbellekleme sürücüleri kullanılırken desteklenmemektedir. Ayrıca, "forever" saklanır önbelleklerde birden çok tag kullanmanız halinde, bayat kayıtları otomatik olarak temizleyen `memcached` gibi bir sürücüyle performans en iyi olacaktır.
 
-Cache tagları cache'deki birbirine yakın öğeleri etiketlemenize ve daha sonra verilen bir isimle etiketlenmiş tüm cache'leri yok etmenize (flush) imkan verir. Etiketlenmiş bir cache'e erişmek için, `tags` metodunu kullanın:
-
 #### Etiketlenmiş Bir Önbelleğe Erişim
+
+Cache tagları cache'deki birbirine yakın öğeleri etiketlemenize ve daha sonra verilen bir isimle etiketlenmiş tüm cache'leri yok etmenize (flush) imkan verir. Etiketlenmiş bir cache'e erişmek için, `tags` metodunu kullanın:
 
 Parametreler olarak sıralı bir tag isimleri listesi geçerek veya parametre olarak sıralı tag isimlerinden oluşan bir dizi geçerek etiketlenmiş bir cache saklayabilirsiniz.
 

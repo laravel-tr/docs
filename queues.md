@@ -23,15 +23,15 @@ Listelenen bu kuyruk sürücüleri için aşağıdaki bağımlılıklar gereklid
 <a name="basic-usage"></a>
 ## Temel Kullanım
 
-Kuyruğa yeni bir iş itmek için `Queue::push` metodunu kullanın:
-
 #### Bir İşin Kuyruğa Sokulması
+
+Kuyruğa yeni bir iş itmek için `Queue::push` metodunu kullanın:
 
 	Queue::push('SendEmail', array('message' => $message));
 
-`push` metoduna girilen ilk parametre işi yapmak için kullanılacak sınıfın adıdır. İkinci parametre işleyiciye geçirilecek veri dizisidir. Bir iş işleyicisi şu şekilde tanımlanmalıdır:
-
 #### Bir İş İşleyicisinin Tanımlanması
+
+`push` metoduna girilen ilk parametre işi yapmak için kullanılacak sınıfın adıdır. İkinci parametre işleyiciye geçirilecek veri dizisidir. Bir iş işleyicisi şu şekilde tanımlanmalıdır:
 
 	class SendEmail {
 
@@ -44,9 +44,9 @@ Kuyruğa yeni bir iş itmek için `Queue::push` metodunu kullanın:
 
 Gerekli olan tek metodun `fire` olduğuna dikkat edin. Bu metod bir `iş` olgusu ve bir de kuyruğa sokulacak `veri` dizisi parametrelerini alır.
 
-Eğer iş'in `fire`'den başka bir metod kullanmasını istiyorsanız, işi sokarken (yani push metodunda) metodu belirleyebilirsiniz:
-
 #### Özel Bir İşleyici Metodunun Belirlenmesi
+
+Eğer iş'in `fire`'den başka bir metod kullanmasını istiyorsanız, işi sokarken (yani push metodunda) metodu belirleyebilirsiniz:
 
 	Queue::push('SendEmail@send', array('message' => $message));
 
@@ -62,9 +62,9 @@ Birkaç kuyruk işi için aynı veriyi geçmeniz gerekiyorsa, `Queue::bulk` meto
 
 	Queue::bulk(array('SendEmail', 'NotifyUser'), $payload);
 
-Kimi zaman sıraya sokulmuş bir işin çalıştırılmasını geciktirmek isteyebilirsiniz. Örneğin, bir müşteriye kayıt olduktan 15 dakika sonra bir e-posta gönderen bir işi kuyruğa koymak isteyebilirsiniz. Bunu `Queue::later` metodunu kullanarak başarabilirsiniz:
-
 #### Bir İşin Çalıştırılmasının Geciktirilmesi
+
+Kimi zaman sıraya sokulmuş bir işin çalıştırılmasını geciktirmek isteyebilirsiniz. Örneğin, bir müşteriye kayıt olduktan 15 dakika sonra bir e-posta gönderen bir işi kuyruğa koymak isteyebilirsiniz. Bunu `Queue::later` metodunu kullanarak başarabilirsiniz:
 
 	$date = Carbon::now()->addMinutes(15);
 
@@ -72,9 +72,9 @@ Kimi zaman sıraya sokulmuş bir işin çalıştırılmasını geciktirmek istey
 
 Bu örnekte, işe atamak istediğimiz gecikme süresini belirtmek için [Carbon](https://github.com/briannesbitt/Carbon) date kitaplığını kullanıyoruz. Alternatif olarak geciktirmek istediğiniz saniye sayısını tam sayı olarak geçebilirsiniz.
 
-Bir iş işlendikten sonra kuyruktan silinmelidir. Silme işlemi ilgili `iş` olgusunda `delete` metodu kullanılarak yapılabilir:
-
 #### İşlenmiş Bir İşin Silinmesi
+
+Bir iş işlendikten sonra kuyruktan silinmelidir. Silme işlemi ilgili `iş` olgusunda `delete` metodu kullanılarak yapılabilir:
 
 	public function fire($is, $veri)
 	{
@@ -83,9 +83,9 @@ Bir iş işlendikten sonra kuyruktan silinmelidir. Silme işlemi ilgili `iş` ol
 		$is->delete();
 	}
 
-Bir işi tekrar kuyruğa devretmek isterseniz, bunu `release` metodu aracılığıyla yapabilirsiniz:
-
 #### Bir İşin Tekrar Kuyruğa Koyulması
+
+Bir işi tekrar kuyruğa devretmek isterseniz, bunu `release` metodu aracılığıyla yapabilirsiniz:
 
 	public function fire($is, $veri)
 	{
@@ -98,18 +98,18 @@ Bir işi tekrar kuyruğa devretmek isterseniz, bunu `release` metodu aracılığ
 
 	$is->release(5);
 
-İş işlenirken bir istisna oluşursa, otomatik olarak kuyruğa tekrar salınacaktır. `attempts` metodunu kullanarak, işi çalıştırmak için yapılmış olan girişim sayısını da yoklayabilirsiniz:
-
 #### Çalıştırma Girişimlerinin Sayısını Yoklama
+
+İş işlenirken bir istisna oluşursa, otomatik olarak kuyruğa tekrar salınacaktır. `attempts` metodunu kullanarak, işi çalıştırmak için yapılmış olan girişim sayısını da yoklayabilirsiniz:
 
 	if ($is->attempts() > 3)
 	{
 		//
 	}
 
-İş tanımlayıcılarına da erişebilirsiniz:
-
 #### Bir İşin ID'ine Erişme
+
+İş tanımlayıcılarına da erişebilirsiniz:
 
 	$is->getJobId();
 
@@ -126,8 +126,6 @@ Kuyruğa bir Closure de push edebilirsiniz. Bu, kuyruğa sokulması gerekecek h�
 
 		$is->delete();
 	});
-
-> **Not:** Kuyruğa bir Closure sokarken `__DIR__` ve `__FILE__` sabitleri kullanılmamalıdır.
 
 Iron.io [push kuyrukları](#push-queues) kullanılıyorken, Closure'ların kuyruğa sokulmasında daha fazla önlem almalısınız. Kuyruk mesajlarızı alan son nokta, isteğin gerçekten Iron.io'den mi geldiğini doğrulayacak bir jeton yoklaması yapmalıdır. Örneğin, sizin push kuyruk son noktanız şuna benzer bir şey olmalıdır: `https://uygulamaniz.com/queue/receive?token=SecretToken`. Böylece, kuyruk istek sıralamasından önce uygulamanızdaki gizli jetonun değerini kontrol edebilirsiniz.
 
@@ -177,9 +175,9 @@ Kuyruktaki sadece ilk sıradaki işi yürütmek için `queue:work` komutunu kull
 
 Push kuyrukları size herhangi bir art alan veya arka plan dinleyici çalıştırmaksızın güçlü Laravel 4 kuyruk araçlarını kullanmanıza imkan verir. Push kuyrukları şu anda sadece [Iron.io](http://iron.io) sürücüsü tarafından desteklenmektedir. Başlamak için önce bir Iron.io hesabı oluşturun ve Iron kimlik bilgilerinizi `app/config/queue.php` yapılandırma dosyasına ekleyin.
 
-Daha sonra, yeni push edilmiş kuyruk işlerini alacak bir URL son noktasını kayda geçirmek için `queue:subscribe` Artisan komutunu kullanabilirsiniz:
-
 #### Bir Push Kuyruk Aboneliğinin Kayda Geçirilmesi
+
+Daha sonra, yeni push edilmiş kuyruk işlerini alacak bir URL son noktasını kayda geçirmek için `queue:subscribe` Artisan komutunu kullanabilirsiniz:
 
 	php artisan queue:subscribe queue_name http://falan.com/queue/receive
 

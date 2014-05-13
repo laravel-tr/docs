@@ -1,6 +1,7 @@
 # Yükseltme Rehberi
 
 - [4.1'den 4.2'ye Yükseltme](#upgrade-4.2)
+- [4.1.25 ve Öncesinden 4.1.26'ye Yükseltme](#upgrade-4.1.26)
 - [4.0'dan 4.1'e Yükseltme](#upgrade-4.1)
 
 <a name="upgrade-4.2"></a>
@@ -33,6 +34,46 @@ Tüm soft silme işlemlerinin API'si aynı kalmıştır.
 ### View / Pagination Environment Sınıflarının Adı Değişti
 
 Şayet `Illuminate\View\Environment` sınıfını veya `Illuminate\Pagination\Environment` sınıfını doğrudan referans ediyorsanız, kodunuzu bunlar yerine `Illuminate\View\Factory` ve `Illuminate\Pagination\Factory` sınıflarını referans verecek şekilde güncellemelisiniz. Bu iki sınıfın isimleri, işlevlerini daha iyi yansıtması için değiştirilmiştir.
+
+<a name="upgrade-4.1.26"></a>
+## 4.1.25 ve Öncesinden 4.1.26'ye Yükseltme
+
+Laravel 4.1.26 "remember me" cookie'leri için güvenlik iyileştirmeleri getirdi. Bu güncellemeler öncesinde, eğer bir remember cookie kötü niyetli başka bir kullanıcı tarafından gasp edilmişse ("hijacked"), hesabın gerçek sahibi kendi şifresini yeniledikten, çıkış yaptıktan (logged out) v.b sonra bile ilgili cookie uzun bir zaman süresince geçerli kalırdı.
+
+Bu değişiklik `users` (veya dengi olan) veritabanı tablonuza yeni bir `remember_token` sütunu eklenmesini gerektirmektedir. Bu değişiklikten sonra, uygulamanıza giriş (login) yaptıkları her seferinde kullanıcıya yepyeni bir token atanacaktır. Bu token ayrıca kullanıcı uygulamadan çıkış yaptığı zaman da yenilenecektir. Bu değişikliğin etkileri şunlardır: eğer bir "remember me" cookie gasp edilirse, sadece uygulamadan çıkış yapılması bu cookie'yi geçersiz kılacaktır.
+
+### Yükseltme Adımları
+
+Öncelikle, `users` tablonuza VARCHAR(100), TEXT veya dengi yeni bir nullable `remember_token` sütunu ekleyin.
+
+Daha sonra, eğer Eloquent authentication sürücüsü kullanıyorsanız, `User` sınıfınızı aşağıdaki üç metodla güncelleyin:
+
+	public function getRememberToken()
+	{
+		return $this->remember_token;
+	}
+
+	public function setRememberToken($value)
+	{
+		$this->remember_token = $value;
+	}
+
+	public function getRememberTokenName()
+	{
+		return 'remember_token';
+	}
+
+> **Not:** Bu değişiklikle mevcut tüm "remember me" oturumları geçersiz kılınacaktır, bu nedenle tüm kullanıcılar uygulamanıza yeniden authenticate olmaya (kimliği doğrulanmaya) zorlanacaklardır.
+
+### Paket Sürdürücüleri
+
+`Illuminate\Auth\UserProviderInterface` interface'ine iki yeni metod eklenmiştir. Örnek implementationlar ön tanımlı sürücülerde bulunabilir:
+
+	public function retrieveByToken($identifier, $token);
+
+	public function updateRememberToken(UserInterface $user, $token);
+
+Ayrıca, `Illuminate\Auth\UserInterface` de "Yükseltme Adımları" kesiminde açıklanan üç yeni metodu almıştır.
 
 <a name="upgrade-4.1"></a>
 ## 4.0'dan 4.1'e Yükseltme
@@ -75,7 +116,7 @@ Uygulamanızdaki `app/lang/en/reminders.php` dil dosyasını [güncellenen bu do
 
 ### Ortam Saptama Güncellemeleri
 
-Güvenlik sebepleri nedeniyle, uygulama ortamınızı tespit etmek için URL domainleri artık kullanılmayabilir. Bu değerler kolaylıkla kafeslenebilir ve saldırganların bir istek için ortamı modifiye etmesine imkan verebilir. Ortam tespitinizi makine host adları (Mac & Ubuntu üzerinde `hostname` komutu) kullanacak şekilde değiştirmelisiniz.
+Güvenlik sebepleri nedeniyle, uygulama ortamınızı tespit etmek için URL domainleri artık kullanılmayabilir. Bu değerler kolaylıkla kafeslenebilir ve saldırganların bir istek için ortamı modifiye etmesine imkan verebilir. Ortam tespitinizi makine host adları (Mac, Linux ve Windows üzerinde `hostname` komutu) kullanacak şekilde değiştirmelisiniz.
 
 ### Daha Sade ve Basit Günlük Dosyaları
 

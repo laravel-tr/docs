@@ -63,6 +63,7 @@ Komut         | Açıklama
 `$table->bigInteger('puan');`  |  BIGINT eşdeğeri sütun
 `$table->binary('veri');`  |  BLOB eşdeğeri sütun
 `$table->boolean('teyit');`  |  BOOLEAN eşdeğeri sütun
+`$table->char('isim', 4);`  |  bir uzunluğu olan CHAR eşdeğeri
 `$table->date('created_at');`  |  DATE eşdeğeri sütun
 `$table->dateTime('created_at');`  |  DATETIME eşdeğeri sütun
 `$table->decimal('miktar', 5, 2);`  |  basamak ve ondalık basamak sayısı belirlenmiş DECIMAL eşdeğeri sütun
@@ -87,9 +88,9 @@ Komut         | Açıklama
 `->default($deger)`  |  Bir sütun için ön tanımlı bir değer tanımlar
 `->unsigned()`  |  INTEGER'i UNSIGNED olarak ayarlar
 
-Şayet MySQL veritabanı kullanıyorsanız, sütunların sıralamasını belirlemek için `after` metodunu kullanabilirsiniz:
-
 #### MySQL Veritabanında After Kullanımı
+
+Şayet MySQL veritabanı kullanıyorsanız, sütunların sıralamasını belirlemek için `after` metodunu kullanabilirsiniz:
 
 	$table->string('isim')->after('email');
 
@@ -97,8 +98,6 @@ Komut         | Açıklama
 ## Sütun İsimlerinin Değiştirilmesi
 
 Bir sütun ismini değiştirmek için Şema Oluşturucusunda `renameColumn` metodunu kullanabilirsiniz:
-
-#### Bir Sütun İsminin Değiştirilmesi
 
 	Schema::table('uyeler', function($table)
 	{
@@ -127,9 +126,9 @@ Bir sütun ismini değiştirmek için Şema Oluşturucusunda `renameColumn` meto
 <a name="checking-existence"></a>
 ## Mevcutluk Yoklanması
 
-`hasTable` ve `hasColumn` metodlarını kullanarak bir tablo ya da sütunun var olup olmadığını kolayca yoklayabilirsiniz:
-
 #### Tablonun Var Olduğunun Yoklanması
+
+`hasTable` ve `hasColumn` metodlarını kullanarak bir tablo ya da sütunun var olup olmadığını kolayca yoklayabilirsiniz:
 
 	if (Schema::hasTable('uyeler'))
 	{
@@ -148,8 +147,6 @@ Bir sütun ismini değiştirmek için Şema Oluşturucusunda `renameColumn` meto
 
 Şema oluşturucusu çeşitli indeks tiplerini desteklemektedir. Bunları iki şekilde ekleyebilirsiniz. Birinci yol bir sütun tanımı sırasında tanımlamak, ikinci yol ise ayrıca eklemektir:
 
-#### Bir Sütun ve İndeksin Birlikte Oluşturulması
-
 	$table->string('email')->unique();
 
 Ya da, ayrı satırlarda indeks ekleme yolunu seçebilirsiniz. Aşağıda, kullanılabilecek tüm indeks tiplerinin bir listesi verilmiştir:
@@ -165,8 +162,6 @@ Komut         | Açıklama
 ## Yabancı Anahtar (Foreign Key)
 
 Laravel, tablolarınıza yabancı key sınırlaması eklemeniz için de destek verir:
-
-#### Bir Tabloya Bir Yabancı Key Eklenmesi
 
 	$table->foreign('uye_id')->references('id')->on('uyeler');
 

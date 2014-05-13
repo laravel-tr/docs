@@ -180,7 +180,7 @@ Eğer filtreden bir yanıt (`Redirect::to` gibi) döndürülürse, bu cevap ceva
 
 After filtreleri filtreye üçüncü parametre olarak geçilen bir `$response` parametresi alırlar:
 
-	Route::filter('log', function($route, $request, $response, $value)
+	Route::filter('log', function($route, $request, $response)
 	{
 		//
 	});
@@ -294,9 +294,7 @@ Laravel rotaları joker alt alanadlarını da işleyebilirler ve joker parmetrel
 <a name="route-prefixing"></a>
 ## Rotalarda Ön-ek
 
-`prefix` seçeneğini kullanarak gruptaki rotalara ön-ek ekleyebilirsiniz:
-
-#### Gruplanmış Rotalara Ön-ek Ekleme
+Bir grubun nitelikler dizisinde `prefix` seçeneğini kullanarak gruptaki rotalara ön-ek ekleyebilirsiniz:
 
 	Route::group(array('prefix' => 'admin'), function()
 	{
@@ -332,7 +330,7 @@ Eğer eşleşmeme durumunda yapılacak işlemi kendiniz belirlemek istiyorsanız
 
 	Route::model('kullanici', 'Kullanici', function()
 	{
-		throw new NotFoundException;
+		throw new NotFoundHttpException;
 	});
 
 Bazen, rota parametreleri için kendi çüzümleyicinizi kullanmak isteyebilirsiniz. Bunun için `Route::bind` metodu kullanılır:

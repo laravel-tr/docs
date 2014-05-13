@@ -16,8 +16,6 @@ Migrasyonlar veritabanı için bir sürüm kontrol türüdür. Bir ekibin verita
 
 Bir migrasyon oluşturmak için, Artisan KSA'da (Artisan Komut Satırı Arayüzü) `migrate:make` komutunu kullanabilirsiniz:
 
-#### Bir Migrasyon Oluşturulması
-
 	php artisan migrate:make kullanicilar_tablosunu_olustur
 
 Migrasyon `app/database/migrations` dizininize konumlandırılır ve Laravel'in migrasyonların sırasını belirlemesine imkan veren bir zaman damgası içerir.
@@ -47,7 +45,7 @@ Tablo ismini ve yeni bir tablonun oluşturulacağını da, `--table` ve `--creat
 
 	php artisan migrate --package=vendor/package
 
-> **Not:** Migrasyonlar çalıştırırken, "class not found" (sınıf bulunamadı) hatası veririse, `composer update` komutunu çalıştırarak deneyiniz.
+> **Not:** Migrasyonlar çalıştırırken, "class not found" (sınıf bulunamadı) hatası alırsanız, `composer dump-autoload` komutunu çalıştırarak deneyiniz.
 
 <a name="rolling-back-migrations"></a>
 ## Migrasyonların Geriye Döndürülmesi

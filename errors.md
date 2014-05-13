@@ -1,13 +1,23 @@
 # Hatalar ve Günlüğe Ekleme
 
-- [Hata Ayrıntısı](#error-detail)
+- [Yapılandırma](#configuration)
 - [Hataların İşlenmesi](#handling-errors)
 - [HTTP İstisnaları](#http-exceptions)
 - [404 Hatalarının İşlenmesi](#handling-404-errors)
 - [Günlüğe Ekleme](#logging)
 
-<a name="error-detail"></a>
-## Hata Ayrıntısı
+<a name="configuration"></a>
+## Yapılandırma
+
+Uygulamanız için günlük işleyicisi `app/start/global.php` [start dosyasında](/docs/lifecycle#start-files) kayda geçirilir. Ön tanımlı olarak, bu logger tek bir günlük dosyası kullanacak şekilde yapılandırılmıştır; bununla birlikte siz bu davranışı gereken şekilde özelleştirebilirsiniz. Laravel popüler [Monolog](https://github.com/Seldaek/monolog) günlükleme kitaplığını kullandığığı için, Monolog'un sunduğu çeşitli işleyicilerin avantajından yararlanabilirsiniz.
+
+Örneğin, tek bir büyük dosya yerine günlük log dosyaları kullanmak istiyorsanız, start dosyanızda aşağıdaki değişikliği yapabilirsiniz:
+
+	$logFile = 'laravel.log';
+
+	Log::useDailyFiles(storage_path().'/logs/'.$logFile);
+
+### Hata Ayrıntısı
 
 Ön tanımlı olarak hata ayrıntısı uygulamanızda etkindir. Yani bir hata oluştuğu zaman ayrıntılı bir sorun listesi ve hata iletisi gösterebileceksiniz. `app/config/app.php` dosyanızdaki `debug` seçeneğini `false` ayarlayarak hata ayrıntılarını devre dışı bırakabilirsiniz.
 
@@ -78,7 +88,7 @@ Uygulamanızdaki tüm "404 Not Found" hatalarını işleyerek özel 404 hata hat
 <a name="logging"></a>
 ## Günlüğe Ekleme
 
-Laravel'in günlüğe ekleme imkanları güçlü [Monolog](http://github.com/seldaek/monolog) üstünde basit bir katman sağlar. Laravel, ön tanımlı olarak uygulamanız için günlük dosyaları oluşturacak şekilde yapılandırılmıştır ve bu dosyalar `app/storage/logs` klasörü içinde tutulmaktadır. Bu dosyalara aşağıdakilere benzer şekilde bilgi yazabilirsiniz:
+Laravel'in günlüğe ekleme imkanları güçlü [Monolog](http://github.com/seldaek/monolog) üstünde basit bir katman sağlar. Laravel, ön tanımlı olarak uygulamanız için tek bir günlük dosyası oluşturacak şekilde yapılandırılmıştır ve bu dosya `app/storage/logs/laravel.log` içinde tutulmaktadır. Bu günceye aşağıdakilere benzer şekilde bilgi yazabilirsiniz:
 
 	Log::info('İşte bu yararlı bir bilgidir.');
 
