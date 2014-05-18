@@ -9,6 +9,7 @@
 - [İndeks Eklenmesi](#adding-indexes)
 - [Yabancı Anahtar (Foreign Key)](#foreign-keys)
 - [İndekslerin Yok Edilmesi](#dropping-indexes)
+- [Zaman Damgaları ve Belirsiz Silmelerin Yok Edilmesi](#dropping-timestamps)
 - [Depolama Motorları](#storage-engines)
 
 <a name="introduction"></a>
@@ -73,8 +74,10 @@ Komut         | Açıklama
 `$table->increments('id');`  |  Giderek artan ID alanı ekler (birincil anahtar).
 `$table->integer('puan');`  |  INTEGER eşdeğeri sütun
 `$table->longText('description');`  |  LONGTEXT eşdeğeri
+`$table->mediumInteger('numbers');`  |  MEDIUMINT eşdeğeri
 `$table->mediumText('description');`  |  MEDIUMTEXT eşdeğeri
 `$table->morphs('taggable');`  |  INTEGER `taggable_id` ve STRING `taggable_type` alanlarını ekler
+`$table->nullableTimestamps();`  |  NULLlara izin vermek dışında `timestamps()` ile aynı
 `$table->smallInteger('puan');`  |  SMALLINT eşdeğeri sütun
 `$table->tinyInteger('numbers');`  |  TINYINT eşdeğeri
 `$table->softDeletes();`  |  Belirsiz silmeler için **deleted\_at** sütunu ekler
@@ -189,6 +192,16 @@ Komut         | Açıklama
 `$table->dropPrimary('uyeler_id_primary');`  |  "uyeler" tablosundan primer key'in yok edilmesi
 `$table->dropUnique('uyeler_email_unique');`  |  "uyeler" tablosundan benzersiz bir indeksin yok edilmesi
 `$table->dropIndex('geo_il_index');`  |  "geo" tablosundan basit bir indeksin yok edilmesi
+
+<a name="dropping-timestamps"></a>
+## Zaman Damgaları ve Belirsiz Silmelerin Yok Edilmesi
+
+`timestamps`, `nullableTimestamps` veya `softDeletes` sütun türlerinin yok edilmesi için aşağıdaki metodları kullanabilirsiniz:
+
+Komut         | Açıklama
+------------- | -------------
+`$table->dropTimestamps();`  |  Tablodan **created\_at** ve **updated\_at** sütunlarının düşürülmesi
+`$table->dropSoftDeletes();`  |  Tablodan **deleted\_at** sütununun düşürülmesi
 
 <a name="storage-engines"></a>
 ## Depolama Motorları
