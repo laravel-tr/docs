@@ -195,6 +195,13 @@ Varsayılan olarak tüm kaynak denetçilerinin bir rota ismi bulunur; ancak bu i
 	Route::resource('foto', 'FotoController',
 					array('names' => array('create' => 'foto.build')));
 
+#### Resource Controller'lere Başka Rotalar Eklenmesi
+
+Bir bir resource controller'e ön tanımlı resource rotaları dışında başka rotalar eklemeniz gerekli bir hale gelirse, bu rotaları `Route::resource` metodunu çağırmadan önce tanımlamalısınız:
+
+	Route::get('foto/populer');
+	Route::resource('foto', 'FotoController');
+
 <a name="handling-missing-methods"></a>
 ## Eksik Olan Metodların İşlenmesi
 
