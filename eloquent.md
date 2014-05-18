@@ -242,11 +242,13 @@ Eğer bir modelde sadece zaman damgalarını güncellemek istiyorsanız, `touch`
 <a name="soft-deleting"></a>
 ## Belirsiz Silme
 
-Bir model belirsiz silindiğinde, aslında veritabanınızdan çıkartılmaz. Onun yerinde kayıttaki bir `deleted_at` zaman damgası ayarlanır. Bir model için belirsiz silmeler yapılabilmesi için modelinize 'softDelete' özelliği eklemeniz gerekir:
+Bir model belirsiz silindiğinde, aslında veritabanınızdan çıkartılmaz. Onun yerinde kayıttaki bir `deleted_at` zaman damgası ayarlanır. Bir model için belirsiz silmeler yapılabilmesi için modelinize 'SoftDeletingTrait' uygulamanız gerekir:
+
+	use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 	class Uye extends Eloquent {
 
-		protected $softDelete = true;
+		use SoftDeletingTrait;
 
 		protected $dates = ['deleted_at'];
 
@@ -936,6 +938,12 @@ Bir modelin pivot tablosundaki tüm kayıtları silmek için, `detach` metodunu 
 	Uye::find(1)->roller()->detach();
 
 Bu operasyonun `roller` tablosundan kayıt silmediğine, sadece pivot tablodan sildiğine dikkat ediniz.
+
+#### Bir Pivot Tablodaki Bir Kaydın Güncellenmesi
+
+Bazen pivot tablonuzu güncellemeniz ama onu detach etmemeniz gerekebilir. Eğer pivot tablonuzu "yerinde" güncellemek istiyorsanız aşağıdakine benzer şekilde `updateExistingPivot` metodunu kullanabilirsiniz:
+
+	Uye::find(1)->roller()->updateExistingPivot($roleId, $attributes);
 
 #### Özel Bir Pivot Model Tanımlanması
 
