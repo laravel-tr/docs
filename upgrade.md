@@ -11,6 +11,14 @@
 
 Laravel 4.2, PHP 5.4.0 veya daha üstünü gerektirir.
 
+### Kriptolama Varsayılanları
+
+`app/config/app.php` yapılandırma dosyanıza yeni bir `cipher` seçeneği ekleyin. Bu seçeneğin değeri `MCRYPT_RIJNDAEL_256` olmalıdır.
+
+	'cipher' => MCRYPT_RIJNDAEL_256
+
+Bu ayar, Laravel kriptolama araçları tarafından kullanılan varsayılan cipher'i (kriptolama sistemini) kontrol etmek için kullanılabilir.
+
 ### Modellerdeki Soft Silmeler Artık Trait Kullanıyorlar
 
 Modellerde soft silmeler kullanıyorsanız, `softDeletes` propertisi çıkartılmıştır. Artık aşağıdakine benzer şekilde `SoftDeletingTrait` kullanmalısınız:
@@ -34,6 +42,12 @@ Tüm soft silme işlemlerinin API'si aynı kalmıştır.
 ### View / Pagination Environment Sınıflarının Adı Değişti
 
 Şayet `Illuminate\View\Environment` sınıfını veya `Illuminate\Pagination\Environment` sınıfını doğrudan referans ediyorsanız, kodunuzu bunlar yerine `Illuminate\View\Factory` ve `Illuminate\Pagination\Factory` sınıflarını referans verecek şekilde güncellemelisiniz. Bu iki sınıfın isimleri, işlevlerini daha iyi yansıtması için değiştirilmiştir.
+
+### Pagination Sunumcusunda Ek Parametre
+
+Eğer `Illuminate\Pagination\Presenter` sınıfını genişletiyorsanız, `getPageLinkWrapper` abstract metodunun kalıbı  `rel` parametresi eklenecek şekilde değiştirilmiştir:
+
+	abstract public function getPageLinkWrapper($url, $page, $rel = null);
 
 <a name="upgrade-4.1.26"></a>
 ## 4.1.25 ve Öncesinden 4.1.26'ye Yükseltme

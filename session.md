@@ -38,6 +38,10 @@ Laravel framework dahili olarak `flash` session anahtarını kullanır, bu neden
 
 	$deger = Session::get('anahtar', function() { return 'default'; });
 
+#### Bir Öğenin Elde Edilmesi ve Oturumdan Çıkartılması
+
+	$value = Session::pull('anahtar', 'default');
+
 #### Oturumdaki Tüm Verileri Almak
 
 	$veri = Session::all();
@@ -107,4 +111,4 @@ Oturum "driver'ı" her istek için oturum verisinin nerede saklanacağını tan�
 - `memcached` / `redis` - oturumlar bu hızlı, önbellekleme tabanlı depolardan birisinde saklanacaktır.
 - `array` - oturumlar basit bir PHP dizisinde saklanacak ve istekler arasında sebat etmeyecektir.
 
-> **Not:** Array sürücüsü tipik olarak unit testler için kullanılır, bu yüzden oturum verileri sürdürülmeyecektir.
+> **Not:** Array sürücüsü tipik olarak unit testler çalıştırmak için kullanılır, bu yüzden oturum verileri sürdürülmeyecektir.

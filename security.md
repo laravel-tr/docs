@@ -280,13 +280,13 @@ Eğer şifre başarılı bir biçimde yenilenirse, kullanıcı uygulamanızın k
 <a name="encryption"></a>
 ## Kriptolama
 
-Laravel, mcrypt PHP uzantısı aracılığıyla güçlü AES-256 kriptolama imkanı sağlamaktadır:
+Laravel, mcrypt PHP uzantısı aracılığıyla güçlü AES kriptolama imkanı sağlamaktadır:
 
 #### Bir Değerin Kriptolanması
 
 	$kriptolu = Crypt::encrypt('secret');
 
-> **Not:** `app/config/app.php` dosyasının `key` seçeneğinde 32 karakterli rastgele string ayarladığınızdan emin olun. Aksi takdirde kriptolanmış değerler güvenli olmayacaktır.
+> **Not:** `app/config/app.php` dosyasının `key` seçeneğinde 16, 24 veya 32 karakterli rastgele bir string ayarladığınızdan emin olun. Aksi takdirde kriptolanmış değerler güvenli olmayacaktır.
 
 #### Kriptolu Bir Değerin Çözülmesi
 
