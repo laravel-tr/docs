@@ -11,6 +11,33 @@
 
 Laravel popüler [SwiftMailer](http://swiftmailer.org) kitaplığı üzerinden temiz ve basit bir API sağlamaktadır. Posta yapılandırma dosyası `app/config/mail.php`'dir ve sizin SMTP host, port ve kimlik bilgilerizi değiştirmenize, bunun yanında bu kitaplığın yolladığı tüm mesajlar için global bir `from` adresi ayarlamanıza imkan veren seçenekler içermektedir. İstediğiniz herhangi bir SMTP sunucusunu kullanabilirsiniz. Posta göndermek için şayet PHP'nin `mail` fonksiyonunu kullanmak istiyorsanız, yapılandırma dosyasındaki `driver`'ı `mail`'e değiştiriniz. Bir `sendmail` sürücüsü de bulunmaktadır.
 
+### API Sürücüleri
+
+Laravel ayrıca Mailgun ve Mandrill HTTP API'ları için sürücüler içermektedir. Bu API'lar SMTP sunucularından çoğu kez daha basit ve hızlıdırlar. Bu sürücülerden her ikisi de uygulamanızda Guzzle 4 HTTP kitaplığının yüklenmiş olmasını gerektirir. `composer.json` dosyanıza aşağıdaki satırı eklemek suretiyle Guzzle 4'ü projenize ekleyebilirsiniz:
+
+	"guzzlehttp/guzzle": "~4.0"
+
+#### Mailgun Sürücüsü
+
+Mailgun sürücüsünü kullanmak için, `app/config/mail.php` yapılandırma dosyanızdaki `driver` seçeneğini `mailgun` olarak ayarlayın. Sonra da, projenizde zaten mevcut değilse bir `app/config/services.php` yapılandırma dosyası oluşturun. Bu dosyanın aşağıdaki seçenekleri taşıdığını doğrulayın:
+
+	'mailgun' => array(
+		'domain' => 'your-mailgun-domain',
+		'secret' => 'your-mailgun-key',
+	),
+
+#### Mandrill Sürücüsü
+
+Mandrill sürücüsünü kullanmak için, `app/config/mail.php` yapılandırma dosyanızdaki `driver` seçeneğini `mandrill` olarak ayarlayın. Sonra da, projenizde zaten mevcut değilse bir `app/config/services.php` yapılandırma dosyası oluşturun. Bu dosyanın aşağıdaki seçenekleri taşıdığını doğrulayın:
+
+	'mandrill' => array(
+		'secret' => 'your-mandrill-key',
+	),
+
+### Log Sürücüsü
+
+`app/config/mail.php` yapılandırma dosyanızdaki `driver` seçeneği `log` olarak ayarlanmışsa, bütün e-mailler log dosyalarınıza yazılacak ve alıcıların hiçbirisine gerçekten gönderilmeyecektir. Bu esas olarak hızlı, local hata ayıklama ve içerik doğrulaması için yararlıdır.
+
 <a name="basic-usage"></a>
 ## Temel Kullanım
 
