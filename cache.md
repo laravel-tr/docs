@@ -69,6 +69,12 @@ Ayrıca, `remember` ve `forever` methodlarını birlikte kullanabilirsiniz.
 
 Önbellekte bütün öğelerin serileştirilmiş şekilde saklandığını unutmayın, yani her türlü veriyi saklayabilirsiniz.
 
+#### Önbellekten Bir Öğe Çekilmesi
+
+Eğer önbellekten bir öğeyi elde etmek ve sonra da onu silmeniz gerekirse, `pull` metodunu kullanabilirsiniz:
+
+	$value = Cache::pull('anahtar');
+
 #### Önbellekten Bir Öğeyi Silmek
 
 	Cache::forget('anahtar');
