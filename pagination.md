@@ -20,7 +20,7 @@ Diğer frameworkler'de, sayfalama oldukça sıkıntılı olabilir. Laravel bu i�
 
 #### Veritabanı Sonuçlarının Sayfalandırılması
 
-	$uyeler = DB::table('uyeler')->paginate(15);
+	$uyeler = DB::table('users')->paginate(15);
 
 #### Bir Eloquent Modelinin Sayfalandırılması
 
@@ -28,7 +28,7 @@ Diğer frameworkler'de, sayfalama oldukça sıkıntılı olabilir. Laravel bu i�
 
 	$uyeler = User::paginate(15);
 
-	$uyeler = User::where('oylar', '>', 100)->paginate(15);
+	$uyeler = User::where('votes', '>', 100)->paginate(15);
 
 `paginate` metoduna geçilen argüman sayfa başına görüntülemek istediğiniz öğelerin sayısıdır. Bir kez sonuçları aldıktan sonra görünümde görüntüleyebilir ve `links` metodunu kullanarak sayfalama bağlantıları oluşturabilirsiniz:
 
@@ -44,7 +44,7 @@ Sayfalama sistemi oluşturmak işte bu kadar! Unutmayın, mevcut sayfa için fra
 
 Sayfalama için kullanılacak özel bir view belirtmek isterseniz, `links` metoduna bir view geçebilirsiniz:
 
-	<?php echo $users->links('view.ismi'); ?>
+	<?php echo $uyeler->links('view.ismi'); ?>
 
 Ayrıca aşağıdaki metodlar aracılığıyla diğer sayfalama bilgilerine erişebilirsiniz:
 
@@ -55,6 +55,13 @@ Ayrıca aşağıdaki metodlar aracılığıyla diğer sayfalama bilgilerine eri�
 - `getFrom`
 - `getTo`
 - `count`
+
+
+#### "Basit Sayfalandırma"
+
+Eğer sayfalandırma view'inizde sadece "Sonraki" ve "Önceki" linklerini gösteriyorsanız, daha etkin bir sorgulama gerçekleştirmek için `simplePaginate` metodunu kullanma seçeneğine sahipsiniz. Bu, view'inizde tam sayfa numaraları gösterilmesi gerekmediğinde, büyük veri setleri için kullanışlıdır:
+
+	$uyeler = User::where('votes', '>', 100)->simplePaginate(15);
 
 #### Elle Bir Sayfalandırıcı Oluşturmak
 
@@ -85,7 +92,7 @@ Bu kod, sayfalama linkine "&sira=oylar" ekleyecek ve şöyle bir URL üretecekti
 
 Eğer sayfalandırıcının URL'sine bir "hash fragmanı" eklemek istiyorsanız, `fragment` metodunu kullanabilirsiniz:
 
-	<?php echo $users->fragment('falan')->links(); ?>
+	<?php echo $uyeler->fragment('falan')->links(); ?>
 
 Bu metod bunun gibi gözüken URL'ler üretecektir:
 

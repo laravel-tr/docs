@@ -103,7 +103,11 @@ Bir kullanıcının kimliği doğrulandıktan sonra, bu kullanıcının modeline
 
 	$email = Auth::user()->email;
 
-Bir kullanıcıyı sadece ID'i ile uygulamanıza giriş yaptırtmak için `loginUsingId` metodunu kullanın:
+Kimliği doğrulanmış bir kullanıcının ID'sini elde etmek için `id` metodunu kullanabilirsiniz:
+
+	$id = Auth::id();
+
+Bir kullanıcıyı sadece ID'si ile uygulamanıza giriş yaptırtmak için `loginUsingId` metodunu kullanın:
 
 	Auth::loginUsingId(1);
 
@@ -205,16 +209,16 @@ Eğer PHP FastCGI kullanıyorsanız, HTTP Basic kimlik doğrulaması ön tanıml
 
 ### Model & Table
 
-Çoğu web uygulaması, kullanıcılarına unutulmuş şifrelerini yenileyecek bir yol verir. Her uygulamada bunu tekrar tekrar yapmaya zorlamak yerine Laravel size şifre hatırlatıcı mektup gönderme ve şifre yenilemesi yapılması için pratik metodlar sağlar. Başlamak için sizin `User` modelinizin `Illuminate\Auth\Reminders\RemindableInterface` sözleşmesini yerine getirdiğini doğrulayın. Tabii ki, Laravel'le gelen `User` modeli bu arayüz kontratını zaten yerine getirmektedir.
+Çoğu web uygulaması, kullanıcılarına unutulmuş şifrelerini yenileyecek bir yol verir. Her uygulamada bunu tekrar tekrar yapmaya zorlamak yerine Laravel size şifre hatırlatıcı mektup gönderme ve şifre yenilemesi yapılması için pratik metodlar sağlar. Başlamak için sizin `User` modelinizin `Illuminate\Auth\Reminders\RemindableInterface` sözleşmesini yerine getirdiğini doğrulayın. Tabii ki, Laravel'le gelen `User` modeli bu arayüz kontratını zaten yerine getirmektedir ve bu interface'i implemente etmek için gerekli metodları içermek için `Illuminate\Auth\Reminders\RemindableTrait` trait'ini kullanmaktadır.
 
 #### RemindableInterface Implementasyonu
 
+	use Illuminate\Auth\Reminders\RemindableTrait;
+	use Illuminate\Auth\Reminders\RemindableInterface;
+
 	class User extends Eloquent implements RemindableInterface {
 
-		public function getReminderEmail()
-		{
-			return $this->email;
-		}
+		use RemindableTrait;
 
 	}
 

@@ -4,6 +4,7 @@
 - [Temel Kullanım](#basic-usage)
 - [Kuyruğa Closure Fonksiyonu Ekleme](#queueing-closures)
 - [Kuyruk Dinleyicileri Çalıştırma](#running-the-queue-listener)
+- [Daemon Kuyruk İşçileri](#daemon-queue-worker)
 - [Push Kuyrukları](#push-queues)
 - [Başarısız İşler](#failed-jobs)
 
@@ -169,6 +170,33 @@ Not: kuyruk sadece kuyrukta iş olmadığı takdirde "uyur". Eğer kuyrukta baş
 Kuyruktaki sadece ilk sıradaki işi yürütmek için `queue:work` komutunu kullanabilirsiniz:
 
 	php artisan queue:work
+
+<a name="daemon-queue-workers"></a>
+## Daemon Kuyruk İşçileri
+
+`queue:work` ayrıca işlerin işlenmesinin framework tekrar boot edilmeksizin devam etmesi için kuyruk işçisinin zorlanması için bir `--daemon` seçeneği içermektedir. Bu, `queue:listen` komutuyla karşılaştırıldığında CPU kullanımında önemli bir azalmayla sonuçlanır ama yayımlama sırasında halihazırda çalışmakta olan kuyrukların drene edilmesi gerekliliği karmaşıklığını ekler.
+
+Bir kuyruk işçisini daemon modunda başlatmak için, `--daemon` flagını kullanın:
+
+	php artisan queue:work connection --daemon
+
+	php artisan queue:work connection --daemon --sleep=3
+
+	php artisan queue:work connection --daemon --sleep=3 --tries=3
+
+Gördüğünüz gibi, `queue:work` komutu `queue:listen` için kullanılan seçeneklerin pek çoğunu desteklemektedir. Mevcut seçeneklerin tümünü görmek için `php artisan help queue:work` komutunu kullanabilirsiniz.
+
+### Daemon Kuyruk İşçileriyle Yayımlama
+
+Bir uygulamayı daemon kuyruk işçileri kullanarak yayımlamanın en basit yolu yayımlamanızın en başında uygulamanızı bakım (maintenance) moduna koymaktır. Bu `php artisan down` komutu kullanılarak yapılabilir. Uygulama bakım moduna alındıktan sonra, Laravel artık kuyruğa yeni işler kabul edecektir ama mevcut işleri işlemeye devam edecektir. Mevcut işlerinizin hepsinin çalışması için yeterli zaman (genellikle 30-60 saniyeden daha uzun değildir) geçtikten sonra, işçiyi durdurabilir ve yayımlama sürecinize devam edebilirsiniz.
+
+Şayet Supervisor veya Laravel Forge (Supervisor kullanır) kullanıyorsanız, tipik olarak bir işçiyi aşağıdakine benzer bir komutla durdurabilirsiniz:
+
+	supervisorctl stop worker-1
+
+Kuyruklar drene edildikten ve yeni kodunuz sunucunuza yayımlandıktan sonra, daemon kuyruk işçisini yeniden başlatmalısınız. Eğer Supervisor kullanıyorsanız, bu tipik olarak şuna benzer bir komutla yapılabilir:
+
+	supervisorctl start worker-1
 
 <a name="push-queues"></a>
 ## Push Kuyrukları

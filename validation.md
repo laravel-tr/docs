@@ -138,6 +138,16 @@ Bu durumda, yeniden yön verme sonrasında, otomatikman bağlanan `$errors` değ
 
 	<?php echo $errors->first('email'); ?>
 
+### İsimli Hata Çantaları
+
+Eğer tek bir sayfa üzerinde birden çok formunuz varsa, hata `MessageBag`'lerini isimlendirmek isteyebilirsiniz. Bu size belirli bir form için olan hata mesajlarını elde etme imkanı verecektir. Yapacağınız tek şey `withErrors` metoduna ikinci bir parametre olarak bir isim geçmektir:
+
+	return Redirect::to('register')->withErrors($validator, 'login');
+
+Ondan sonra `$errors` değişkeninden isimli `MessageBag` olgusuna erişebilirsiniz:
+
+	<?php echo $errors->login->first('email'); ?>
+
 <a name="available-validation-rules"></a>
 ## Mevcut Geçerlilik Kuralları
 

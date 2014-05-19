@@ -47,6 +47,12 @@ Tablo ismini ve yeni bir tablonun oluşturulacağını da, `--table` ve `--creat
 
 > **Not:** Migrasyonlar çalıştırırken, "class not found" (sınıf bulunamadı) hatası alırsanız, `composer dump-autoload` komutunu çalıştırarak deneyiniz.
 
+### Üretim Ortamında Migrasyonların Zorlanması
+
+Bazı migration işlemleri yıkıcıdır, yani verilerinizi kaybetmenize yol açabilir. Bu komutları üretim veritabanınızda çalıştırmanızdan korumak amacıyla, bu komutları çalıştırdığınızda sizden teyit etmeniz istenecektir. Bu komutların böyle bir istek olmadan çalışmasını zorlamak için `--force` flamasını kullanın:
+
+	php artisan migrate --force
+
 <a name="rolling-back-migrations"></a>
 ## Migrasyonların Geriye Döndürülmesi
 
