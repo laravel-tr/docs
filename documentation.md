@@ -6,7 +6,6 @@
 - Başlangıç
     - [Kurulum](/docs/installation)
     - [Yapılandırma](/docs/configuration)
-    - [Homestead](/docs/homestead)
     - [İstek Yaşam Döngüsü](/docs/lifecycle)
     - [Rotalar](/docs/routing)
     - [İstekler (Requests) ve Girdi (Input)](/docs/requests)
@@ -15,7 +14,6 @@
     - [Hatalar ve Günlüğe Ekleme](/docs/errors)
 - Detaylı Öğrenim
     - [Kimlik Doğrulama](/docs/security)
-    - [Faturalama](/docs/billing)
     - [Önbellekleme (Cache)](/docs/cache)
     - [Framework'ün Genişletilmesi](/docs/extending)
     - [Olaylar (Events)](/docs/events)
