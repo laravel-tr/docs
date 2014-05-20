@@ -1,9 +1,9 @@
 # Yükseltme Rehberi
 
-- [4.1'den 4.2'ye Yükseltme](#upgrade-4.2)
 - [4.1.25 ve Öncesinden 4.1.26'ye Yükseltme](#upgrade-4.1.26)
 - [4.0'dan 4.1'e Yükseltme](#upgrade-4.1)
 
+<<<<<<< HEAD
 <a name="upgrade-4.2"></a>
 ## 4.1'den 4.2'ye Yükseltme
 
@@ -49,6 +49,8 @@ Eğer `Illuminate\Pagination\Presenter` sınıfını genişletiyorsanız, `getPa
 
 	abstract public function getPageLinkWrapper($url, $page, $rel = null);
 
+=======
+>>>>>>> origin/4.1
 <a name="upgrade-4.1.26"></a>
 ## 4.1.25 ve Öncesinden 4.1.26'ye Yükseltme
 
