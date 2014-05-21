@@ -20,7 +20,7 @@ Laravel 4.2, PHP 5.4.0 veya daha üstünü gerektirir.
 
 Bu ayar, Laravel kriptolama araçları tarafından kullanılan varsayılan cipher'i (kriptolama sistemini) kontrol etmek için kullanılabilir.
 
-### Modellerdeki Soft Silmeler Artık Trait Kullanıyorlar
+### Modellerdeki Soft Silmeler Artık Trait Kullanıyor
 
 Modellerde soft silmeler kullanıyorsanız, `softDeletes` propertisi çıkartılmıştır. Artık aşağıdakine benzer şekilde `SoftDeletingTrait` kullanmalısınız:
 
