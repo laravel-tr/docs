@@ -145,6 +145,8 @@ Bu örnekte, sadece belirttiğimiz üç nitelik toplu atanabilecektir.
 
 	}
 
+> **Not:** `guarded` kullanıyorken de, yine bir `save` veya `update` metoduna `Input::get()` veya kullanıcının kontrolündeki herhangi bir ham diziyi hiçbir zaman için geçmemelisiniz, çünkü öyle yaptığınızda guarded olmayan herhangi bir sütun güncellenebilir.
+
 #### Toplu Atamanın Tüm Nitelikler İçin Engellenmesi
 
 Yukardaki örneğe göre `id` ve `parola` nitelikleri toplu atana **mayacaktır**. Diğer tüm nitelikler toplu atanabilecektir. Toplu atamayı niteliklerin **hepsi** için bloke etmeyi de seçebilirsiniz:
