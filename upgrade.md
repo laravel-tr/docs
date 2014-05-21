@@ -1,6 +1,7 @@
 # Yükseltme Rehberi
 
 - [4.1'den 4.2'ye Yükseltme](#upgrade-4.2)
+- [4.1.x ve Öncesinden 4.1.29'a Yükseltme](#upgrade-4.1.29)
 - [4.1.25 ve Öncesinden 4.1.26'ye Yükseltme](#upgrade-4.1.26)
 - [4.0'dan 4.1'e Yükseltme](#upgrade-4.1)
 
@@ -48,6 +49,13 @@ Tüm soft silme işlemlerinin API'si aynı kalmıştır.
 Eğer `Illuminate\Pagination\Presenter` sınıfını genişletiyorsanız, `getPageLinkWrapper` abstract metodunun kalıbı  `rel` parametresi eklenecek şekilde değiştirilmiştir:
 
 	abstract public function getPageLinkWrapper($url, $page, $rel = null);
+
+<a name="upgrade-4.1.29"></a>
+## 4.1.x ve Öncesinden 4.1.29'a Yükseltme
+
+Laravel 4.1.29 tüm veritabanı sürücüleri için sütunların tırnak içine alınmasını iyileştirmiştir. Bu iyileştirme, modellerde `fillable` özelliğini **kullanmıyorken** uygulamalarınızı bazı toplu atama açıklarından korur. Eğer siz toplu atamaya karşı korumak için modellerinizde `fillable` özelliğini kullanıyorsanız, uygulamanız korunmasız değildir. Buna karşın, eğer `guarded` kullanıyorsanız ve "update" veya "save" tipindeki bir fonksiyona kullanıcının kontrolündeki bir dizi geçiyorsanız, uygulamanız toplu atama riskinde olacağı için hemen `4.1.29`'e yükseltmelisiniz.
+
+Laravel 4.1.29'ye yükseltmek için, basitçe `composer update` komutunu verin. Bu salınımda başka düzeltmeler gereken bir değişiklik yapılmamıştır.
 
 <a name="upgrade-4.1.26"></a>
 ## 4.1.25 ve Öncesinden 4.1.26'ye Yükseltme
