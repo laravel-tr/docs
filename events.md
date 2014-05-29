@@ -4,7 +4,7 @@
 - [Joker Dinleyiciler](#wildcard-listeners)
 - [Dinleyici Olarak Sınıfları Kullanma](#using-classes-as-listeners)
 - [Olayları Sıraya Sokma](#queued-events)
-- [Olay Aboneleri](#event-subscribers)
+- [Olay Abonecileri](#event-subscribers)
 
 <a name="basic-usage"></a>
 ## Temel Kullanım

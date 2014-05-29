@@ -4,7 +4,7 @@
 - [Temel Kullanım](#basic-usage)
 - [Kuyruğa Closure Fonksiyonu Ekleme](#queueing-closures)
 - [Kuyruk Dinleyicileri Çalıştırma](#running-the-queue-listener)
-- [Daemon Kuyruk İşçileri](#daemon-queue-worker)
+- [Daemon Kuyruk İşçisi](#daemon-queue-worker)
 - [Push Kuyrukları](#push-queues)
 - [Başarısız İşler](#failed-jobs)
 
@@ -128,6 +128,8 @@ Kuyruğa bir Closure de push edebilirsiniz. Bu, kuyruğa sokulması gerekecek h�
 		$is->delete();
 	});
 
+> **Not:** Kuyruğa sokulmuş Closure'lar için nesneleri `use` direktifi aracılığıyla kullanılabilir yapmak yerine, birincil anahtarları geçmeyi ve ilgili modeli kuyruk işiniz içinden tekrar çekmeyi düşünün. Bu, beklenmedik serileştirme davranışlarını çoğu keresinde önleyecektir.
+
 Iron.io [push kuyrukları](#push-queues) kullanılıyorken, Closure'ların kuyruğa sokulmasında daha fazla önlem almalısınız. Kuyruk mesajlarızı alan son nokta, isteğin gerçekten Iron.io'den mi geldiğini doğrulayacak bir jeton yoklaması yapmalıdır. Örneğin, sizin push kuyruk son noktanız şuna benzer bir şey olmalıdır: `https://uygulamaniz.com/queue/receive?token=SecretToken`. Böylece, kuyruk istek sıralamasından önce uygulamanızdaki gizli jetonun değerini kontrol edebilirsiniz.
 
 <a name="running-the-queue-listener"></a>
@@ -171,8 +173,8 @@ Kuyruktaki sadece ilk sıradaki işi yürütmek için `queue:work` komutunu kull
 
 	php artisan queue:work
 
-<a name="daemon-queue-workers"></a>
-## Daemon Kuyruk İşçileri
+<a name="daemon-queue-worker"></a>
+## Daemon Kuyruk İşçisi
 
 `queue:work` ayrıca işlerin işlenmesinin framework tekrar boot edilmeksizin devam etmesi için kuyruk işçisinin zorlanması için bir `--daemon` seçeneği içermektedir. Bu, `queue:listen` komutuyla karşılaştırıldığında CPU kullanımında önemli bir azalmayla sonuçlanır ama yayımlama sırasında halihazırda çalışmakta olan kuyrukların drene edilmesi gerekliliği karmaşıklığını ekler.
 
