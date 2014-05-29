@@ -129,6 +129,15 @@ Eğer komutunuz [IoC container](/docs/ioc) uygulamasında kayıtlı ise, Artisan
 
 	Artisan::resolve('binding.ismi');
 
+#### Komutların Bir Hizmet Sağlayıcısında Kayda Geçirilmesi
+
+Eğer komutları bir hizmet sağlayıcısı içerisinden kayda geçirmeniz gerekirse, sağlayıcının `boot` metodundan `commands` metodunu çağırmalı ve çağırırken ilgili komutun [IoC konteyneri](/docs/ioc) bağlamasını geçmelisiniz:
+
+	public function boot()
+	{
+		$this->commands('command.binding');
+	}
+
 <a name="calling-other-commands"></a>
 ## Diğer Komutların Çağırılması
 

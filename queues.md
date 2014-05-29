@@ -107,7 +107,7 @@ Bir işi tekrar kuyruğa devretmek isterseniz, bunu `release` metodu aracılığ
 		//
 	}
 
-#### Bir İşin ID'sine Erişme
+#### Bir İşin ID'ine Erişme
 
 İş tanımlayıcılarına da erişebilirsiniz:
 
@@ -126,6 +126,8 @@ Kuyruğa bir Closure de push edebilirsiniz. Bu, kuyruğa sokulması gerekecek h�
 
 		$is->delete();
 	});
+
+> **Not:** Kuyruğa sokulmuş Closure'lar için nesneleri `use` direktifi aracılığıyla kullanılabilir yapmak yerine, birincil anahtarları geçmeyi ve ilgili modeli kuyruk işiniz içinden tekrar çekmeyi düşünün. Bu, beklenmedik serileştirme davranışlarını çoğu keresinde önleyecektir.
 
 Iron.io [push kuyrukları](#push-queues) kullanılıyorken, Closure'ların kuyruğa sokulmasında daha fazla önlem almalısınız. Kuyruk mesajlarızı alan son nokta, isteğin gerçekten Iron.io'den mi geldiğini doğrulayacak bir jeton yoklaması yapmalıdır. Örneğin, sizin push kuyruk son noktanız şuna benzer bir şey olmalıdır: `https://uygulamaniz.com/queue/receive?token=SecretToken`. Böylece, kuyruk istek sıralamasından önce uygulamanızdaki gizli jetonun değerini kontrol edebilirsiniz.
 

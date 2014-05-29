@@ -154,6 +154,6 @@ SSH  |  [Illuminate\Remote\RemoteManager](http://laravel.com/api/4.1/Illuminate/
 SSH (Olgu)  |  [Illuminate\Remote\Connection](http://laravel.com/api/4.1/Illuminate/Remote/Connection.html)  |
 URL  |  [Illuminate\Routing\UrlGenerator](http://laravel.com/api/4.1/Illuminate/Routing/UrlGenerator.html)  |  `url`
 Validator  |  [Illuminate\Validation\Factory](http://laravel.com/api/4.1/Illuminate/Validation/Factory.html)  |  `validator`
-Validator (Olgu)  |  [Illuminate\Validation\Validator](http://laravel.com/api/4.1/Illuminate/Validation/Validator.html)
+Validator (Olgu)  |  [Illuminate\Validation\Validator](http://laravel.com/api/4.1/Illuminate/Validation/Validator.html)  |
 View  |  [Illuminate\View\Environment](http://laravel.com/api/4.1/Illuminate/View/Environment.html)  |  `view`
 View (Olgu)  |  [Illuminate\View\View](http://laravel.com/api/4.1/Illuminate/View/View.html)  |

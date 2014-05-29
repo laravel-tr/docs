@@ -141,6 +141,11 @@ Laravel size, basit TEDA (REST) isimlendirme gelenekleri kullanarak, belirleyece
 			//
 		}
 
+		public function anyLogin()
+		{
+			//
+		}
+
 	}
 
 `index` metodları, denetçi tarafından yönetilmekte olan kök URI'a cevap verir. Örneğimizde bu, `kullanicilar` dır.
