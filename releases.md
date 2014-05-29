@@ -12,7 +12,7 @@ Bu sürümün tam değişiklik listesi bir 4.2 yüklemesinden `php artisan chang
 
 ### PHP 5.4 Gerekliliği
 
-Laravel 4.2 PHP 5.4 veya daha üstünü gerektirir. Bu PHP yükseltme gerekliliği bize [Laravel Cashier](/docs/billing) benzeri araçlar için daha anlamlı ve etkileyici interface'ler için trait'ler gibi yeni PHP özelliklerini kullanmamıza imkan verir. PHP 5.4 aynı zamanda PHP 5.3'e göre önemli bir hız ve performans iyileştireleri de getirmektedir.
+Laravel 4.2 PHP 5.4 veya daha üstünü gerektirir. Bu yükseltilmiş PHP  gerekliliği bize [Laravel Cashier](/docs/billing) benzeri araçlar için daha anlamlı ve etkileyici interface'ler için trait'ler gibi yeni PHP özelliklerini kullanmamıza imkan verir. PHP 5.4 aynı zamanda PHP 5.3'e göre önemli bir hız ve performans iyileştireleri de getirmektedir.
 
 ### Laravel Forge
 
@@ -24,7 +24,7 @@ Laravel Forge hakkında daha fazla bilgi [resmi Forge web sitesinde](https://for
 
 ### Laravel Homestead
 
-Laravel Homestead sağlam ve güçlü Laravel ve PHP uygulamaları geliştirilmesi için resmi bir Vagrant ortamıdır. Box'ların ihtiyaçlarının büyük çoğunluğu box dağıtım için paketlenmeden önce halledilir, böyleye box'un boot edilmesi son derece hızlıdır. Homestead'da Nginx 1.6, PHP 5.5.12, MySQL, Postgres, Redis, Memcached, Beanstalk, Node, Gulp, Grunt ve Bower yer almaktadır. Homestaed birden çok Laravel uygulamasının tek bir box'ta yönetilmesi için basit bir `Homestead.yaml` yapılandırma dosyası içerir.
+Laravel Homestead sağlam ve güçlü Laravel ve PHP uygulamaları geliştirilmesi için resmi bir Vagrant ortamıdır. Box'ların ihtiyaçlarının büyük çoğunluğu box dağıtım için paketlenmeden önce halledilir, böyleye box'un boot edilmesi son derece hızlıdır. Homestead'da Nginx 1.6, PHP 5.5.12, MySQL, Postgres, Redis, Memcached, Beanstalk, Node, Gulp, Grunt ve Bower yer almaktadır. Homestead birden çok Laravel uygulamasının tek bir box'ta yönetilmesi için basit bir `Homestead.yaml` yapılandırma dosyası içerir.
 
 Varsayılan Laravel 4.2 yüklemesi şimdi artık box'un Homestead veritabanını kullanması, böylece Laravel'in ilk yükleme ve yapılandırmasının daha kolay olması için yapılandırılmış bir `app/config/local/database.php` yapılandırma dosyası taşımaktadır.
 
@@ -38,7 +38,7 @@ Laravel Cashier, Stripe ile abonelik faturalaması yönetilmesi için basit, ifa
 
 Artisan `queue:work` komutu "deamon modunda" bir işçi başlatmak için şimdi bir `--daemon` seçeneğini destekliyor, bunun anlamı bu işçinin framework yeniden boot edilmesi hiç olmaksızın işleri işlemeye devam edeceğidir. Bu, hafifçe daha karmaşık bir uygulama yayımlama süreci maliyetiyle birlikte, CPU kullanımında önemli bir azalmayla sonuçlanır.
 
-Daemon kuyruk işçileriyle ilgili daha fazla bilgi [queue documentation](/docs/queue#daemon-queue-workers) dokümantasyonunda bulunabilir.
+Daemon kuyruk işçileriyle ilgili daha fazla bilgi [queue documentation](/docs/queues#daemon-queue-workers) dokümantasyonunda bulunabilir.
 
 ### Mail API Sürücüleri
 
