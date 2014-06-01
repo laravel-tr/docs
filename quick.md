@@ -1,11 +1,13 @@
 # Laravel Hızlı Başlangıç
 
 - [Kurulum](#installation)
+- [Local Geliştirme Ortamı](#local-development-environment)
 - [Rotalandırma (Routing)](#routing)
 - [Bir View Oluşturma](#creating-a-view)
 - [Bir Migrasyon Oluşturma](#creating-a-migration)
 - [Eloquent ORM](#eloquent-orm)
 - [Veri Gösterme](#displaying-data)
+- [Uygulamanızın Yayımlanması](#deploying-your-application)
 
 <a name="installation"></a>
 ## Kurulum
@@ -40,6 +42,20 @@ Tipik olarak, Laravel uygulamalarınızı sunmak için Apache veya Nginx gibi bi
 ### Dizin Yapısı
 
 Frameworkün yüklenmesinden sonra, dizin yapısıyla aşina olmak için projenize bir göz atın. Projenizdeki `app` dizini `views`, `controllers` ve `models` gibi klasörler içerir. Uygulamanızın kodlarının çoğu bu dizin içindeki bir yerlerde ikamet eder. Ayrıca, `app/config` dizinini de inceleyip sizin için sunulmuş yapılandırma seçeneklerini keşfetmek isteyebilirsiniz.
+
+<a name="local-development-environment"></a>
+## Local Geliştirme Ortamı
+
+Geçmişte, makineniz üzerinde lokal bir PHP geliştirme ortamı yapılandırılması bir başağrısıydı. PHP, gerekli uzantılar ve gerekli diğer bileşenlerin doğru sürümlerinin yüklenmesi zaman harcayıcı ve kafa karıştırıcıdır. Bunun yerine [Laravel Homestead](/docs/homestead) kullanmayı düşünün. Homestead Laravel ve [Vagrant](http://vagrantup.com) için tasarlanmış basit bir sanal makinedir. Homestead Vagrant kutusu güçlü ve sağlam PHP uygulamaları inşa etmeniz için gerekli yazılımların hepsiyle birlikte önceden paketlendiği için, sanallaştırılmış, izole bir geliştirme ortamını saniyeler içerisinde oluşturabilirsiniz. İşte Homestead'a dahil edilen araçlardan bazılarından oluşan bir liste:
+
+- Nginx
+- PHP 5.5
+- MySQL
+- Redis
+- Memcached
+- Beanstalk
+
+"Sanallaştırılmış" biraz karışık geliyorsa da merak etmeyin, sancısızdır. Homestead'ın bağımlılıkları olan VirtualBox ve Vagrant'ın her ikisi de popüler tüm işletim sistemleri için grafiksel program yükleyicileri içermektedir. Başlamak için [Homestead dokümantasyonunu](/docs/homestead) kontrol ediniz.
 
 <a name="routing"></a>
 ## Rotalandırma (Routing)
@@ -170,3 +186,10 @@ Harika. Artık kullanıcıları view dosyamızda göstermeye hazırız!
 `echo` ifadesinin nerede olduğunu merak ediyor olabilirsiniz. Blade kullanırken, küme parantezi arasına yazılan değişkenler aynı `echo` ifadesindeki gibi ekrana bastırılır. Şimdi `/kullanicilar` adresine girip veritabanınızda kayıtlı olan tüm kullanıcıların listesinin ekrana bastırıldığını görebilirsiniz.
 
 Bu sadece bir başlangıç. Bu derste Laravel'in en temel konularını gördünüz, ancak daha göreceğiniz birçok heyecan verici özellikler var! Dökümantasyonu okumaya devam edin ve Laravel içerisinde gelen birçok farklı özellik hakkında daha fazla bilgiye sahip olun. Örneğin [Eloquent](/docs/eloquent) ve [Blade](/docs/templates). Belki de sizin ilginizi [Queues](/docs/queues) ve [Unit Testing](/docs/testing) çekiyordur? Ya da [IoC Container](/docs/ioc) kullanarak uygulamanızın mimarisini güçlendirmek istiyorsunuzdur? Seçim sizin!
+
+<a name="deploying-your-application"></a>
+## Uygulamanızın Yayımlanması
+
+Laravel'in amaçlarından biri de PHP uygulama geliştirmeyi indirmekten yayımlamaya kadar keyifli bir hale getirmektir ve [Laravel Forge](https://forge.laravel.com) Laravel uygulamalarınızı süper hızlı sunucular üzerinde yayımlamak için basit bir yol sağlar. Forge DigitalOcean, Linode, Rackspace ve Amazon EC2 üzerinde sunucuları yapılandırabilir ve karşılayabilir. Tıpkı Homestead gibi, gerekli en son araçlar dahil edilmiştir: Nginx, PHP 5.5, MySQL, Postgres, Redis, Memcached ve başkaları. Hatta, Forge "Quick Deploy" özelliğiyle değişikliklerinizi Github veya Bitbucket'e push ettiğiniz her seferinde kodunuzu yayımlamış olursunuz!
+
+Forge bunlar yanında kuyruk işçileri, SSL, Cron işleri, sub-domainler ve daha birçok şeyi yapılandırmanıza yardım edebilir. Daha fazla bilgi için [Forge websitesini](https://forge.laravel.com) ziyaret ediniz.
