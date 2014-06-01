@@ -70,9 +70,9 @@ Bir abonelik oluştururken bir kupon uygulamak isterseniz, `withCoupon` metodunu
 	     ->withCoupon('code')
 	     ->create($creditCardToken);
 
-Bu `subscription` metodu ilgili Stripe aboneliğini otomatik olarak oluşturacaktır, bunun yanında veritabanınızı Stripe müşteri ID'si ve ilgili diğer faturalama bilgisiyle güncelleyecektir.
+Bu `subscription` metodu ilgili Stripe aboneliğini otomatik olarak oluşturacaktır, bunun yanında veritabanınızı Stripe müşteri ID'si ve ilgili diğer faturalama bilgisiyle güncelleyecektir. Eğer planınızda Stripe'de yapılandırılmış olan bir trial (deneme) varsa, kullanıcı kaydında deneme bitiş tarihi (trial end date) de otomatik olarak ayarlanacaktır.
 
-Eğer planınız bir deneme süresi ise, abonelikten sonra modelinizde deneme bitiş tarihi (trial end date) ayarladığınızdan emin olun:
+Eğer planınız Stripe'de yapılandırılmış **olmayan** bir deneme süresine sahipse, deneme bitiş tarihini abonelikten sonra elle ayarlamak zorundasınız:
 
 	$user->trial_ends_at = Carbon::now()->addDays(14);
 
