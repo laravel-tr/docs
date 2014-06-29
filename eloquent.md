@@ -835,6 +835,18 @@ Yeni ilişkili model ekleme ihtiyacınız çok olacaktır. Örneğin, bir makale
 
 Bu örnekte eklenen yorumdaki `makale_id` alanı otomatik olarak ayarlanmaktadır.
 
+Eğer birden çok sayıda ilişkili model kaydetmeniz gerekirse:
+
+	$yorumlar = array(
+		new Yorum(array('mesaj' => 'Yeni bir yorum.')),
+		new Yorum(array('mesaj' => 'Bir başka yorum.')),
+		new Yorum(array('mesaj' => 'Son bir yorum.'))
+	);
+
+	$makale = Makale::find(1);
+
+	$yorum = $makale->yorumlar()->saveMany($yorumlar);
+
 ### Modellerin Üye Yapılması (Belongs To)
 
 Bir `belongsTo` ilişkisi güncellenirken, `associate` metodunu kullanabilirsiniz. Bu metod çocuk modeldeki yabancı anahtarı ayarlayacaktır:
@@ -1069,7 +1081,7 @@ Değiştiriciler de benzer şekilde deklare edilir:
 <a name="date-mutators"></a>
 ## Tarih Değiştiricileri
 
-Ön tanımlı olarak, Eloquent `created_at`, `updated_at` ve `deleted_at` sütunlarını [Carbon](https://github.com/briannesbitt/Carbon), olgularına çevirecektir. Carbon çeşitli yardımcı metodlar sağlar ve PHP'nin `DateTime` sınıfını genişletir.
+Ön tanımlı olarak, Eloquent `created_at` ve `updated_at` sütunlarını [Carbon](https://github.com/briannesbitt/Carbon), olgularına çevirecektir. Carbon çeşitli yardımcı metodlar sağlar ve PHP'nin `DateTime` sınıfını genişletir.
 
 Siz hangi alanların otomatik olarak değiştirileceğini isteğinize göre ayarlayabilirsiniz, hatta modeldeki `getDates` metodunu ezmek suretiyle bu davranışı tamamen devre dışı bırakabilirsiniz:
 
