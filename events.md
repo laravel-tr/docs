@@ -110,14 +110,7 @@ Eğer ön tanımlı `handle` metodunu kullanmak istemiyorsanız, abone olunacak 
 
 	Event::queue('falan', array($uye));
 
-#### Bir Olay Flusher'ın Kayda Geçirilmesi
-
-	Event::flusher('falan', function($uye)
-	{
-		//
-	});
-
-Son olarak, ilgili "flusher"ı çalıştırabilir ve `flush` metodunu kullanarak sıradaki tüm olayları harekete geçirebilirsiniz:
+"flusher"ı çalıştırabilir ve `flush` metodunu kullanarak sıradaki tüm olayları harekete geçirebilirsiniz:
 
 	Event::flush('falan');
 
