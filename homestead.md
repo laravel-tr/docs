@@ -110,7 +110,7 @@ Navicat veya Sequel Pro aracılığıyla ana makinenizdeki MySQL veya Postgres v
 
 ### İlave Sitelerin Eklenmesi
 
-Homestead ortamınızı hazırladıktan ve çalıştırdıktan sonra, Laravel uygulamalarınız için başka Nginx siteleri eklemek isteyebilirsiniz. Tek bir Homestead ortamında istediğiniz kadar çok sayıda Laravel yüklemesi çalıştırabilirsiniz. Bunu yapmanın iki yolu vardır. Birincisi, basitçe bu siteleri `Homestead.yaml` dosyanıza ekleyebilir, `vagrant destroy` ile kutuyu yok eder ve sonra tekrar `vagrant up` yapabilirsiniz.
+Homestead ortamınızı hazırladıktan ve çalıştırdıktan sonra, Laravel uygulamalarınız için başka Nginx siteleri eklemek isteyebilirsiniz. Tek bir Homestead ortamında istediğiniz kadar çok sayıda Laravel yüklemesi çalıştırabilirsiniz. Bunu yapmanın iki yolu vardır. İlk olarak, basitçe bu siteleri `Homestead.yaml` dosyanıza ekleyebilir ve ondan sonra da `vagrant provision` çalıştırabilirsiniz.
 
 Alternatif olarak, Homestead ortamınızda bulunan `serve` skriptini kullanabilirsiniz. Bu `serve` skriptini kullanmak için, Homestead ortamınıza SSH ile girin ve aşağıdaki komutu çalıştırın:
 
