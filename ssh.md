@@ -47,8 +47,8 @@ Alternatif olarak, `into` metodunu kullanmak suretiyle komutları belirli bir ba
 		echo $line.PHP_EOL;
 	});
 
-## Görevler
 <a name="tasks"></a>
+## Görevler
 
 Eğer her zaman birlikte çalışması gereken bir grup komut tanımlamanız gerekiyorsa, bir `task` (görev) tanımlamak için `define` metodunu kullanabilirsiniz:
 
@@ -218,9 +218,9 @@ Artık bu `deploy` makrosu tek, basit bir komut aracılığı ile çalıştırı
 	envoy run deploy
 
 <a name="envoy-notifications"></a>
-<a name="envoy-hipchat-notifications"></a>
 ### Bildirimler
 
+<a name="envoy-hipchat-notifications"></a>
 #### HipChat
 
 Bir görevi çalıştırdıktan sonra, basit `@hipchat` direktifini kullanarak ekibinizin HipChat odasına bir bildirim gönderebilirsiniz:
