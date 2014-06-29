@@ -38,7 +38,7 @@ Laravel Cashier, Stripe ile abonelik faturalaması yönetilmesi için basit, ifa
 
 Artisan `queue:work` komutu "deamon modunda" bir işçi başlatmak için şimdi bir `--daemon` seçeneğini destekliyor, bunun anlamı bu işçinin framework yeniden boot edilmesi hiç olmaksızın işleri işlemeye devam edeceğidir. Bu, hafifçe daha karmaşık bir uygulama yayımlama süreci maliyetiyle birlikte, CPU kullanımında önemli bir azalmayla sonuçlanır.
 
-Daemon kuyruk işçileriyle ilgili daha fazla bilgi [queue documentation](/docs/queues#daemon-queue-workers) dokümantasyonunda bulunabilir.
+Daemon kuyruk işçileriyle ilgili daha fazla bilgi [queue documentation](/docs/queues#daemon-queue-worker) dokümantasyonunda bulunabilir.
 
 ### Mail API Sürücüleri
 
