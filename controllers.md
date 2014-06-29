@@ -200,6 +200,23 @@ Varsayılan olarak tüm kaynak denetçilerinin bir rota ismi bulunur; ancak bu i
 	Route::resource('foto', 'FotoController',
 					array('names' => array('create' => 'foto.build')));
 
+#### Yuvalanmış Resource Controller'lerin Halledilmesi
+
+Resource controlleri "yuvalamak" için, rota yazımında "dot" (nokta) sözdizimi kullanın:
+
+	Route::resource('photos.comments', 'PhotoCommentController');
+
+Bu rota "yuvalanmış" bir rota olarak kayda geçirilecek ve `photos/{photoResource}/comments/{commentResource}` benzeri URI'larla erişilebilecektir:
+
+	class PhotoCommentController extends BaseController {
+
+		public function show($photoId, $commentId)
+		{
+			//
+		}
+
+	}
+
 #### Resource Controller'lere Başka Rotalar Eklenmesi
 
 Bir bir resource controller'e ön tanımlı resource rotaları dışında başka rotalar eklemeniz gerekli bir hale gelirse, bu rotaları `Route::resource` metodunu çağırmadan önce tanımlamalısınız:
