@@ -162,5 +162,5 @@ Aşağıdaki örnek, basitçe `$var` üzerinde `->format()` metodunu çağıran 
 	{
 		$pattern = $compiler->createMatcher('datetime');
 
-		return preg_replace($pattern, '$1<?php echo $2->format('d/m/Y H:i'); ?>', $view);
+		return preg_replace($pattern, '$1<?php echo $2->format(\'m/d/Y H:i\'); ?>', $view);
 	});
