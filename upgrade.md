@@ -20,6 +20,8 @@ Laravel 4.2, PHP 5.4.0 veya daha üstünü gerektirir.
 
 Bu ayar, Laravel kriptolama araçları tarafından kullanılan varsayılan cipher'i (kriptolama sistemini) kontrol etmek için kullanılabilir.
 
+> **Not:** Laravel 4.2'de, default cipher en güvenli cipher olarak kabul edilen `MCRYPT_RIJNDAEL_128` (AES)'dir. Laravel <= 4.1'de kriptolanmış cookies/values'leri dekript etmek için bu cipher'i tekrar `MCRYPT_RIJNDAEL_256`'e değiştirmek gereklidir
+
 ### Modellerdeki Soft Silmeler Artık Trait Kullanıyor
 
 Modellerde soft silmeler kullanıyorsanız, `softDeletes` propertisi çıkartılmıştır. Artık aşağıdakine benzer şekilde `SoftDeletingTrait` kullanmalısınız:
@@ -30,7 +32,7 @@ Modellerde soft silmeler kullanıyorsanız, `softDeletes` propertisi çıkartıl
 		use SoftDeletingTrait;
 	}
 
-Ayrıca, `dates` propertisine `deleted_at` sütununu elle eklemeniz gerekir:
+Ayrıca, `dates` propertisine `deleted_at` sütununu elle eklemek zorundasınız:
 
 	class User extends Eloquent {
 		use SoftDeletingTrait;
@@ -39,6 +41,8 @@ Ayrıca, `dates` propertisine `deleted_at` sütununu elle eklemeniz gerekir:
 	}
 
 Tüm soft silme işlemlerinin API'si aynı kalmıştır.
+
+> **Not:** Bu `SoftDeletingTrait` base modele uygulanamaz. Gerçek bir model sınıfı üzerinde kullanılmalıdır.
 
 ### View / Pagination Environment Sınıflarının Adı Değişti
 
@@ -49,6 +53,12 @@ Tüm soft silme işlemlerinin API'si aynı kalmıştır.
 Eğer `Illuminate\Pagination\Presenter` sınıfını genişletiyorsanız, `getPageLinkWrapper` abstract metodunun kalıbı  `rel` parametresi eklenecek şekilde değiştirilmiştir:
 
 	abstract public function getPageLinkWrapper($url, $page, $rel = null);
+
+### Iron.Io Queue Kriptolama
+
+Eğer Iron.io queue sürücüsü kullanıyorsanız, bu durumda queue yapılandırma dosyanıza yeni bir `encrypt` seçeneği eklemeniz gerekecektir.
+
+    'encrypt' => true
 
 <a name="upgrade-4.1.29"></a>
 ## 4.1.x ve Öncesinden 4.1.29'a Yükseltme
