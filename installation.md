@@ -35,7 +35,7 @@ Laravel'i güncellemek isterseniz `php composer.phar update` komutunu verebilirs
 
 Laravel framework'un birkaç sistem gereksinimi bulunmaktadır:
 
-- PHP >= 5.3.7
+- PHP >= 5.4
 - MCrypt PHP Eklentisi
 
 PHP 5.5 için, bazı OS yayımlamaları PHP JSON eklentisinin elle yüklenmesini gerektirebilir. Ubuntu kullanırken, bu `apt-get install php5-json` aracılığı ile yapılabilir.
