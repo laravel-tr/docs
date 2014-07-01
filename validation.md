@@ -162,6 +162,7 @@ Mevcut tüm geçerlilik kuralları ve bunların işlevleri aşağıda verilmişt
 - [Array](#rule-array)
 - [Before (Date)](#rule-before)
 - [Between](#rule-between)
+- [Boolean](#rule-boolean)
 - [Confirmed](#rule-confirmed)
 - [Date](#rule-date)
 - [Date Format](#rule-date-format)
@@ -188,6 +189,7 @@ Mevcut tüm geçerlilik kuralları ve bunların işlevleri aşağıda verilmişt
 - [Required Without All](#rule-required-without-all)
 - [Same](#rule-same)
 - [Size](#rule-size)
+- [Timezone](#rule-timezone)
 - [Unique (Database)](#rule-unique)
 - [URL](#rule-url)
 
@@ -265,6 +267,11 @@ Geçerlilik bakılan alan _numerik_ olmalıdır ve tam _value_ uzunluğunda olma
 #### digits_between:_min_,_max_
 
 Geçerlilik bakılan alan verilen _min_ ile _max_ arasında bir uzunlukta olmalıdır.
+
+<a name="rule-boolean"></a>
+#### boolean
+
+Geçerlilik bakılan alan bir boolean olarak çevrilebilmelidir. Kabul edilen girdiler `true`, `false`, `1`, `0`, `"1"` ve `"0"` dır.
 
 <a name="rule-email"></a>
 #### email
@@ -387,6 +394,11 @@ Verilen _alan_ geçerlilik bakılan alanla aynı olmalıdır.
 #### size: _deger_
 
 Geçerlilik bakılan alan verilen _deger_'le aynı büyüklükte olmalıdır. String veriler için, _deger_ harf sayısı anlamına gelir. Numerik veriler için, _deger_ verilen bir tamsayı değeridir. Dosyalar için, _size_ kilobayt cinsinden dosya boyutuna karşılık gelir.
+
+<a name="rule-timezone"></a>
+#### timezone
+
+Geçerlilik bakılan alan `timezone_identifiers_list` PHP fonksiyonuna göre geçerli bir timezone tanımlayıcısı olmalıdır.
 
 <a name="rule-unique"></a>
 #### unique: _tablo_, _sütun_, _haric_, _idSütunu_

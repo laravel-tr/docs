@@ -10,6 +10,7 @@
 - [Bir Aboneliğe Geri Dönülmesi](#resuming-a-subscription)
 - [Abonelik Durumunun Yoklanması](#checking-subscription-status)
 - [Başarısız Ödemelerin Halledilmesi](#handling-failed-payments)
+- [Diğer Stripe Webhook'larının İşlenmesi](#handling-other-stripe-webhooks)
 - [Faturalar](#invoices)
 
 <a name="introduction"></a>
@@ -32,7 +33,7 @@ Daha sonra, `app` yapılandırma dosyanızda `Laravel\Cashier\CashierServiceProv
 
 #### Migration
 
-Cashier kullanabilmemiz için, veritabanımıza birkaç sütun eklememiz gerekiyor. Endişe etmeyin, gerekli sütunları ekleyecek bir migrasyon oluşturmak için `cashier:table` Artisan komutunu kullanabilirsiniz. Bu migrasyonu oluşturduktan sonra basitçe `migrate` komutunu çalıştırın.
+Cashier kullanabilmemiz için, veritabanımıza birkaç sütun eklememiz gerekiyor. Endişe etmeyin, gerekli sütunları ekleyecek bir migrasyon oluşturmak için `cashier:table` Artisan komutunu kullanabilirsiniz. Örneğin, bu alanı users tablosuna eklemek için `php artisan cashier:table users` kullanın. Bu migrasyonu oluşturduktan sonra basitçe `migrate` komutunu çalıştırın.
 
 #### Model Ayarı
 
@@ -77,6 +78,16 @@ Eğer planınız Stripe'de yapılandırılmış **olmayan** bir deneme süresine
 	$user->trial_ends_at = Carbon::now()->addDays(14);
 
 	$user->save();
+
+### Ek Kullanıcı Ayrıntılarının Belirtilmesi
+
+Ek müşteri ayrıntılarını geçmek isterseniz, onları `create` metoduna ikinci parametre olarak geçmek suretiyle bunu yapabilirsiniz:
+
+	$user->subscription('monthly')->create($creditCardToken, [
+		'email' => $email, 'description' => 'Our First Customer'
+	]);
+
+Stripe tarafından desteklenen ek alanlar hakkında daha fazlasını öğrenmek için, Stripe'ın [müşteri oluşturma dokümantasyonuna](https://stripe.com/docs/api#create_customer) bakınız.
 
 <a name="no-card-up-front"></a>
 ## Kredi Kartsız
@@ -183,6 +194,13 @@ Bir kullanıcının uygulamanızdaki bir plana hiç abone olup olmadığını ta
 		//
 	}
 
+Bir kullanıcının verilen bir plana abone olup olmadığını ID'sine dayalı olarak tayin etmek için `onPlan` metodu kullanılabilir:
+
+	if ($user->onPlan('monthly'))
+	{
+		//
+	}
+
 <a name="handling-failed-payments"></a>
 ## Başarısız Ödemelerin Halledilmesi
 
@@ -192,16 +210,16 @@ Bir kullanıcının uygulamanızdaki bir plana hiç abone olup olmadığını ta
 
 Hepsi bu kadar! Gerçekleşmemiş ödemeler bu controller tarafından yakalanacak ve halledilecektir. Bu controller üç başarısız ödeme girişiminden sonra ilgili müşterinin aboneliğini iptal edecektir. Bu örnekteki `stripe/webhook` URI sadece örnek içindir. Kendi Stripe ayarlarınızda bu URI'ı yapılandırmanız gerekir.
 
-İşlemek istediğiniz başka Stripe webhook olaylarına sahipseniz, Webhook controller'i basitçe genişletin:
+<a name="handling-other-stripe-webhooks"></a>
+## Diğer Stripe Webhook'larının İşlenmesi
+
+İşlemek istediğiniz başka Stripe webhook olaylarına sahipseniz, Webhook controller'i basitçe genişletin. Metod isminiz Cashier'in beklenen geleneğine uygun olmalıdır, burası için özel olarak, metod ismi işlemek istediğiniz Stripe webhook'un ismi ve önüne `handle` getirilmiş hali olmalıdır. Örneğin, eğer `invoice.payment_succeeded` webhook'unu işlemek istiyorsanız controllerinize bir `handleInvoicePaymentSucceeded` metodu eklemelisiniz.
 
 	class WebhookController extends Laravel\Cashier\WebhookController {
 
-		public function handleWebhook()
+		public function handleInvoicePaymentSucceeded($payload)
 		{
-			// Diğer olayları hallet...
-
-			// Başarısız ödeme kontrolü için son çare...
-			return parent::handleWebhook();
+			// Olayı işle...
 		}
 
 	}

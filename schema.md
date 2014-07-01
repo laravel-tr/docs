@@ -123,7 +123,7 @@ Bir sütun ismini değiştirmek için Şema Oluşturucusunda `renameColumn` meto
 
 	Schema::table('uyeler', function($table)
 	{
-		$table->dropColumn('puan', 'avatar', 'ikametgah');
+		$table->dropColumn(array('puan', 'avatar', 'ikametgah'));
 	});
 
 <a name="checking-existence"></a>

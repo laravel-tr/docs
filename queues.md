@@ -17,7 +17,7 @@ Kuyruk yapılandırma dosyası `app/config/queue.php` olarak saklanır. Bu dosya
 
 Listelenen bu kuyruk sürücüleri için aşağıdaki bağımlılıklar gereklidir:
 
-- Beanstalkd: `pda/pheanstalk`
+- Beanstalkd: `pda/pheanstalk ~2.0`
 - Amazon SQS: `aws/aws-sdk-php`
 - IronMQ: `iron-io/iron_mq`
 

@@ -75,19 +75,33 @@ Kimi zaman, örneğin bir kesimin tanımlanmış olup olmadığından emin olmad
 
 #### Veri Yazdırılması
 
-	Merhaba {{ $isim }}.
+	Merhaba {{{ $isim }}}.
 
-	Şu anki UNIX zaman damgası {{ time() }}'dır.
+	Şu anki UNIX zaman damgası {{{ time() }}}'dır.
 
-Küme parantezleri ile sarmalanmış bir metni görüntülemek isterseniz, küme parantezi önüne `@` sembolü ilave ederek Blade davranışını devredışı bırakabilirsiniz.
+#### Verinin Varlığını Yokladıktan Sonra Yazdırılması
+
+Bazen bir değişkeni echo yapmak isteyebilir ama değişkenin ayarlanmış olup olmadığından emin olmayabilirsiniz. Temel olarak bunu yapmak istersiniz:
+
+	{{{ isset($isim) ? $isim : 'Default' }}}
+
+Bununla birlikte, bir ternary cümlesi yazmak yerine, Blade size aşağıdaki kullanışlı kısayolu kullanma imkanu verir:
+
+	{{{ $isim or 'Default' }}}
 
 #### Küme Parantezi İle Ham Metin Görüntülemek
+
+Küme parantezleri ile sarmalanmış bir metni görüntülemek isterseniz, küme parantezi önüne `@` sembolü ilave ederek Blade davranışını devredışı bırakabilirsiniz.
 
 	@{{ Bu metin Blade tarafından işleme alınmayacaktır }}
 
 Tabii ki, kullanıcılardan gelen tüm veriler escape edilmeli ya da arındırılmalıdır. Çıktıyı escape etmek için, üçlü küme parantezi sözdizimini kullanabilirsiniz:
 
 	Merhaba {{{ $isim }}}.
+
+Eğer verinin escape edilmesini istemiyorsanız, ikili küme parantezi kullanabilirsiniz:
+
+	Merhaba, {{ $isim }}.
 
 > **Not:** Uygulamanızın kullanıcılarından gelen verileri yazdıracağınız zaman çok dikkatli olun. İçerikte olabilecek HTML antitelerini escape etmek amacıyla her zaman için üçlü küme parantezi sözdizimi kullanın.
 
@@ -162,5 +176,5 @@ Aşağıdaki örnek, basitçe `$var` üzerinde `->format()` metodunu çağıran 
 	{
 		$pattern = $compiler->createMatcher('datetime');
 
-		return preg_replace($pattern, '$1<?php echo $2->format('d/m/Y H:i'); ?>', $view);
+		return preg_replace($pattern, '$1<?php echo $2->format(\'m/d/Y H:i\'); ?>', $view);
 	});
