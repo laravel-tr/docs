@@ -19,7 +19,7 @@ Laravel, kimlik doğrulanması işlerini çok basit hale getirmeyi amaçlamaktad
 
 Şayet sizin uygulamanız Eloquent kullanmıyorsa, Laravel sorgu oluşturucusunu kullanan `database` kimlik doğrulama sürücüsünü kullanabilirsiniz.
 
-> **Not:** Başlamadan önce `users` (veya dengi olan) tablonuzun 100 karakterlik string tipinde nullable bir `remember_token` sütunu taşıdığından emin olun. Bu sütun, uygulamanız tarafından sürdürülecek olan "remember me (beni hatırla)" session'ları için bir token saklamak amacıyla kullanılacaktır.
+> **Not:** Başlamadan önce `users` (veya dengi olan) tablonuzun 100 karakterlik string tipinde nullable bir `remember_token` sütunu taşıdığından emin olun. Bu sütun, uygulamanız tarafından sürdürülecek olan "remember me (beni hatırla)" session'ları için bir token saklamak amacıyla kullanılacaktır. Bu, bir migrasyonda `$table->rememberToken();` kullanılarak yapılabilir.
 
 <a name="storing-passwords"></a>
 ## Şifrelerin Saklanması
