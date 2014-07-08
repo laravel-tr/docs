@@ -7,6 +7,7 @@
 - [Belirsiz Silme](#soft-deleting)
 - [Zaman Damgaları](#timestamps)
 - [Sorgu Kapsamları](#query-scopes)
+- [Küresel Kapsamlar](#global-scopes)
 - [İlişkiler](#relationships)
 - [İlişkilerin Sorgulanması](#querying-relations)
 - [Ateşli (Eager) Yüklemeler](#eager-loading)
@@ -372,6 +373,70 @@ Bazen parametreler kabul eden kapsam tanımlamak isteyebilirsiniz. Yapmanız ger
 Parametreyi kapsamın çağrısına geçin:
 
 	$uyeler = Uye::ofType('moderator')->get();
+
+<a name="global-scopes"></a>
+## Küresel Kapsamlar
+
+Bazen, bir model üzerinde yapılan tüm sorgular için uygulanan bir scope tanımlamak isteyebilirsiniz. Aslında, Eloquent'in kendi "belirsiz silme" özelliği bu şekilde çalışmaktadır. Global scope'lar PHP trait'leri ve bir `Illuminate\Database\Eloquent\ScopeInterface` implementasyonu birlikte kullanılarak tanımlanırlar.
+
+İlk olarak, bir trait tanımlayalım. Bu örnek için Laravel'le birlikte gelen `SoftDeletingTrait` kullanacağız:
+
+	trait SoftDeletingTrait {
+
+		/**
+		 * Boot the soft deleting trait for a model.
+		 *
+		 * @return void
+		 */
+		public static function bootSoftDeletingTrait()
+		{
+			static::addGlobalScope(new SoftDeletingScope);
+		}
+
+	}
+
+Eğer bir Eloquent modeli bir  `bootTraitIsmi` isimlendirme kuralına uyan bir metoda sahip olan bir trait kullanırsa, bu Elequent modeli boot edildiği zaman o trait metodu çağrılacaktır. Bu size küresel bir kapsamı kayda geçirme ya da istediğiniz başka bir şey yapma fırsatı vermektedir. Bir scope `ScopeInterface` interface'ini implemente etmelidir, bu interface iki metoda sahiptir: `apply` ve `remove`.
+
+Bunlardan `apply` metodu bir `Illuminate\Database\Eloquent\Builder` sorgu oluşturucu nesnesi alır ve bu kapsama eklemek istediğiniz ilave `where` cümlelerinin eklenmesinden sorumludur. `remove` metodu da bir `Builder` nesnesi alır ve `apply` tarafından gerçekleştirilen eylemlerin geri döndürülmesinden sorumludur. Başka bir deyişle, `remove` metodu eklenmiş olan `where` cümlesini (veya herhangi bir başka cümleyi) çıkarmalıdır. Dolayısıyla, bizim `SoftDeletingScope` için, bu metodlar buna benzer gözükecektir:
+
+	/**
+	 * Verilen bir Eloquent sorgu oluşturucusuna scope uygula.
+	 *
+	 * @param  \Illuminate\Database\Eloquent\Builder  $builder
+	 * @return void
+	 */
+	public function apply(Builder $builder)
+	{
+		$model = $builder->getModel();
+
+		$builder->whereNull($model->getQualifiedDeletedAtColumn());
+	}
+
+	/**
+	 * Verilen Eloquent sorgu oluşturucusundan scope'u kaldır.
+	 *
+	 * @param  \Illuminate\Database\Eloquent\Builder  $builder
+	 * @return void
+	 */
+	public function remove(Builder $builder)
+	{
+		$column = $builder->getModel()->getQualifiedDeletedAtColumn();
+
+		$query = $builder->getQuery();
+
+		foreach ((array) $query->wheres as $key => $where)
+		{
+			// Eğer where cümlesi bir belirsiz silme date sınırlaması ise, onu sorgudan
+			// kaldıracağız ve wheres'deki key'leri resetleyeceğiz. Bu, bu geliştiriciye,
+			// tembel yüklenen bir ilişki sonuç kümesinde silinmiş modeli dahil etme imkanı verir.
+			if ($this->isSoftDeleteConstraint($where, $column))
+			{
+				unset($query->wheres[$key]);
+
+				$query->wheres = array_values($query->wheres);
+			}
+		}
+	}
 
 <a name="relationships"></a>
 ## İlişkiler

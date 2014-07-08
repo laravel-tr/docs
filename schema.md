@@ -87,6 +87,7 @@ Komut         | Açıklama
 `$table->time('ikindi');`  |  TIME eşdeğeri sütun
 `$table->timestamp('eklenme_vakti');`  |  TIMESTAMP eşdeğeri sütun
 `$table->timestamps();`  |  **created\_at** ve **updated\_at** sütunlarını ekler
+`$table->rememberToken();`  |  VARCHAR(100) NULL olarak `remember_token` ekler
 `->nullable()`  |  İlgili sütunun NULL değerleri olabilir demektir
 `->default($deger)`  |  Bir sütun için ön tanımlı bir değer tanımlar
 `->unsigned()`  |  INTEGER'i UNSIGNED olarak ayarlar
