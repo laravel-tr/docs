@@ -400,7 +400,7 @@ Eğer bir Eloquent modeli bir  `bootTraitIsmi` isimlendirme kuralına uyan bir m
 Bunlardan `apply` metodu bir `Illuminate\Database\Eloquent\Builder` sorgu oluşturucu nesnesi alır ve bu kapsama eklemek istediğiniz ilave `where` cümlelerinin eklenmesinden sorumludur. `remove` metodu da bir `Builder` nesnesi alır ve `apply` tarafından gerçekleştirilen eylemlerin geri döndürülmesinden sorumludur. Başka bir deyişle, `remove` metodu eklenmiş olan `where` cümlesini (veya herhangi bir başka cümleyi) çıkarmalıdır. Dolayısıyla, bizim `SoftDeletingScope` için, bu metodlar buna benzer gözükecektir:
 
 	/**
-	 * Verilen bir Eloquent sorgu oluşturucuna scope uygula.
+	 * Verilen bir Eloquent sorgu oluşturucusuna scope uygula.
 	 *
 	 * @param  \Illuminate\Database\Eloquent\Builder  $builder
 	 * @return void
@@ -413,7 +413,7 @@ Bunlardan `apply` metodu bir `Illuminate\Database\Eloquent\Builder` sorgu oluşt
 	}
 
 	/**
-	 * Verilen Eloquent sorgu oluşturucundan scope'u kaldır.
+	 * Verilen Eloquent sorgu oluşturucusundan scope'u kaldır.
 	 *
 	 * @param  \Illuminate\Database\Eloquent\Builder  $builder
 	 * @return void
