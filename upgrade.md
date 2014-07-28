@@ -86,7 +86,7 @@ Eğer `app/controllers/BaseController.php` dosyasında en üstte bir `use` cüml
 
 ### Password Reminders Güncellemeleri
 
-Şifre hatırlatıcıları daha büyük esneklik olması için elden geçirilmiştir. Artisan `php artisan auth:reminders-controller` komutunu çalıştırmak suretiyle yeni iskelet controlleri inceleyebilirsiniz. Ayrıca [güncellenmiş dokümantasyonu](/docs/security#password-reminders-and-reset) da okuyabilir ve uygulamanızı ona göre güncelleyebilirsiniz.
+Şifre hatırlatıcıları daha büyük esneklik olması için elden geçirilmiştir. Artisan `php artisan auth:reminders-controller` komutunu çalıştırmak suretiyle yeni iskelet controlleri inceleyebilirsiniz (bunu sadece aşağıdaki değişiklikleri tamamladıktan sonra çalıştırın). Ayrıca [güncellenmiş dokümantasyonu](/docs/security#password-reminders-and-reset) da okuyabilir ve uygulamanızı ona göre güncelleyebilirsiniz.
 
 Uygulamanızdaki `app/lang/en/reminders.php` dil dosyasını [güncellenen bu dosyaya](https://github.com/laravel/laravel/blob/master/app/lang/en/reminders.php) uyacak şekilde güncelleyin.
 
@@ -110,7 +110,7 @@ Güncel rotaya `Route::getCurrentRoute()` yerine şimdi `Route::current()` ile e
 
 ### Composer Güncellemesi
 
-Yukarıdaki değişiklikleri tamamladıktan sonra, çekirdek application dosyalarını güncellemek için `composer update` fonksiyonunu çalıştırabilirsiniz! Eğer sınıf yükleme (class load) hataları alırsanız, `update` komutunu şu şekilde etkinleştirilmiş `--no-scripts` seçeneği ile kullanmayı deneyin: `composer update --no-scripts`.
+Yukarıdaki değişiklikleri tamamladıktan sonra, çekirdek application dosyalarını güncellemek için `composer update` fonksiyonunu çalıştırabilirsiniz! Eğer sınıf yükleme (class load) hataları alırsanız, `update` komutunu şu şekilde etkinleştirilmiş `--no-scripts` seçeneği ile kullanmayı deneyin: `composer update --no-scripts` (Linux sistemde, eğer Permission Denied hatası alıyorsanız `sudo composer update` çalıştırmak zorunda kalabilirsiniz).
 
 ### Joker Olay Dinleyiciler
 
