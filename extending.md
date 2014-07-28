@@ -139,12 +139,18 @@ Bu `UserProviderInterface` implementasyonlarının tek sorumluluğu MySQL, Riak 
 	interface UserProviderInterface {
 
 		public function retrieveById($identifier);
+		public function retrieveByToken($identifier, $token);
+		public function updateRememberToken(UserInterface $user, $token);
 		public function retrieveByCredentials(array $credentials);
 		public function validateCredentials(UserInterface $user, array $credentials);
 
 	}
 
 `retrieveById` fonksiyonu tipik olarak kullanıcıyı temsil eden sayısal bir anahtar alır (örneğin bir MySQL veritabanındaki otomatik artan ID gibi). Metod tarafından, bu ID'e uyan `UserInterface` implementasyonu getirilecek ve döndürülecektir.
+
+`retrieveByToken` fonksiyonu bir kullanıcıyı onun benzersiz `$identifier` i ve bir `remember_token` alanında saklanan "remember me" `$token` i ile elde eder. Önceki metodta olduğu gibi, bir `UserInterface` implementasyonu döndürmelidir.
+
+`updateRememberToken` metodu `$user` in `remember_token` alanını bu yeni `$token` ile günceller. Bu yeni token ya başarılı "remember me" login girişiminde atanan yepyeni bir token olabilir ya da kullanıcı log out yaptığı zaman bir null olabilir.
 
 `retrieveByCredentials` metodu bir uygulamaya giriş yapma girişiminde bulunulduğu zaman `Auth::attempt` metoduna geçilen kimlik bilgilerinden oluşan diziyi alır. Bu metod daha sonra bu kimlik bilgilerine uyan kullanıcıyı altta yatan kalıcı depolama sisteminden "sorgulamalıdır". Tipik olarak, bu metod `$credentails['username']` üzerine bir "where" koşulu olan bir sorgu çalıştıracaktır. **Bu metod herhangi bir şifre doğrulaması veya authentication yapmaya kalkışmamalıdır.**
 
