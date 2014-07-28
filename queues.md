@@ -200,7 +200,7 @@ Bu komut tüm kuyruk işçilerine mevcut işlerini işlemeyi bitirdikten sonra y
 
 ### Daemon Kuyruk İşçileri İçin Kodlama
 
-Daemon kuruk işçileri her biri işlerini işlemeden önce frameworkü yeniden başlatmazlar. Bu nedenle, işlerinizi bitirmeden önce çok büyük kaynakları serbest bırakmaya özen göstermelisiniz. Örneğin, GD kitaplığıyla resim manipulasyonu yapıyorsanız, yaptıktan sonra `imagedestroy` ile belleği rahatlatmalısınız.
+Daemon kuyruk işçileri her biri işlerini işlemeden önce frameworkü yeniden başlatmazlar. Bu nedenle, işlerinizi bitirmeden önce çok büyük kaynakları serbest bırakmaya özen göstermelisiniz. Örneğin, GD kitaplığıyla resim manipulasyonu yapıyorsanız, yaptıktan sonra `imagedestroy` ile belleği rahatlatmalısınız.
 
 Benzer şekilde, uzun çalışan daemon'larla kullanıldığı zaman veritabanı bağlantınız kopabilir. Taze bir bağlantınız olmasını temin etmek için `DB::reconnect` metodunu kullanabilirsiniz.
 
