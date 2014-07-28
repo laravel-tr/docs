@@ -129,6 +129,12 @@ Eğer verinin escape edilmesini istemiyorsanız, ikili küme parantezi kullanabi
 		<p>Bu, üye {{ $uye->id }}'dir.</p>
 	@endforeach
 
+	@forelse($users as $user)
+	  	<li>{{ $user->name }}</li>
+	@empty
+	  	<p>Bir üye yok</p>
+	@endforelse
+
 	@while (true)
 		<p>Sonsuz döngüdeyim.</p>
 	@endwhile
