@@ -133,6 +133,15 @@ Bundan sonra bu alt görünüm ebeveyn görünümde gösterilebilir:
 		</body>
 	</html>
 
+#### Bir Görünümün Mevcut Olmadığının Belirlenmesi
+  
+Bir view'in mevcut olup olmadığını yoklamanız gerekirse, `View::exists` metodunu kullanın:
+  
+	if (View::exists('emails.customer'))
+	{
+		//
+  	}
+  
 <a name="view-composers"></a>
 ## Görünüm Kompozitörleri
 
