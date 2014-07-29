@@ -190,15 +190,19 @@ Gördüğünüz gibi, `queue:work` komutu `queue:listen` için kullanılan seçe
 
 ### Daemon Kuyruk İşçileriyle Yayımlama
 
-Bir uygulamayı daemon kuyruk işçileri kullanarak yayımlamanın en basit yolu yayımlamanızın en başında uygulamanızı bakım (maintenance) moduna koymaktır. Bu `php artisan down` komutu kullanılarak yapılabilir. Uygulama bakım moduna alındıktan sonra, Laravel artık kuyruğa yeni işler kabul edecektir ama mevcut işleri işlemeye devam edecektir. Mevcut işlerinizin hepsinin çalışması için yeterli zaman (genellikle 30-60 saniyeden daha uzun değildir) geçtikten sonra, işçiyi durdurabilir ve yayımlama sürecinize devam edebilirsiniz.
+Bir uygulamayı daemon kuyruk işçileri kullanarak yayımlamanın en basit yolu yayımlamanızın en başında uygulamanızı bakım (maintenance) moduna koymaktır. Bu `php artisan down` komutu kullanılarak yapılabilir. Uygulama bakım moduna alındıktan sonra, Laravel artık kuyruğa yeni işler kabul etmeyecektir ama mevcut işleri işlemeye devam edecektir.
 
-Şayet Supervisor veya Laravel Forge (Supervisor kullanır) kullanıyorsanız, tipik olarak bir işçiyi aşağıdakine benzer bir komutla durdurabilirsiniz:
+Worker'larınızı yeniden başlatmanın en kolay yolu yayımlama scriptinize aşağıdaki komutu dahil etmektir:
 
-	supervisorctl stop worker-1
+	php artisan queue:restart
 
-Kuyruklar drene edildikten ve yeni kodunuz sunucunuza yayımlandıktan sonra, daemon kuyruk işçisini yeniden başlatmalısınız. Eğer Supervisor kullanıyorsanız, bu tipik olarak şuna benzer bir komutla yapılabilir:
+Bu komut tüm kuyruk işçilerine mevcut işlerini işlemeyi bitirdikten sonra yeniden başlatmaları talimatı verecektir.
 
-	supervisorctl start worker-1
+### Daemon Kuyruk İşçileri İçin Kodlama
+
+Daemon kuyruk işçileri her biri işlerini işlemeden önce frameworkü yeniden başlatmazlar. Bu nedenle, işlerinizi bitirmeden önce çok büyük kaynakları serbest bırakmaya özen göstermelisiniz. Örneğin, GD kitaplığıyla resim manipulasyonu yapıyorsanız, yaptıktan sonra `imagedestroy` ile belleği rahatlatmalısınız.
+
+Benzer şekilde, uzun çalışan daemon'larla kullanıldığı zaman veritabanı bağlantınız kopabilir. Taze bir bağlantınız olmasını temin etmek için `DB::reconnect` metodunu kullanabilirsiniz.
 
 <a name="push-queues"></a>
 ## Push Kuyrukları

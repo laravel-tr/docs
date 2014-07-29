@@ -22,6 +22,8 @@ Diğer frameworkler'de, sayfalama oldukça sıkıntılı olabilir. Laravel bu i�
 
 	$uyeler = DB::table('users')->paginate(15);
 
+> **Not:** Şu an için, bir `groupBy` cümlesi kullanan pagination işlemleri Laravel tarafından verimli bir biçimde çalıştırılamamaktadır. Eğer sayfalanmış bir sonuç kümesinde bir `groupBy` kullanmanız gerekiyorsa, veritabanını elle sorgulamanız ve `Paginator::make` kullanmanız önerilir.
+
 #### Bir Eloquent Modelinin Sayfalandırılması
 
 [Eloquent](/docs/eloquent) modellerini de sayfalandırabilirsiniz:

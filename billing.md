@@ -121,12 +121,12 @@ Bazen abonelikler "miktar" ile etkilenir. Örneğin, uygulamanız bir hesap üze
 	$user->subscription()->increment();
 
 	// Aboneliğin mevcut miktarına beş ekle...
-	$user->subscription()->increment(5)
+	$user->subscription()->increment(5);
 
 	$user->subscription()->decrement();
 
 	// Aboneliğin mevcut miktarından beş çıkar...
-	$user->subscription()->decrement(5)
+	$user->subscription()->decrement(5);
 
 <a name="cancelling-a-subscription"></a>
 ## Bir Aboneliğin İptal Edilmesi
