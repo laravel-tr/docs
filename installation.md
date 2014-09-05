@@ -16,7 +16,13 @@ Laravel bağımlılıklarını yönetmek için [Composer](http://getcomposer.org
 
 ### Laravel Installer Aracılığıyla
 
-İlk olarak, [Laravel installer PHAR arşivini indirin](http://laravel.com/laravel.phar). Kolaylık açısından ismini `laravel` olarak değiştirin ve `/usr/local/bin` yoluna taşıyın. Bir kere kurduktan sonra, `laravel new` komutu, istediğiniz klasöre yeni bir laravel kurulumunu yapacaktır. Örneğin, `laravel new blog` komutu, içinde tüm bağımlılıkları yüklenmiş yeni bir laravel kurulumu barındıran `blog` klasörünü oluşturacaktır. Bu yolla kurulum yapmak Composer ile yapmaktan çok daha hızlıdır.
+Öncelikle, Composer kullanarak Laravel yükleyicisini indiriniz.
+
+	composer global require "laravel/installer=~1.1"
+
+Terminalinizde `laravel` komutunu çalıştırdığınızda `laravel` çalıştırıcısının bulunabilmesi için PATH'inizde `~/.composer/vendor/bin` dizininin bulunduğundan emin olun.
+
+Bunu bir kere kurduktan sonra, basit `laravel new` komutu sizin belirttiğiniz dizine yeni bir Laravel yüklemesi oluşturucaktır. Örneğin, `laravel new blog` komutu, içinde tüm bağımlılıkları yüklenmiş yeni bir laravel kurulumu barındıran `blog` klasörünü oluşturacaktır. Bu yolla kurulum yapmak Composer aracılığıyla yüklemekten çok daha hızlıdır.
 
 ### Composer'ın Create-Project Komutuyla
 
