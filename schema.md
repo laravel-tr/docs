@@ -113,6 +113,8 @@ Bir sütun ismini değiştirmek için Şema Oluşturucusunda `renameColumn` meto
 <a name="dropping-columns"></a>
 ## Sütunların Yok Edilmesi
 
+Bir sütunu yok etmek için, Şema Oluşturucusunda `dropColumn` metodunu kullanabilirsiniz. Bir sütunu yok etmeden önce `composer.json` dosyanıza `doctrine/dbal` bağımlılığı eklediğinizden emin olun.
+ 
 #### Bir Veritabanı Tablosundan Bir Sütunun Yok Edilmesi
 
 	Schema::table('uyeler', function($table)
