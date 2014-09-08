@@ -216,20 +216,6 @@ Bazen bir sorguda ham ifade kullanma ihtiyacı duyabilirsiniz. Bu ifadeler sorgu
 		->groupBy('durum')
 		->get();
 
-#### Bir Sütun Değerinin Artırılması veya Azaltılması
-
-	DB::table('uyeler')->increment('puan');
-
-	DB::table('uyeler')->increment('puan', 5);
-
-	DB::table('uyeler')->decrement('puan');
-
-	DB::table('uyeler')->decrement('puan', 5);
-
-Ayrıca, güncellenecek ek sütunlar belirtebilirsiniz:
-
-	DB::table('uyeler')->increment('puan', 1, array('isim' => 'Tuana Şeyma'));
-
 <a name="inserts"></a>
 ## Eklemeler
 
@@ -264,6 +250,20 @@ Ayrıca, güncellenecek ek sütunlar belirtebilirsiniz:
 	DB::table('uyeler')
 	            ->where('id', 1)
 	            ->update(array('puan' => 1));
+
+#### Bir Sütun Değerinin Artırılması veya Azaltılması
+
+	DB::table('uyeler')->increment('puan');
+
+	DB::table('uyeler')->increment('puan', 5);
+
+	DB::table('uyeler')->decrement('puan');
+
+	DB::table('uyeler')->decrement('puan', 5);
+
+Ayrıca, güncellenecek ek sütunlar belirtebilirsiniz:
+
+	DB::table('uyeler')->increment('puan', 1, array('isim' => 'Tuana Şeyma'));
 
 <a name="deletes"></a>
 ## Silmeler
