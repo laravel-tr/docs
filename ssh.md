@@ -260,4 +260,4 @@ Envoy'u güncellemek için, tek yapacağınız `self-update` komutunu çalışt�
 
 Eğer Envoy yüklediğiniz yer `/usr/local/bin` ise, `sudo` kullanmanız gerekebilir:
 
-	sudo envoy self-update
+	composer global update
