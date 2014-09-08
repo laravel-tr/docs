@@ -32,7 +32,7 @@ Artık terminalinizden aşağıdaki komutu vermek suretiyle Laravel yükleyebili
 
 Bu komut sizin geçerli dizininiz içerisindeki yeni bir `sizin-projenizin-ismi` klasörüne Laravel'in yepyeni bir kopyasını indirecek ve yükleyecektir.
 
-Eğer isterseniz, alternatif olarak [Github'daki Laravel ambarının](https://github.com/laravel/laravel/archive/master.zip) bir kopyasını elle indirebilirsiniz. Sonra da elle oluşturduğunuz proje dizininizin kökünde `composer install` komutunu çalıştırın. Bu komut, frameworkün bağımlılıklarını indirecek ve yükleyecektir.
+Eğer isterseniz, alternatif olarak [GitHub'daki Laravel ambarının](https://github.com/laravel/laravel/archive/master.zip) bir kopyasını elle indirebilirsiniz. Sonra da elle oluşturduğunuz proje dizininizin kökünde `composer install` komutunu çalıştırın. Bu komut, frameworkün bağımlılıklarını indirecek ve yükleyecektir.
 
 ### İzinler
 
@@ -55,7 +55,7 @@ Frameworkün yüklenmesinden sonra, dizin yapısıyla aşina olmak için projeni
 Geçmişte, makineniz üzerinde lokal bir PHP geliştirme ortamı yapılandırılması bir başağrısıydı. PHP, gerekli uzantılar ve gerekli diğer bileşenlerin doğru sürümlerinin yüklenmesi zaman harcayıcı ve kafa karıştırıcıdır. Bunun yerine [Laravel Homestead](/docs/homestead) kullanmayı düşünün. Homestead Laravel ve [Vagrant](http://vagrantup.com) için tasarlanmış basit bir sanal makinedir. Homestead Vagrant kutusu güçlü ve sağlam PHP uygulamaları inşa etmeniz için gerekli yazılımların hepsiyle birlikte önceden paketlendiği için, sanallaştırılmış, izole bir geliştirme ortamını saniyeler içerisinde oluşturabilirsiniz. İşte Homestead'a dahil edilen araçlardan bazılarından oluşan bir liste:
 
 - Nginx
-- PHP 5.5
+- PHP 5.6
 - MySQL
 - Redis
 - Memcached
@@ -196,6 +196,6 @@ Bu sadece bir başlangıç. Bu derste Laravel'in en temel konularını gördün�
 <a name="deploying-your-application"></a>
 ## Uygulamanızın Yayımlanması
 
-Laravel'in amaçlarından biri de PHP uygulama geliştirmeyi indirmekten yayımlamaya kadar keyifli bir hale getirmektir ve [Laravel Forge](https://forge.laravel.com) Laravel uygulamalarınızı süper hızlı sunucular üzerinde yayımlamak için basit bir yol sağlar. Forge DigitalOcean, Linode, Rackspace ve Amazon EC2 üzerinde sunucuları yapılandırabilir ve karşılayabilir. Tıpkı Homestead gibi, gerekli en son araçlar dahil edilmiştir: Nginx, PHP 5.5, MySQL, Postgres, Redis, Memcached ve başkaları. Hatta, Forge "Quick Deploy" özelliğiyle değişikliklerinizi Github veya Bitbucket'e push ettiğiniz her seferinde kodunuzu yayımlamış olursunuz!
+Laravel'in amaçlarından biri de PHP uygulama geliştirmeyi indirmekten yayımlamaya kadar keyifli bir hale getirmektir ve [Laravel Forge](https://forge.laravel.com) Laravel uygulamalarınızı süper hızlı sunucular üzerinde yayımlamak için basit bir yol sağlar. Forge DigitalOcean, Linode, Rackspace ve Amazon EC2 üzerinde sunucuları yapılandırabilir ve karşılayabilir. Tıpkı Homestead gibi, gerekli en son araçlar dahil edilmiştir: Nginx, PHP 5.6, MySQL, Postgres, Redis, Memcached ve başkaları. Hatta, Forge "Quick Deploy" özelliğiyle değişikliklerinizi Github veya Bitbucket'e push ettiğiniz her seferinde kodunuzu yayımlamış olursunuz!
 
 Forge bunlar yanında kuyruk işçileri, SSL, Cron işleri, sub-domainler ve daha birçok şeyi yapılandırmanıza yardım edebilir. Daha fazla bilgi için [Forge websitesini](https://forge.laravel.com) ziyaret ediniz.
