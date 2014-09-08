@@ -111,7 +111,9 @@ Ayrıca varsayılan bir değer, üçüncü eleman olarak geçilebilir:
 	$array = array('names' => array('joe' => array('programmer')));
 
 	$value = array_get($array, 'names.joe');
-
+	
+	$value = array_get($array, 'names.john', 'default');
+	
 > **Not:** `array_get` gibi birşey ama onun yerine nesneler mi istiyorsunuz? `object_get` kullanın.
 
 ### array_only
