@@ -169,9 +169,10 @@ Komut         | Açıklama
 
 Laravel, tablolarınıza yabancı key sınırlaması eklemeniz için de destek verir:
 
+	$table->integer('uye_id')->unsigned();
 	$table->foreign('uye_id')->references('id')->on('uyeler');
 
-Bu örnekte, `uye_id` sütununun `uyeler` tablosundaki `id` sütununu referans aldığını beyan ediyoruz.
+Bu örnekte, `uye_id` sütununun `uyeler` tablosundaki `id` sütununu referans aldığını beyan ediyoruz. İlk olarak foreign key sütununu oluşturmayı unutmayın!
 
 Ayrıca, güncelleme ve silme ("on delete" ve "on update") eylemi sınırlamaları için seçenekler de belirleyebilirsiniz:
 
