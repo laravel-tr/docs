@@ -117,7 +117,7 @@ Bu dosyadaki tüm anahtar-değer çiftleri PHP'nin `$_ENV` ve `$_SERVER` "süper
 
 Şimdi bir de projenizi yayınladığınız sunucuda `.env.php` dosyası oluşturup gerekli yapılandırmaları aynı formatta girin. Aynı `.env.local.php` dosyası gibi, bu `.env.php` üretim ortamı dosyası da hiçbir zaman kaynak kontrolde bulunmamalıdır.
 
-> **Not:** Her bir ortam için gerekli yapılandırma dosyasını oluşturabilirsiniz. Örneğin, `development` ortamında çalışan proje, eğer varsa `.env.development.php` dosyasını sisteme dahil edecektir.
+> **Not:** Her bir ortam için gerekli yapılandırma dosyasını oluşturabilirsiniz. Örneğin, `development` ortamında çalışan proje, eğer varsa `.env.development.php` dosyasını sisteme dahil edecektir. Bununla birlikte, `production` ortamı her zaman için `.env.php` dosyasını kullanır.
 
 <a name="maintenance-mode"></a>
 ## Bakım Modu
