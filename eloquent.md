@@ -940,6 +940,14 @@ Tabii, `attach`'in ters işlemi `detach`'tir:
 
 	$uye->roller()->detach(1);
 
+Hem `attach` hem de `detach` ayrıca girdi olarak ID'lerden oluşan diziler de alırlar:
+
+	$uye = Uye::find(1);
+
+	$uye->roller()->detach([1, 2, 3]);
+
+	$uye->roller()->attach([1 => ['attribute1' => 'value1'], 2, 3]);
+	
 #### Birçoktan Birçoğa Model Bağlamak İçin Sync Kullanımı
 
 İlişkili modelleri bağlamak için `sync` metodunu da kullanabilirsiniz. Bu `sync` metodu parametre olarak pivot tablodaki yerlerin id'lerinden oluşan bir dizi geçirilmesini ister. Bu işlem tamamlandıktan sonra, model için kullanılacak ara tabloda sadece bu id'ler olacaktır:
@@ -1278,4 +1286,4 @@ Erişimciyi oluşturduktan sonra, ilgili modeldeki `appends` özelliğine değer
 
 	protected $appends = array('is_admin');
 
-Nitelik `appends` listesine eklendikten sonra modelin hem dizi hem de JSON formlarına dahil edilecektir.
+Nitelik `appends` listesine eklendikten sonra modelin hem dizi hem de JSON formlarına dahil edilecektir. `appends` dizisindeki nitelikler modeldeki `visible` ve `hidden` konfigürasyonuna göre davranır. 
