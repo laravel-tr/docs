@@ -227,7 +227,7 @@ Bir bir resource controller'e ön tanımlı resource rotaları dışında başka
 <a name="handling-missing-methods"></a>
 ## Eksik Olan Metodların İşlenmesi
 
-Denetçide tanımlanmamış olan metodlara gelecek olan çağrıları işlemek için bir "hepsini yakala" metodu tanımlanabilir. Bu metodun isminin `missingMethod` olması gerekir ve istek için metod ve parametre dizisi alır:
+`Route::controller` kullanıldığı zaman, denetçide tanımlanmamış olan metodlara gelecek olan çağrıları işlemek için bir "hepsini yakala" metodu tanımlanabilir. Bu metodun isminin `missingMethod` olması gerekir ve istek için metod ve parametre dizisi alır:
 
 #### Bir Hepsini Yakala Metodunun Tanımlanması
 
@@ -235,3 +235,5 @@ Denetçide tanımlanmamış olan metodlara gelecek olan çağrıları işlemek i
 	{
 		//
 	}
+
+Eğer resource controllerler kullanıyorsanız, olmayan metodları işlemesi için controllerde bir `__call` sihirli metodu tanımlamalısınız.
