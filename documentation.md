@@ -3,6 +3,7 @@
     - [Hızlı Başlangıç](/docs/quick)
     - [Sürüm Notları](/docs/releases)
     - [Yükseltme Rehberi](/docs/upgrade)
+    - [Katkıda Bulunma Kılavuzu](/docs/contributions)
 - Başlangıç
     - [Kurulum](/docs/installation)
     - [Yapılandırma](/docs/configuration)
