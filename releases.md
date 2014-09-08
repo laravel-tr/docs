@@ -24,7 +24,7 @@ Laravel Forge hakkında daha fazla bilgi [resmi Forge web sitesinde](https://for
 
 ### Laravel Homestead
 
-Laravel Homestead sağlam ve güçlü Laravel ve PHP uygulamaları geliştirilmesi için resmi bir Vagrant ortamıdır. Box'ların ihtiyaçlarının büyük çoğunluğu box dağıtım için paketlenmeden önce halledilir, böyleye box'un boot edilmesi son derece hızlıdır. Homestead'da Nginx 1.6, PHP 5.5.12, MySQL, Postgres, Redis, Memcached, Beanstalk, Node, Gulp, Grunt ve Bower yer almaktadır. Homestead birden çok Laravel uygulamasının tek bir box'ta yönetilmesi için basit bir `Homestead.yaml` yapılandırma dosyası içerir.
+Laravel Homestead sağlam ve güçlü Laravel ve PHP uygulamaları geliştirilmesi için resmi bir Vagrant ortamıdır. Box'ların ihtiyaçlarının büyük çoğunluğu box dağıtım için paketlenmeden önce halledilir, böyleye box'un boot edilmesi son derece hızlıdır. Homestead'da Nginx 1.6, PHP 5.6, MySQL, Postgres, Redis, Memcached, Beanstalk, Node, Gulp, Grunt ve Bower yer almaktadır. Homestead birden çok Laravel uygulamasının tek bir box'ta yönetilmesi için basit bir `Homestead.yaml` yapılandırma dosyası içerir.
 
 Varsayılan Laravel 4.2 yüklemesi şimdi artık box'un Homestead veritabanını kullanması, böylece Laravel'in ilk yükleme ve yapılandırmasının daha kolay olması için yapılandırılmış bir `app/config/local/database.php` yapılandırma dosyası taşımaktadır.
 

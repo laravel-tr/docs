@@ -43,12 +43,12 @@ Mandrill sürücüsünü kullanmak için, `app/config/mail.php` yapılandırma d
 
 Bir e-posta mesajı göndermek için `Mail::send` metodu kullanılabilir:
 
-	Mail::send('emails.welcome', $data, function($message)
+	Mail::send('emails.welcome', array('key' => 'value'), function($message)
 	{
 		$message->to('falan@numune.com', 'Can Simitci')->subject('Hoş geldiniz!');
 	});
 
-Burada `send` metoduna geçilen ilk parametre e-posta gövde metni olarak kullanılacak görünümün ("view"in) ismidir ve ikinci parametre `$data` ise bu görünüme geçilecek veriyi temsil eder. Üçüncü parametremiz e-posta mesajında çeşitli seçenekler belirlememize imkan veren bir anonim fonksiyondur.
+Burada `send` metoduna geçilen ilk parametre e-posta gövde metni olarak kullanılacak görünümün ("view"in) ismidir ve ikinci parametre ise bu görünüme geçilecek veridir. Bu veri çoğu kez asosiyatif bir dizi şeklinde olup, veri öğeleri view'de $key'ler halinde kullanılabilir olacaktır. Üçüncü parametremiz e-posta mesajında çeşitli seçenekler belirlememize imkan veren bir anonim fonksiyondur.
 
 > **Not:** E-posta görünümlerine mutlaka bir `$message` değişkeni geçilir ve bu değişken bize ataşmanların yazı içine gömülmesi imkanı verir. Dolayısıyla sizin görünüm elemanlarınız arasında bir `message` değişkeni olmaması iyi olur.
 

@@ -238,6 +238,11 @@ Geçerlilik bakılan alan verilen bir tarihten önceki bir değer olmalıdır. T
 
 Geçerlilik bakılan alan verilen _min_ ile _max_ arasında bir büyüklükte olmalıdır. Stringler, sayılar ve dosyalar `size` kuralıyla aynı tarzda değerlendirilir.
 
+<a name="rule-boolean"></a>
+#### boolean
+
+Geçerlilik bakılan alan bir boolean olarak çevrilebilmelidir. Kabul edilen girdiler `true`, `false`, `1`, `0`, `"1"` ve `"0"` dır.
+
 <a name="rule-confirmed"></a>
 #### confirmed
 
@@ -267,11 +272,6 @@ Geçerlilik bakılan alan _numerik_ olmalıdır ve tam _value_ uzunluğunda olma
 #### digits_between:_min_,_max_
 
 Geçerlilik bakılan alan verilen _min_ ile _max_ arasında bir uzunlukta olmalıdır.
-
-<a name="rule-boolean"></a>
-#### boolean
-
-Geçerlilik bakılan alan bir boolean olarak çevrilebilmelidir. Kabul edilen girdiler `true`, `false`, `1`, `0`, `"1"` ve `"0"` dır.
 
 <a name="rule-email"></a>
 #### email

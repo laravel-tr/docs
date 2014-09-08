@@ -185,6 +185,7 @@ Bir grup composer'i bir defada kayda geçirmek için `composers` metodunu kullan
 	View::composers(array(
 		'AdminComposer' => array('admin.index', 'admin.profile'),
 		'UserComposer' => 'user',
+		'ProductComposer@create' => 'product' 
 	));
 
 > **Not:** Kompozitör sınıfının nerede saklanacağı konusunda bir gelenek olmadığına dikkat edin. `composer.json` dosyanızdaki yönergeleri kullanarak otomatik yüklenebildikleri sürece, bunları istediğiniz yerde depolayabilirsiniz.

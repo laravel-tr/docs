@@ -13,7 +13,9 @@ Laravel sizin lokal geliştirme ortamınız da dahil olmak üzere bütün PHP ge
 
 Laravel Homestead lokal makinenizde PHP, bir web sunucusu ve diğer herhangi bir sunucu yazılımı yüklemenizi gerektirmeksizin size harika bir geliştirme ortamı sağlayan resmi, ambalajlanmış bir Vagrant "box"tur. İşletim sisteminizi karışmasını daha artık dert etmeyin! Vagrant box'ları tamamen kontrol altındadır. Eğer bir şeyler yanlış giderse, onu yok edebilir ve dakikalar içerisinde yeniden oluşturabilirsiniz!
 
-Homestead herhangi bir Windows, Mac ve Linux'te çalışır ve Nginx web sunucusu, PHP 5.5, MySQL, Postgres, Redis, Memcached ve muhteşem Laravel uygulamaları geliştirmek için gerekli diğer tüm güzellikleri içerir.
+Homestead herhangi bir Windows, Mac ve Linux'te çalışır ve Nginx web sunucusu, PHP 5.6, MySQL, Postgres, Redis, Memcached ve muhteşem Laravel uygulamaları geliştirmek için gerekli diğer tüm güzellikleri içerir.
+
+> **Not:** Eğer Windows kullanıyorsanız, donanım sanallaştırmasını (hardware virtualization) (VT-x) etkinleştirmeniz gerekebilir. Bu genellikle BIOS'iniz aracılığıyla etkinleştirilebilmektedir.
 
 Homestead hali hazırda Vagrant 1.6 kullanılarak inşa ve test edilmiştir.
 
@@ -21,7 +23,7 @@ Homestead hali hazırda Vagrant 1.6 kullanılarak inşa ve test edilmiştir.
 ## Dahil Edilen Yazılımlar
 
 - Ubuntu 14.04
-- PHP 5.5
+- PHP 5.6
 - Nginx
 - MySQL
 - Postgres
