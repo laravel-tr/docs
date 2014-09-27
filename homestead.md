@@ -11,7 +11,7 @@
 
 Laravel sizin lokal geliştirme ortamınız da dahil olmak üzere bütün PHP geliştirme deneyimini zevkli bir hale getirmeye çalışmaktadır. [Vagrant](http://vagrantup.com) Sanal Makinelerin yönetilmesi ve hazırlanması için basit, zekice bir yol sağlamaktadır.
 
-Laravel Homestead lokal makinenizde PHP, bir web sunucusu ve diğer herhangi bir sunucu yazılımı yüklemenizi gerektirmeksizin size harika bir geliştirme ortamı sağlayan resmi, ambalajlanmış bir Vagrant "box"tur. İşletim sisteminizi karışmasını daha artık dert etmeyin! Vagrant box'ları tamamen kontrol altındadır. Eğer bir şeyler yanlış giderse, onu yok edebilir ve dakikalar içerisinde yeniden oluşturabilirsiniz!
+Laravel Homestead lokal makinenizde PHP, HHVM, bir web sunucusu ve diğer herhangi bir sunucu yazılımı yüklemenizi gerektirmeksizin size harika bir geliştirme ortamı sağlayan resmi, ambalajlanmış bir Vagrant "box"tur. İşletim sisteminizi karışmasını daha artık dert etmeyin! Vagrant box'ları tamamen kontrol altındadır. Eğer bir şeyler yanlış giderse, onu yok edebilir ve dakikalar içerisinde yeniden oluşturabilirsiniz!
 
 Homestead herhangi bir Windows, Mac ve Linux'te çalışır ve Nginx web sunucusu, PHP 5.6, MySQL, Postgres, Redis, Memcached ve muhteşem Laravel uygulamaları geliştirmek için gerekli diğer tüm güzellikleri içerir.
 
@@ -24,6 +24,7 @@ Homestead hali hazırda Vagrant 1.6 kullanılarak inşa ve test edilmiştir.
 
 - Ubuntu 14.04
 - PHP 5.6
+- HHVM
 - Nginx
 - MySQL
 - Postgres
@@ -72,6 +73,13 @@ Bir SSH anahtarı oluşturduktan sonra, `Homestead.yaml` dosyanızın `authorize
 ### Nginx Sitelerinizi Yapılandırın
 
 Nginx size tanıdık değil mi? Problem değil. `sites` özelliği, Homestead ortamınızdaki bir klasöre kolaylıkla bir "domain" eşleştirmenize imkan verir. Örnek bir site yapılandırması `Homestead.yaml` dosyasına dahil edilmiştir. Aynı şekilde, Homestead ortamınıza gerektiği kadar çok sayıda site ekleyebilirsiniz. Homestead, üzerinde çalışmakta olduğunuz her Laravel projesi için kullanışlı, sanallaştırılmış bir ortam olarak hizmet edebilir!
+
+`hhvm` opsiyonunu `true` ayarlamak suretiyle herhangi bir Homestead sitesini [HHVM](http://hhvm.com) kullanır hale getirebilirsiniz:
+
+	sites:
+	    - map: homestead.app
+	      to: /home/vagrant/Code/Laravel/public
+	      hhvm: true
 
 ### Bash Alias'ları
 
