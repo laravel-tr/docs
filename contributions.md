@@ -5,7 +5,7 @@
 - [Yeni Özellikler](#new-features)
 - [Bug'lar](#bugs)
 - [Liferaft Uygulamalarının Oluşturulması](#creating-liferaft-applications)
-- [Liferaft Uygulamalarının Getirilmesi](#grabbing-liferaft-applications)
+- [Liferaft Uygulamalarının Çekip Alınması](#grabbing-liferaft-applications)
 - [Hangi Dal?](#which-branch)
 - [Güvenlik Açıkları](#security-vulnerabilities)
 - [Kodlama Biçimi](#coding-style)
@@ -97,33 +97,35 @@ Bu `liferaft.md` dosyasını doldurduktan sonra, değişikliklerinizin tamamın�
 
 	liferaft throw
 
-This command will create a pull request against the Laravel GitHub repository. A Laravel maintainer can easily grab your application and run it in their own Homestead environment!
+Bu komut Laravel GitHub ambarı için bir çekme isteği oluşturacaktır. Bir Laravel geliştiricisi sizin uygulamanızı kolaylıkla çekip alabilecek ve kendi Homestead ortamlarında çalıştırabilecektir!
 
 <a name="grabbing-liferaft-applications"></a>
-## Grabbing Liferaft Applications
+## Liferaft Uygulamalarının Çekip Alınması
 
-Intrested in contributing to Laravel? Liferaft makes it painless to install Liferaft applications and view them on your own [Homestead environment](/docs/homestead).
+Laravele katkıda bulanmak mı istiyorsunuz? Liferaft Liferaft uygulamalarını yüklemek ve onları kendi [Homestead ortamınızda](/docs/homestead) görme işini sancısız bir hale getirir.
 
-First, for convenience, clone the [laravel/laravel](https://github.com/laravel/laravel) into a `liferaft` directory on your machine:
+İlk olarak, kolaylık olması için, [laravel/laravel](https://github.com/laravel/laravel) ambarını kendi makinenizde bir `liferaft` dizinine klonlayın:
 
 	git clone https://github.com/laravel/laravel.git liferaft
 
-Next, check out the `develop` branch so you will be able to install Liferaft applications that target both stable and upcoming Laravel releases:
+Ondan sonra, `develop` dalını yoklayın, böylece hem stabil hem de gelecek Laravel sürümlerini hedef alan Liferaft uygulamalarını yükleyebileceksiniz:
 
 	git checkout -b develop origin/develop
 
-Next, you can run the Liferaft `grab` command from your repository directory. For example, if you want to install the Liferaft application associated with pull request #3000, you should run the following command:
+Sonra da, sizin ambar dizininden Liferaft `grab` komutunu çalıştırabilirsiniz. Örneğin, #3000 çekme isteği ile ilişkili Liferaft uygulamasını yüklemek istiyorsanız, aşağıdaki komutu çalıştırmalısınız:
 
 	liferaft grab 3000
 
-The `grab` command will create a new branch on your Liferaft directory, and pull in the changes for the specified pull request. Once the Liferaft application is installed, simply serve the directory through your [Homestead](/docs/homestead) virtual machine! Once you debug the issue, don't forget to send a pull request to the [laravel/framework](https://github.com/laravel/framework) repository with the proper fix!
+Bu `grab` komutu sizin Liferaft dizininizde yeni bir dal oluşturacak ve belirtilen çekme isteği için değişiklikleri çekecektir. Liferaft uygulaması yüklendikten sonra, [Homestead](/docs/homestead) sanal makineniz aracılığıyla dizini hizmete sokmanız (serve etmeniz) yeterlidir! Sorunu debug ettikten sonra, doğru düzeltme ile [laravel/framework](https://github.com/laravel/framework) ambarına bir çekme isteği göndermeyi unutmayın!
 
-Have an extra hour and want to solve a random issue? Just run `grab` without a pull request ID:
+Fazladan bir saatiniz var ve rastgele bir sorunu çözmek istiyorsunuz? Bir çekme isteği ID'si olmaksızın, `grab` komutunu tek başına çalıştırın:
 
 	liferaft grab
 
 <a name="which-branch"></a>
 ## Hangi Dal?
+
+> **Not:** Bu kesim esas olarak [laravel/framework](https://github.com/laravel/framework) ambarına çekme istekleri gönderilmesi için geçerlidir, Liferaft uygulamaları için değildir.
 
 **Tüm** bug düzeltmeleri en son kararlı dala gönderilmelidir. Bug düzeltmeleri, düzeltilen özellikler sadece çıkacak sürümde mevcut olmadığı sürece **asla** `master` dalına gönderilmemelidir.
 
