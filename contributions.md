@@ -4,6 +4,8 @@
 - [Çekirdek Geliştirme Tartışmaları](#core-development-discussion)
 - [Yeni Özellikler](#new-features)
 - [Bug'lar](#bugs)
+- [Liferaft Uygulamalarının Oluşturulması](#creating-liferaft-applications)
+- [Liferaft Uygulamalarının Getirilmesi](#grabbing-liferaft-applications)
 - [Hangi Dal?](#which-branch)
 - [Güvenlik Açıkları](#security-vulnerabilities)
 - [Kodlama Biçimi](#coding-style)
@@ -13,7 +15,7 @@
 
 Laravel açık kaynak bir projedir ve Laravel'in geliştirilmesi için herkes ona katkıda bulunabilir. Beceri düzeyi, cinsiyeti, ırkı, dini ve milliyeti ne olursa olsun katılımcıları bekliyoruz. Farklı, canlı bir topluluğa sahip olmak frameworkün temel değerlerinden biridir!
 
-Aktif işbirliğini teşvik etmek amacıyla, Laravel şu anda bug bildirimlerini değil, sadece çekme isteklerini (pull requests) kabul etmektedir. **"Bug bildirimleri" başarısız kalan bir unit testini içeren bir çekme isteği şeklinde gönderilebilir.** Başarısız kalan bir unit testi, geliştirme ekibine bu bug'ın mevcut olduğunun "kanıtını" gösterir ve geliştirme ekibi bu bug'ı hallettikten sonra da bug'ın düzeltildiğinin güvenilir bir göstergesi olarak hizmet eder.
+Aktif işbirliğini teşvik etmek amacıyla, Laravel şu anda bug bildirimlerini değil, sadece çekme isteklerini (pull requests) kabul etmektedir. "Bug bildirimleri" başarısız kalan bir unit testini içeren bir çekme isteği şeklinde gönderilebilir. Alternatif olarak, bir sandbox Laravel uygulaması içindeki bir bug gösterimi [ana Laravel ambarına](https://github.com/laravel/laravel) bir çekme isteği olarak gönderilebilir. Başarısız kalan bir unit testi veya bir sandbox uygulaması, geliştirme ekibine bu bug'ın mevcut olduğunun "kanıtını" gösterir ve geliştirme ekibi bu bug'ı hallettikten sonra da bug'ın düzeltildiğinin güvenilir bir göstergesi olarak hizmet eder.
 
 Laravel kaynak kodu Github'da yönetilmektedir ve Laravel projelerinin her biri için ambarlar vardır:
 
@@ -44,11 +46,81 @@ Yeni özellikler eklerken unit testlerini eklemeyi unutmayın! Unit testleri, ye
 <a name="bugs"></a>
 ## Bug'lar
 
+### Unit Test Yoluyla
+
 Bug'lar için çekme istekleri, öncesinde Laravel geliştirme ekibiyle tartışılmaksızın gönderilebilir. Bir bug düzeltmesi gönderirken bug'ın asla tekrar gözükmeyeceğinden bizi emin eden bir unit testi eklemeye çalışınız!
 
 Eğer frameworkte bir bug bulduğunuza inanıyor, fakat onu nasıl düzelteceğinizden emin değilseniz, lütfen başarısız kalan bir unit testi içeren bir çekme isteği gönderin. Başarısız kalan bir unit testi, geliştirme ekibine bu bug'ın mevcut olduğunun "kanıtını" gösterir ve geliştirme ekibi bu bug'ı hallettikten sonra da bug'ın düzeltildiğinin güvenilir bir göstergesi olarak hizmet eder.
 
 Şayet bir bug için başarısız kalan bir unit testinin nasıl yazılacağından emin değilseniz, frameworke dahil edilmiş diğer unit testlerini gözden geçirin. Hala yapamadınızsa, `#laravel` IRC channel (Freenode)'da yardım isteyebilirsiniz.
+
+### Laravel Liferaft Yoluyla
+
+Sorununuz için bir unit testi yazamıyorsanız, Laravel Liferaft size sorunu yeniden oluşturan bir demo uygulaması oluşturma imkanı verir. Liferaft, Laravel ambarının fork edilmesi ve ambara çekme isteklerinin gönderilmesini otomatize de edebilir. Liferaft uygulamanız gönderildikten sonra, bir Laravel geliştiricisi sizin uygulamanızı [Homestead](/docs/homestead) üzerinde çalıştırabilir ve sorununuzu gözden geçirebilir.
+
+<a name="creating-liferaft-applications"></a>
+## Liferaft Uygulamalarının Oluşturulması
+
+Laravel Liferaft Laravele katkıda bulunmak için yeni ve yenilikçi bir yol sağlar. İlk olarak Composer aracılığıyla Liferaft CLI aracını yüklemeniz gerekecek:
+
+### Liferaft Yüklenmesi
+
+	composer global require "laravel/liferaft=~1.0"
+
+Terminalinizden `liferaft` komutu çalıştırıldığı zaman `liferaft` çalıştırılabilir dosyasının bulunması için PATH'inizde `~/.composer/vendor/bin` dizini olduğundan emin olun.
+
+### GitHub İle Giriş Yapılması
+
+Liferaft ile çalışmaya başlamadan önce, bir GitHub kişisel erişim tokenine kayıt olmanız gerekir. [GitHub settings panelinizden](https://github.com/settings/applications) bir kişisel erişim tokeni üretebilirsiniz. GitHub tarafından seçilmiş durumdaki default kapsamlar yeterli olacaktır; bununla birlikte, eğer isterseniz, Liferaft'ın sizin eski sandbox uygulamalarınızı silebilmesi için `delete_repo` kapsamı imtiyazını alabilirsiniz.
+
+	liferaft auth my-github-token
+
+### Yeni Bir Liferaft Uygulaması Oluşturulması
+
+Yeni bir Liferaft uygulaması oluşturmak için, `new` komutunu kullanmanız yeterlidir:
+
+	liferaft new my-bug-fix
+
+Bu komut birkaç şey yapacaktır. Birincisi, [Laravel GitHub repository'yi](https://github.com/laravel/laravel) sizin GitHub hesabına fork edecektir. Daha sonra bu fork edilen ambarı sizin makinenize klonlayacak ve Composer bağımlılıklarını yükleyecektir. Ambar yüklendikten sonra, Liferaft uygulaması içerisinde sorunu yeniden oluşturmaya başlayabilirsiniz!
+
+### Sorununuzun Yeniden Oluşturulması
+
+Bir Liferaft uygulaması oluşturulmasından sonra, basitçe sorununuzu yeniden oluşturun. Rotalarınızı tanımlayabilir, Eloquent modelleri oluşturabilir ve hatta veritabanı migrasyonları üretebilirsiniz! Tek gereklilik, uygulamanızın yeni bir [Laravel Homestead](/docs/homestead) sanal makinesi üzerinde çalışabiliyor olmasıdır. Bu, Laravel geliştiricilerine sizin uygulamanızı kendi makinelerinde kolaylıkla çalıştırabilme imkanı verir.
+
+Sorununuzu Liferaft uygulaması içerisinde yeniden oluşturduktan sonra, gözden geçirme için onu tekrar Laravel ambarına geri göndermeye hazırsınız demektir!
+
+### Uygulamanızın Gözden Geçirme İçin Gönderilmesi
+
+Sorununuzu yeniden oluşturduktan sonra, onu gözden geçirme için göndermenin tam zamanıdır! Bununla birlikte, öncelikle Liferaft uygulamanız içerisinde üretilmiş olan `liferaft.md` dosyasını tamamlamanız gerekir. Bu dosyanın ilk satırı çekme isteğinizin başlığı olacaktır. İçeriğin geri kalan kısı çekme isteğinin gövdesinde yer alacaktır. Tabii ki, GitHub Flavored Markdown desteklenmektedir.
+
+Bu `liferaft.md` dosyasını doldurduktan sonra, değişikliklerinizin tamamını GitHub ambarınıza gönderin. Sonra da, uygulamanızın dizininden Liferaft `throw` komutunu çalıştırın:
+
+	liferaft throw
+
+This command will create a pull request against the Laravel GitHub repository. A Laravel maintainer can easily grab your application and run it in their own Homestead environment!
+
+<a name="grabbing-liferaft-applications"></a>
+## Grabbing Liferaft Applications
+
+Intrested in contributing to Laravel? Liferaft makes it painless to install Liferaft applications and view them on your own [Homestead environment](/docs/homestead).
+
+First, for convenience, clone the [laravel/laravel](https://github.com/laravel/laravel) into a `liferaft` directory on your machine:
+
+	git clone https://github.com/laravel/laravel.git liferaft
+
+Next, check out the `develop` branch so you will be able to install Liferaft applications that target both stable and upcoming Laravel releases:
+
+	git checkout -b develop origin/develop
+
+Next, you can run the Liferaft `grab` command from your repository directory. For example, if you want to install the Liferaft application associated with pull request #3000, you should run the following command:
+
+	liferaft grab 3000
+
+The `grab` command will create a new branch on your Liferaft directory, and pull in the changes for the specified pull request. Once the Liferaft application is installed, simply serve the directory through your [Homestead](/docs/homestead) virtual machine! Once you debug the issue, don't forget to send a pull request to the [laravel/framework](https://github.com/laravel/framework) repository with the proper fix!
+
+Have an extra hour and want to solve a random issue? Just run `grab` without a pull request ID:
+
+	liferaft grab
 
 <a name="which-branch"></a>
 ## Hangi Dal?
