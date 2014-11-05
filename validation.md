@@ -361,9 +361,9 @@ Geçerlilik bakılan alan verilen düzenli ifadeye uygun olmalıdır.
 Geçerlilik bakılan alan input verisinde bulunmak zorundadır.
 
 <a name="rule-required-if"></a>
-#### required_if: _alan_, _deger_
+#### required_if: _alan_, _deger_,...
 
-Şayet _alan_ alanı _deger_'e eşit ise, geçerlilik bakılan alan girilmek zorundadır.
+Şayet _alan_ alanı herhangi bir _deger_'e eşit ise, geçerlilik bakılan alan girilmek zorundadır.
 
 <a name="rule-required-with"></a>
 #### required_with: _falan_, _filan_,...
