@@ -48,7 +48,7 @@ Formunuz dosya yüklemelerini kabul edecekse, diziye `files` seçeneğini ekleyi
 
 #### Bir Forma CSRF Değeri Eklemek
 
-Laravel, uygulamanızı siteler arası istek sahtekarlıklarından korumak için kolay bir metot sunar. Öncelikle, kullanıcının oturumuna rastgele bir değer yerleştirilir. Merak etmeyin, bu otomatik olarak yapılır. CSRF değeri, formlarınıza gizli bir alan olarak otomatik olarak yerleştirilir. Yine de, gizli alan için HTML kodunu oluşturmak isterseniz, `token` metodunu kullanabilirsiniz:
+Laravel, uygulamanızı siteler arası istek sahtekarlıklarından korumak için kolay bir metot sunar. Öncelikle, kullanıcının oturumuna rastgele bir değer yerleştirilir. Eğer `Form::open` metodunu `POST`, `PUT` veya `DELETE` ile kullanırsanız, CSRF değeri, formlarınıza gizli bir alan olarak otomatik olarak yerleştirilir. Alternatif olarak, gizli CSRF alanı için HTML kodu üretmek isterseniz, `token` metodunu kullanabilirsiniz:
 
 	echo Form::token();
 
