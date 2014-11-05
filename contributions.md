@@ -26,7 +26,7 @@ Laravel kaynak kodu Github'da yönetilmektedir ve Laravel projelerinin her biri 
 - [Laravel Envoy](https://github.com/laravel/envoy)
 - [Laravel Homestead](https://github.com/laravel/homestead)
 - [Laravel Homestead Build Scripts](https://github.com/laravel/settler)
-- [Laravel Website](https://github.com/laravel/website)
+- [Laravel Website](https://github.com/laravel/laravel.com)
 - [Laravel Art](https://github.com/laravel/art)
 
 <a name="core-development-discussion"></a>
