@@ -13,7 +13,7 @@ Laravel sizin lokal geliştirme ortamınız da dahil olmak üzere bütün PHP ge
 
 Laravel Homestead lokal makinenizde PHP, HHVM, bir web sunucusu ve diğer herhangi bir sunucu yazılımı yüklemenizi gerektirmeksizin size harika bir geliştirme ortamı sağlayan resmi, ambalajlanmış bir Vagrant "box"tur. İşletim sisteminizi karışmasını daha artık dert etmeyin! Vagrant box'ları tamamen kontrol altındadır. Eğer bir şeyler yanlış giderse, onu yok edebilir ve dakikalar içerisinde yeniden oluşturabilirsiniz!
 
-Homestead herhangi bir Windows, Mac ve Linux'te çalışır ve Nginx web sunucusu, PHP 5.6, MySQL, Postgres, Redis, Memcached ve muhteşem Laravel uygulamaları geliştirmek için gerekli diğer tüm güzellikleri içerir.
+Homestead herhangi bir Windows, Mac veya Linux sisteminde çalışır ve Nginx web sunucusu, PHP 5.6, MySQL, Postgres, Redis, Memcached ve muhteşem Laravel uygulamaları geliştirmek için gerekli diğer tüm güzellikleri içerir.
 
 > **Not:** Eğer Windows kullanıyorsanız, donanım sanallaştırmasını (hardware virtualization) (VT-x) etkinleştirmeniz gerekebilir. Bu genellikle BIOS'iniz aracılığıyla etkinleştirilebilmektedir.
 
@@ -60,7 +60,7 @@ Ondan sonra da, ambarda bulunan `Homestead.yaml` dosyasını düzenleyin. Bu dos
 
 Bir SSH anahtarınız yok mu? Mac ve Linux'te, genel olarak aşağıdaki komutu kullanarak bir SSH anahtar çifti oluşturabilirsiniz:
 
-	ssh-keygen -t rsa -C "your@email.com"
+	ssh-keygen -t rsa -C "your@homestead"
 
 Windows'ta, [Git](http://git-scm.com/) yükleyebilir ve yukarıdaki komutu vermek için Git'le birlikte bulunan `Git Bash` kabuğunu kullanabilirsiniz. Alternatif olarak, [PuTTY](http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html) ve [PuTTYgen](http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html) kullanabilirsiniz.
 
@@ -91,11 +91,11 @@ Homestead kutunuza Bash aliasları eklemek için, basitçe Homestead dizininin k
 
 Nginx siteleriniz için "domain"leri makinenizdeki `hosts` dosyasına eklemeyi unutmayın! Bu `hosts` dosyası local domain'lerinize gelen istekleri Homestead ortamınıza yönlendirecektir. Mac ve Linux'te, bu dosya `/etc/hosts` konumundadır. Windows'ta, `C:\Windows\System32\drivers\etc\hosts` konumundadır. Bu dosyaya eklediğiniz satırlar aşağıdaki gibi gözükecektir:
 
-	127.0.0.1  homestead.app
+	192.168.10.10  homestead.app
 
-Domain'i `hosts` dosyanıza ekledikten sonra, siteye tarayıcınız aracılığıyla port 8000 üzerinden erişebilirsiniz!
+IP adresinin `Homestead.yaml` dosyanızda ayarlanmış bir IP adresi olduğundan emin olun. Domain'i `hosts` dosyanıza ekledikten sonra, siteye tarayıcınız aracılığıyla erişebilirsiniz!
 
-	http://homestead.app:8000
+	http://homestead.app
 
 Veritabanlarınıza nasıl bağlanacağınızı öğrenmek için, okumaya devam edin!
 
