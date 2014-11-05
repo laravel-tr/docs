@@ -149,7 +149,7 @@ Dahil edilen görünüme bir veri dizisi de geçebilirsiniz:
 
 #### Kesimlerin Üzerine Yazmak
 
-Ön tanımlı olarak, section'lar sectionda önceden mevcut olan bir içeriğe eklenirler. Bir section'u, öncekini geçersiz kılarak tümden üzerine yazmak için `overwrite` cümlesini kullanabilirsiniz:
+Bir section'u, öncekini geçersiz kılarak tümden üzerine yazmak için `overwrite` cümlesini kullanabilirsiniz:
 
 	@extends('list.item.container')
 

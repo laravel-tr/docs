@@ -198,6 +198,8 @@ Worker'larınızı yeniden başlatmanın en kolay yolu yayımlama scriptinize a�
 
 Bu komut tüm kuyruk işçilerine mevcut işlerini işlemeyi bitirdikten sonra yeniden başlatmaları talimatı verecektir.
 
+> **Not:** Bu komut restart planlamak için cache sistemine dayanmaktadır. APCu default olarak CLI komutları için çalışmaz. Eğer APCu kullanıyorsanız, APCu yapılandırmanıza `apc.enable_cli=1` ekleyin.
+
 ### Daemon Kuyruk İşçileri İçin Kodlama
 
 Daemon kuyruk işçileri her biri işlerini işlemeden önce frameworkü yeniden başlatmazlar. Bu nedenle, işlerinizi bitirmeden önce çok büyük kaynakları serbest bırakmaya özen göstermelisiniz. Örneğin, GD kitaplığıyla resim manipulasyonu yapıyorsanız, yaptıktan sonra `imagedestroy` ile belleği rahatlatmalısınız.
