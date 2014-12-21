@@ -22,7 +22,9 @@ Laravel'in `Event` sınıfı, uygulamanızdaki olaylara abone olmanıza ve dinle
 
 #### Bir Olayı Ateşleme
 
-	$olay = Event::fire('uye.login', array($uye));
+	$response = Event::fire('auth.login', array($user));
+
+Bu `fire` metodu, uygulamanızda daha sonra olacakları kontrol etmekte kullanacağınız bir response'lar dizisi döndürür.
 
 #### Bir Olaya Abone Olurken Öncelik Belirtme
 
@@ -47,7 +49,9 @@ Bazen bir olayın diğer dinleyicilere yayılmasını durdurmak isteyebilirsiniz
 
 Tamam, olayların nasıl kayda geçirileceğini biliyorsunuz ama onların _nerede_ kayda geçirileceğini merak ediyor olabilirsiniz. Dert etmeyin, bu çok sorulan bir şey. Ne yazık ki bu cevaplandırması zor bir soru, çünkü bir olayı neredeyse her yerde kayda geçirebilirsiniz! Fakat, işte bazı ipuçları. Aynı şekilde, diğer pek çok bootstrapping (önce yüklenen) koduna benzer olarak, olayları `app/start/global.php` gibi `start` dosyalarınızın birisinde kayda geçirebilirsiniz.
 
-Eğer `start` dosyalarınız çok kalabalık bir hale gelirse, bir `start` dosyanızda "include" edilen ayrı bir `app/events.php` dosyası oluşturabilirsiniz. Bu, sizin olay kaydetme işinizi, geri kalan bootstrapping kodundan temiz bir şekilde ayrı tutmanın basit bir çözümüdür. Eğer sınıf temelli bir yaklaşımı tercih ederseniz, olaylarınızı bir [servis sağlayıcı](/docs/ioc#service-providers) ile kayda geçirebilirsiniz. Bu yaklaşımlardan hiçbiri "mutlak" doğru olmadığından, ugulamanızın büyüklüğüne göre rahatlık hissedeceğiniz bir yaklaşımı seçin.
+Eğer `start` dosyalarınız çok kalabalık bir hale gelirse, bir `start` dosyanızda "include" edilen ayrı bir `app/events.php` dosyası oluşturabilirsiniz. Bu, sizin olay kaydetme işinizi, geri kalan bootstrapping kodundan temiz bir şekilde ayrı tutmanın basit bir çözümüdür. 
+
+Eğer sınıf temelli bir yaklaşımı tercih ederseniz, olaylarınızı bir [servis sağlayıcı](/docs/ioc#service-providers) ile kayda geçirebilirsiniz. Bu yaklaşımlardan hiçbiri "mutlak" doğru olmadığından, ugulamanızın büyüklüğüne göre rahatlık hissedeceğiniz bir yaklaşımı seçin.
 
 <a name="wildcard-listeners"></a>
 ## Joker Dinleyiciler
