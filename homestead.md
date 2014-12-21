@@ -48,15 +48,39 @@ VirtualBox ve Vagrant yüklendikten sonra, terminalinizde aşağıdaki komutu ku
 
 	vagrant box add laravel/homestead
 
-### Homestead Ambarını Klonlayın
+### Homestead Yüklenmesi
 
-Kutuyu Vagrant yüklemenize ekledikten sonra, bu ambarı klonlamalı veya indirmelisiniz. Homestead kutusu sizin tüm Laravel (ve PHP) projelerinizin host'u olarak hizmet edeceği için, bu ambarı tüm Laravel projelerinizi tuttuğunuz merkezi bir `Homestead` dizinine klonlamayı düşünün.
+#### Composer + PHP Aracı İle
+
+Kutuyu Vagrant yüklemenize ekledikten sonra, Composer `global` komutunu kullanarak Homestead CLI aracını kurmaya geçebilirsiniz:
+
+	composer global require "laravel/homestead=~2.0"
+
+Terminalinizde `homestead` komutunu çalıştırdığınız zaman `homestead` çalıştırılabilir dosyasının bulunası için PATH'inizde `~/.composer/vendor/bin` dizininin yer aldığından emin olun.
+
+Homestead CLI aracını kurduktan sonra , `Homestead.yaml` konfigürasyon dosyasını oluşturmak için `init` komutunu çalıştırın:
+
+	homestead init
+
+Bu `Homestead.yaml` dosyası `~/.homestead` dizinine koyulacaktır. Eğer bir Mac veya Linux sistemi kullanıyorsanız, `Homestead.yaml` dosyanızı terminalinizde `homestead edit` komutunu çalıştırmak suretiyle düzenleyebilirsiniz:
+
+	homestead edit
+
+#### Elle Git Aracılığıyla (Local PHP Olmadan)
+
+Alternatif olarak, eğer lokal makinenize PHP kurmak istemiyorsanız, elle basitçe ambarı klonlaak suretiyle Homestead kurabilirsiniz. Homestead box sizin Laravel (ve PHP) projelerinizin tümü için barındırma yeri olarak hizmet edeceği için, bu ambarı Laravel projelerinizin tümünü tutacağınız merkezi bir `Homestead` dizinine klonlamayı düşünün:
 
 	git clone https://github.com/laravel/homestead.git Homestead
 
+Once you have installed the Homestead CLI aracını kurduktan sonra, `Homestead.yaml` yapılandırma dosyasını oluşturmak için `bash init.sh` komutunu çalıştırın:
+
+	bash init.sh
+
+Bu `Homestead.yaml` dosyası `~/.homestead` dizinine koyulacaktır.
+
 ### SSH Anahtarınızı Ayarlayın
 
-Ondan sonra da, ambarda bulunan `Homestead.yaml` dosyasını düzenleyin. Bu dosyada, public SSH anahtarınızın, bunun yanı sıra ana makineniz ile Homestead sanal makineniz arasında paylaşılmasını istediğiniz klasörlerin yolunu ayarlayabilirsiniz.
+Ondan sonra da, `Homestead.yaml` dosyasını düzenlemelisiniz. Bu dosyada, public SSH anahtarınızın, bunun yanı sıra ana makineniz ile Homestead sanal makineniz arasında paylaşılmasını istediğiniz klasörlerin yolunu ayarlayabilirsiniz.
 
 Bir SSH anahtarınız yok mu? Mac ve Linux'te, genel olarak aşağıdaki komutu kullanarak bir SSH anahtar çifti oluşturabilirsiniz:
 
@@ -83,11 +107,13 @@ Nginx size tanıdık değil mi? Problem değil. `sites` özelliği, Homestead or
 
 ### Bash Alias'ları
 
-Homestead kutunuza Bash aliasları eklemek için, basitçe Homestead dizininin köküne `aliases` dosyası ekleyin.
+Homestead kutunuza Bash aliasları eklemek için, basitçe `~/.homestead` dizininin köküne `aliases` dosyası ekleyin.
 
 ### Vagrant Box'ı Başlatın
 
-`Homestead.yaml` dosyasını istediğiniz gibi düzenledikten sonra, terminalinizde Homestead dizininden `vagrant up` komutunu çalıştırın. Vagrant sanal makineyi boot edecektir ve paylaşılan klasörlerinizi ve Nginx sitelerinizi otomatik olarak yapılandıracaktır!
+`Homestead.yaml` dosyasını istediğiniz gibi düzenledikten sonra, terminalinizde `homestead up` komutunu çalıştırın. Eğer Homestead'ı elle yüklemiş ve PHP `homestead` aracını kullanmıyorsanız, klonlanmış Homestead Git ambarınızı taşıyan dizinden `vagrant up` komutunu çalıştırın.
+
+Vagrant sanal makineyi boot edecektir ve paylaşılan klasörlerinizi ve Nginx sitelerinizi otomatik olarak yapılandıracaktır! Makineyi yok etmek için, `homestead destroy` komutunu kullanabilirsiniz. Mevcut Homestead komutlarının tam bir listesini görmek için, `homestead list` çalıştırın.
 
 Nginx siteleriniz için "domain"leri makinenizdeki `hosts` dosyasına eklemeyi unutmayın! Bu `hosts` dosyası local domain'lerinize gelen istekleri Homestead ortamınıza yönlendirecektir. Mac ve Linux'te, bu dosya `/etc/hosts` konumundadır. Windows'ta, `C:\Windows\System32\drivers\etc\hosts` konumundadır. Bu dosyaya eklediğiniz satırlar aşağıdaki gibi gözükecektir:
 
@@ -104,11 +130,7 @@ Veritabanlarınıza nasıl bağlanacağınızı öğrenmek için, okumaya devam 
 
 ### SSH Aracılığıyla Bağlanma
 
-Homestead ortamınıza SSH aracılığıyla bağlanmak için, `Homestead.yaml` dosyanızda belirttiğiniz SSH anahtarını kullanarak port 2222 üzerinde `127.0.0.1`'e bağlanmalısınız. Ayrıca, basitçe `Homestead` dizininizden `vagrant ssh` komutunu da çalıştırabilirsiniz.
-
-Eğer daha fazla kolaylık istiyorsanız `~/.bash_aliases` veya `~/.bash_profile`'inize aşağıdaki aliası eklemek yararlı olabilir:
-
-	alias vm='ssh vagrant@127.0.0.1 -p 2222'
+Homestead ortamınıza SSH aracılığıyla bağlanmak için, terminalinizde `homestead ssh` komutunu veriniz.
 
 ### Veritabanlarınıza Bağlanma
 

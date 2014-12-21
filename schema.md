@@ -68,7 +68,7 @@ Komut         | Açıklama
 `$table->date('created_at');`  |  DATE eşdeğeri sütun
 `$table->dateTime('created_at');`  |  DATETIME eşdeğeri sütun
 `$table->decimal('miktar', 5, 2);`  |  basamak ve ondalık basamak sayısı belirlenmiş DECIMAL eşdeğeri sütun
-`$table->double('column', 15, 8);`  |  DOUBLE eşdeğeri sütun
+`$table->double('column', 15, 8);`  |  DOUBLE eşdeğeri sütun, toplamda 15 ve ondalık noktasından sonra 8 basamak 
 `$table->enum('tercihler', array('falan', 'filan'));` | ENUM eşdeğeri sütun
 `$table->float('miktar');`  |  FLOAT eşdeğeri sütun
 `$table->increments('id');`  |  Giderek artan ID alanı ekler (birincil anahtar).

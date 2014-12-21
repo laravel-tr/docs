@@ -322,7 +322,7 @@ Geçerlilik bakılan alan bir IP adresi olarak biçimlendirilmiş olmalıdır.
 <a name="rule-max"></a>
 #### max: _deger_
 
-Geçerlilik bakılan alan bir maksimum _deger_'e eşit veya ondan az olmalıdır. Stringler, sayılar ve dosyalar `size` kuralıyla aynı tarzda değerlendirilir.
+Geçerlilik bakılan alan bir maksimum _deger_'e eşit veya ondan az olmalıdır. Stringler, sayılar ve dosyalar [`size`](#rule-size) kuralıyla aynı tarzda değerlendirilir.
 
 <a name="rule-mimes"></a>
 #### mimes: _falan_, _filan_,...
@@ -336,7 +336,7 @@ Geçerlilik bakılan alan listelenen uzantılardan birine tekabül eden bir MIME
 <a name="rule-min"></a>
 #### min: _deger_
 
-Geçerlilik bakılan alan bir asgari _deger_'den büyük olmalıdır. Stringler, sayılar ve dosyalar `size` kuralıyla aynı tarzda değerlendirilir.
+Geçerlilik bakılan alan bir asgari _deger_'den büyük olmalıdır. Stringler, sayılar ve dosyalar [`size`](#rule-size) kuralıyla aynı tarzda değerlendirilir.
 
 <a name="rule-not-in"></a>
 #### not_in: _falan_,_filan_,...
