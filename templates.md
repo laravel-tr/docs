@@ -68,7 +68,7 @@ Bir Blade düzenini genişleten (`extend`) görünümlerin, düzenden gelen kesi
 
 Kimi zaman, örneğin bir kesimin tanımlanmış olup olmadığından emin olmadığınız durumlarda, `@yield` direktifine ön tanımlı bir değer geçmek isteyebilirsiniz. Bu ön tanımlı değer ikinci parametre olarak geçilebilir.
 
-	@yield('section', 'Ön Tanımlı İçerik');
+	@yield('section', 'Ön Tanımlı İçerik')
 
 <a name="other-blade-control-structures"></a>
 ## Diğer Blade Kontrol Yapıları
@@ -161,7 +161,7 @@ Bir section'u, öncekini geçersiz kılarak tümden üzerine yazmak için `overw
 
 	@lang('language.line')
 
-	@choice('language.line', 1);
+	@choice('language.line', 1)
 
 #### Yorumlar
 
