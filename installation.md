@@ -1,77 +1,73 @@
-# Kurulum
+# Installation
 
-- [Composer Kurulumu](#install-composer)
-- [Laravel Yükleme](#install-laravel)
-- [Sunucu Gereksinimleri](#server-requirements)
-- [Yapılandırma](#configuration)
-- [Zarif URL'ler](#pretty-urls)
+- [Install Composer](#install-composer)
+- [Install Laravel](#install-laravel)
+- [Server Requirements](#server-requirements)
 
 <a name="install-composer"></a>
-## Composer Kurulumu
+## Install Composer
 
-Laravel bağımlılıklarını yönetmek için [Composer](http://getcomposer.org) kullanır. Öncelikle `composer.phar` dosyasını indiriniz. PHAR arşivini yerel proje dosyanızda tutabileceğiniz gibi `usr/local/bin` içerisine taşıyarak sisteminizde evrensel olarak da kullanabilirsiniz. Windows'ta Composer [Windows kurulumu](https://getcomposer.org/Composer-Setup.exe)nu kullanabilirsiniz. Setup Composer'i PATH değişkeni olarak kaydedecektir, böylece terminal üzerinde `composer` yazdığınızda Composer'i direkt olarak kullanabilirsiniz.
+Laravel utilizes [Composer](http://getcomposer.org) to manage its dependencies. So, before using Laravel, you will need to make sure you have Composer installed on your machine.
 
 <a name="install-laravel"></a>
-## Laravel Yükleme
+## Install Laravel
 
-### Laravel Installer Aracılığıyla
+### Via Laravel Installer
 
-Öncelikle, Composer kullanarak Laravel yükleyicisini indiriniz.
+First, download the Laravel installer using Composer.
 
 	composer global require "laravel/installer=~1.1"
 
-Terminalinizde `laravel` komutunu çalıştırdığınızda `laravel` çalıştırıcısının bulunabilmesi için PATH'inizde `~/.composer/vendor/bin` dizininin bulunduğundan emin olun.
+Make sure to place the `~/.composer/vendor/bin` directory in your PATH so the `laravel` executable can be located by your system.
 
-Bunu bir kere kurduktan sonra, basit `laravel new` komutu sizin belirttiğiniz dizine yeni bir Laravel yüklemesi oluşturucaktır. Örneğin, `laravel new blog` komutu, içinde tüm bağımlılıkları yüklenmiş yeni bir laravel kurulumu barındıran `blog` klasörünü oluşturacaktır. Bu yolla kurulum yapmak Composer aracılığıyla yüklemekten çok daha hızlıdır.
+Once installed, the simple `laravel new` command will create a fresh Laravel installation in the directory you specify. For instance, `laravel new blog` would create a directory named `blog` containing a fresh Laravel installation with all dependencies installed. This method of installation is much faster than installing via Composer:
 
-### Composer'ın Create-Project Komutuyla
+	laravel new blog
 
-Terminalinizde Composer create-project komutunu vererek Laravel'i yükleyebilirsiniz:
+### Via Composer Create-Project
+
+You may also install Laravel by issuing the Composer `create-project` command in your terminal:
 
 	composer create-project laravel/laravel --prefer-dist
 
-### Elle İndirerek
-
-Composer yüklendikten sonra, Laravel framework'ün [son sürümünü](https://github.com/laravel/laravel/archive/master.zip) indirip, içeriğini sunucunuzdaki bir dizine çıkarınız. Ardından, Laravel uygulamanızın ana dizininde, Laravel gereksinimlerini yüklemek için, `php composer.phar install` (veya `composer install`) komutunu çalıştırınız. Bu işlemin başarıyla tamamlanabilmesi için sunucunuzda [Git](http://git-scm.com/downloads) yüklü olması gerekmektedir.
-
-Laravel'i güncellemek isterseniz `php composer.phar update` komutunu verebilirsiniz.
-
 <a name="server-requirements"></a>
-## Sunucu Gereksinimleri
+## Server Requirements
 
-Laravel framework'un birkaç sistem gereksinimi bulunmaktadır:
+The Laravel framework has a few system requirements:
 
 - PHP >= 5.4
-- MCrypt PHP Eklentisi
+- Mcrypt PHP Extension
+- OpenSSL PHP Extension
+- Mbstring PHP Extension
 
-PHP 5.5 için, bazı OS yayımlamaları PHP JSON eklentisinin elle yüklenmesini gerektirebilir. Ubuntu kullanırken, bu `apt-get install php5-json` aracılığı ile yapılabilir.
+As of PHP 5.5, some OS distributions may require you to manually install the PHP JSON extension. When using Ubuntu, this can be done via `apt-get install php5-json`.
 
 <a name="configuration"></a>
-## Yapılandırma
+## Configuration
 
-Laravel'in çalışabilmesi için neredeyse hiç yapılandırma ayarı gerekmez. Geliştirmeye hemen başlayabilirsiniz! Ancak `app/config/app.php` dosyasını ve dokümantasyonunu gözden geçirebilirsiniz. Buradaki `timezone` (saat dilimi) ve `locale` gibi değerleri uygulamanızın ihtiyaçlarına göre düzenleyebilirsiniz.
+The first thing you should do after installing Laravel is set your application key to a random string. If you installed Laravel via Composer, this key has probably already been set for you by the `key:generate` command.
 
-Laravel yüklendikten sonra, [local ortamınızı yapılandırmanız](/docs/configuration#environment-configuration) da gerekmektedir. Bu size local makinenizde geliştirme yaparken ayrıntılı hata mesajları alma imkanı verecektir. Ön tanımlı olarak, üretim yapılandırma dosyanızdaki ayrıntılı hata bildirimi devre dışı durumdadır.
+Typically, this string should be 32 characters long. The key can be set in the `app.php` configuration file. **If the application key is not set, your user sessions and other encrypted data will not be secure!**
 
-> **Not:** Bir üretim ortamında `app.debug` değerini asla `true` ayarlamamalısınız. Bunu hiçbir zaman yapmayın.
+Laravel needs almost no other configuration out of the box. You are free to get started developing! However, you may wish to review the `config/app.php` file and its documentation. It contains several options such as `timezone` and `locale` that you may wish to change according to your application.
+
+Once Laravel is installed, you should also [configure your local environment](/docs/master/configuration#environment-configuration).
+
+> **Note:** You should never have the `app.debug` configuration option set to `true` for a production application.
 
 <a name="permissions"></a>
-### İzinler
-Laravel `app/storage` dizin içeriğinin web sunucu tarafından yazılabilir olmasını gerektirmektedir.
+### Permissions
 
-<a name="paths"></a>
-### Dosya Yolları
-
-Framework dizin yollarının birkaçı yapılandırılabilirdir. Bu dizin yollarını değiştirebilmek için `bootstrap/paths.php` dosyasını gözden geçiriniz.
+Laravel may require one set of permissions to be configured: folders within `storage` require write access by the web server.
 
 <a name="pretty-urls"></a>
-## Zarif URL'ler
+## Pretty URLs
 
 ### Apache
 
-Laravel framework, URL'lerin `index.php` olmadan kullanımına imkan vermek için kullanılan bir `public/.htaccess` dosyası ile birlikte gelmektedir. Laravel uygulamanızın sunumu için Apache kullanıyorsanız `mod_rewrite` modülünün etkin olduğundan emin olunuz.
+The framework ships with a `public/.htaccess` file that is used to allow URLs without `index.php`. If you use Apache to serve your Laravel application, be sure to enable the `mod_rewrite` module.
 
-Eğer Laravel ile birlikte gelen `.htaccess` dosyası Apache kurulumunuz ile işlev göstermezse, bunu deneyiniz:
+If the `.htaccess` file that ships with Laravel does not work with your Apache installation, try this one:
 
 	Options +FollowSymLinks
 	RewriteEngine On
@@ -82,8 +78,10 @@ Eğer Laravel ile birlikte gelen `.htaccess` dosyası Apache kurulumunuz ile iş
 
 ### Nginx
 
-Nginx kullanıyorsanız, ekteki ayar "zarif url"lerin çalışmasını sağlamaya yeterlidir:
+On Nginx, the following directive in your site configuration will allow "pretty" URLs:
 
     location / {
         try_files $uri $uri/ /index.php?$query_string;
     }
+
+Of course, when using [Homestead](/docs/master/homestead), pretty URLs will be configured automatically.

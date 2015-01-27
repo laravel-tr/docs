@@ -1,235 +1,158 @@
-# Görünümler (Views) ve Cevaplar (Responses)
+# HTTP Responses
 
-- [Temel Cevaplar](#basic-responses)
-- [Yönlendirmeler (Redirects)](#redirects)
-- [Görünümler (Views)](#views)
-- [Görünüm Kompozitörleri](#view-composers)
-- [Özel Cevaplar](#special-responses)
-- [Cevap Makroları](#response-macros)
+- [Basic Responses](#basic-responses)
+- [Redirects](#redirects)
+- [Other Responses](#other-responses)
+- [Response Macros](#response-macros)
 
 <a name="basic-responses"></a>
-## Temel Cevaplar
+## Basic Responses
 
-#### Rotalardan String Döndürme
+#### Returning Strings From Routes
+
+The most basic response from a Laravel route is a string:
 
 	Route::get('/', function()
 	{
-		return 'Merhaba dünya!';
+		return 'Hello World';
 	});
 
-#### Özel Cevaplar Oluşturma
+#### Creating Custom Responses
 
-Bir cevap (`Response`) olgusu `Symfony\Component\HttpFoundation\Response` sınıfından türer ve HTTP cevapları oluşturmak için çeşitli metodlar sağlar.
+However, for most routes and controller actions, you will be returning a full `Illuminate\Http\Response` instance or a [view](/docs/master/views). Returning a full `Response` instance allows you customize the response's HTTP status code and headers. A `Response` instance inherits from the `Symfony\Component\HttpFoundation\Response` class, providing a variety of methods for building HTTP responses:
 
-	$cevap = Response::make($contents, $statusCode);
+	use Illuminate\Http\Response;
 
-	$cevap->header('Content-Type', $deger);
+	return (new Response($content, $status))
+	              ->header('Content-Type', $value);
 
-	return $cevap;
+For convenience, you may also use the `response` helper:
 
-Eğer `Response` sınıfının metodlarına erişmeniz gerekiyor, ama cevap içeriği olarak bir view döndürmek istiyorsanız, kolaylık açısından `Response::view` metodunu kullanabilirsiniz:
+	return response($content, $status)
+	              ->header('Content-Type', $value);
 
-	return Response::view('hello')->header('Content-Type', $type);
+> **Note:** For a full list of available `Response` methods, check out its [API documentation](http://laravel.com/api/master/Illuminate/Http/Response.html) and the [Symfony API documentation](http://api.symfony.com/2.5/Symfony/Component/HttpFoundation/Response.html).
 
-#### Cevaplara Çerez Bağlanması
+#### Sending A View In A Response
 
-	$cerez = Cookie::make('isim', 'deger');
+If you need access to the `Response` class methods, but want to return a view as the response content, you may use the `view` method for convenience:
 
-	return Response::make($content)->withCookie($cerez);
+	return response()->view('hello')->header('Content-Type', $type);
+
+#### Attaching Cookies To Responses
+
+	return response($content)->withCookie(cookie('name', 'value'));
 
 <a name="redirects"></a>
-## Yönlendirmeler (Redirects)
+## Redirects
 
-#### Bir Yönlendirme Döndürme
+Redirect responses are typically instances of the `Illuminate\Http\RedirectResponse` class, and contain the proper headers needed to redirect the user to another URL.
 
-	return Redirect::to('uye/giris');
+#### Returning A Redirect
 
-#### Flaş Veri Eşliğinde Bir Yönlendirme Döndürme
+There are several ways to generate a `RedirectResponse` instance. The simplest method is to use the `redirect` helper method. When testing, it is not common to mock the creation of a redirect response, so using the helper method is almost always acceptable:
 
-	return Redirect::to('uye/giris')->with('mesaj', 'Giriş başarısız!');
+	return redirect('user/login');
 
-> **Not:** `with` metodu veriyi oturum bilgisine flaşlayacağından, bu veriyi tipik `Session::get` metodu ile alabilirsiniz.
+#### Returning A Redirect With Flash Data
 
-#### İsimli Bir Rotaya Yönlendirme Döndürme
+Redirecting to a new URL and [flashing data to the session](/docs/master/session) are typically done at the same time. So, for convenience, you may create a `RedirectResponse` instance **and** flash data to the session in a single method chain:
 
-	return Redirect::route('giris');
+	return redirect('user/login')->with('message', 'Login Failed');
 
-#### Parametre Geçerek İsimli Bir Rotaya Yönlendirme Döndürme
+#### Returning A Redirect To A Named Route
 
-	return Redirect::route('profil', array(1));
+When you call the `redirect` helper with no parameters, an instance of `Illuminate\Routing\Redirector` is returned, allowing you to call any method on the `Redirector` instance. For example, to generate a `RedirectResponse` to a named route, you may use the `route` method:
 
-#### İsimli Parametre Kullanarak İsimli Bir Rotaya Yönlendirme Döndürme
+	return redirect()->route('login');
 
-	return Redirect::route('profil', array('uye' => 1));
+#### Returning A Redirect To A Named Route With Parameters
 
-#### Bir Kontrolör Eylemine Yönlendirme Döndürme
+If your route has parameters, you may pass them as the second argument to the `route` method.
 
-	return Redirect::action('HomeController@index');
+	// For a route with the following URI: profile/{id}
 
-#### Parametre Geçerek Bir Kontrolör Eylemine Yönlendirme Döndürme
+	return redirect()->route('profile', [1]);
 
-	return Redirect::action('UserController@profil', array(1));
+If you are redirecting to a route with an "ID" parameter that is being populated from an Eloquent model, you may simply pass the model itself. The ID will be extracted automatically:
 
-#### İsimli Parametre Kullanarak Bir Kontrolör Eylemine Yönlendirme Döndürme
+	return redirect()->route('profile', [$user]);
 
-	return Redirect::action('UserController@profil', array('uye' => 1));
+#### Returning A Redirect To A Named Route Using Named Parameters
 
-<a name="views"></a>
-## Görünümler (Views)
+	// For a route with the following URI: profile/{user}
 
-Görünümler tipik olarak uygulamanızın HTML'sini içerirler ve kontrolörünüzün ve etki alanı mantığınızın gösterim mantığınızdan ayrık tutulmasının uygun bir yoludur. Görünümler `app/views` dizininde saklanmaktadır.
+	return redirect()->route('profile', ['user' => 1]);
 
-Basit bir görünüm şuna benzer:
+#### Returning A Redirect To A Controller Action
 
-	<!-- Görünüm app/views/selamlama.php dosyasında bulunsun-->
+Similarly to generating `RedirectResponse` instances to named routes, you may also generate redirects to [controller actions](/docs/master/controllers):
 
-	<html>
-		<body>
-			<h1>Merhaba <?php echo $isim; ?></h1>
-		</body>
-	</html>
+	return redirect()->action('App\Http\Controllers\HomeController@index');
 
-Bu görünüm web tarayıcısına şu şekilde döndürülebilir:
+> **Note:** You do not need to specify the full namespace to the controller if you have registered a root controller namespace via `URL::setRootControllerNamespace`.
 
-	Route::get('/', function()
-	{
-		return View::make('selamlama', array('isim' => 'Tuana Şeyma'));
-	});
+#### Returning A Redirect To A Controller Action With Parameters
 
-`View::make` metodundaki ikinci parametre görünümde kullanılması gereken bir veri dizisidir.
+	return redirect()->action('App\Http\Controllers\UserController@profile', [1]);
 
-#### Görünümlere Veri Geçilmesi
+#### Returning A Redirect To A Controller Action Using Named Parameters
 
-	// Geleneksel yaklaşım kullanmak
-	$view = View::make('selamlama')->with('isim', 'Tuana Şeyma');
+	return redirect()->action('App\Http\Controllers\UserController@profile', ['user' => 1]);
 
-	// Sihirli Metodları kullanmak
-	$view = View::make('selamlama')->withIsim('Tuana Şeyma');
+<a name="other-responses"></a>
+## Other Responses
 
-Yukarıdaki örnekte `$isim` değişkeni görünümden erişilebilir olacak ve `Tuana Şeyma` bilgisini taşıyacaktır.
+The `response` helper may be used to conveniently generate other types of response instances. When the `response` helper is called without arguments, an implementation of the `Illuminate\Contracts\Routing\ResponseFactory` [contract](/docs/master/contracts) is returned. This contract provides several helpful methods for generating responses.
 
-Dilerseniz, `make` metoduna ikinci parametre olarak veriler dizisi geçebilirsiniz:
+#### Creating A JSON Response
 
-	$view = View::make('selamlama', $data);
+The `json` method will automatically set the `Content-Type` header to `application/json`:
 
-Bir parça veriyi tüm görünümler arasında paylaşmanız da mümkündür:
+	return response()->json(['name' => 'Steve', 'state' => 'CA']);
 
-	View::share('isim', 'Tuana Şeyma');
+#### Creating A JSONP Response
 
-#### Bir Görünüme Bir Alt Görünüm Geçirilmesi
+	return response()->json(['name' => 'Steve', 'state' => 'CA'])
+	                 ->setCallback($request->input('callback'));
 
-Bazen bir görünümü başka bir görünümün içine geçirmek isteyebilirsiniz. Örneğin, `app/views/evlat/view.php`'de saklanan belli bir görünüm olsun ve biz bunu şu şekilde başka bir görünüme geçirebiliriz:
+#### Creating A File Download Response
 
-	$view = View::make('selamlama')->nest('evlat', 'evlat.view');
+	return response()->download($pathToFile);
 
-	$view = View::make('selamlama')->nest('evlat', 'evlat.view', $data);
+	return response()->download($pathToFile, $name, $headers);
 
-Bundan sonra bu alt görünüm ebeveyn görünümde gösterilebilir:
+> **Note:** Symfony HttpFoundation, which manages file downloads, requires the file being downloaded to have an ASCII file name.
 
-	<html>
-		<body>
-			<h1>Merhaba!</h1>
-			<?php echo $evlat; ?>
-		</body>
-	</html>
+<a name="response-macros"></a>
+## Response Macros
 
-#### Bir Görünümün Mevcut Olmadığının Belirlenmesi
-  
-Bir view'in mevcut olup olmadığını yoklamanız gerekirse, `View::exists` metodunu kullanın:
-  
-	if (View::exists('emails.customer'))
-	{
-		//
-  	}
-  
-<a name="view-composers"></a>
-## Görünüm Kompozitörleri
+If you would like to define a custom response that you can re-use in a variety of your routes and controllers, you may use the `macro` method on an implementation of `Illuminate\Contracts\Routing\ResponseFactory`.
 
-Görünüm kompozitörleri görünüm oluşturulduğu zaman çağrılan isimsiz fonksiyonlar veya sınıf metodlarıdır. Eğer belli bir görünüm, uygulamanız boyunca her oluşturulduğunda bu görünüme bağlamak istediğiniz bir veri varsa, bir görünüm kompozitörü kodun tek bir yere koyulabilmesi imkanı verebilir. Bu nedenle, görünüm kompozitörleri "görünüm modelleri" veya "sunum yapıcı" gibi iş görürler.
+For example, from a [service provider's](/docs/master/providers) `boot` method:
 
-#### Bir Görünüm Kompozitörü Tanımlanması
+	<?php namespace App\Providers;
 
-	View::composer('profil', function($view)
-	{
-		$view->with('navigasyon', Sayfa::all());
-	});
+	use Response;
+	use Illuminate\Support\ServiceProvider;
 
-Şimdi `profil` görünümü her oluşturulduğunda, `navigasyon` verisi bu görünüme bağlanacaktır.
+	class ResponseMacroServiceProvider extends ServiceProvider {
 
-Bir görünüm kompozitörüne bir defada birden çok görünüm bağlamanız da mümkündür:
-
-    View::composer(array('profil','pano','bildirim'), function($view)
-    {
-        $view->with('navigasyon', Sayfa::all());
-    });
-
-Bunun yerine sınıf tabanlı bir kompozitör kullanmak isterseniz, ki uygulama [IoC Konteyneri](/docs/ioc) ile çözümlenebilme yararı sağlar, şöyle yapabilirsiniz:
-
-	View::composer('profil', 'ProfileComposer');
-
-Bir görünüm kompozitörü sınıfı şöyle tanımlanmalıdır:
-
-	class ProfileComposer {
-
-		public function compose($view)
+		/**
+		 * Perform post-registration booting of services.
+		 *
+		 * @return void
+		 */
+		public function boot()
 		{
-			$view->with('adet', Uye::count());
+			Response::('caps', function($value) use ($response)
+			{
+				return $response->make(strtoupper($value));
+			});
 		}
 
 	}
 
-#### Birden Çok Composer Tanımlanması
+The `macro` function accepts a name as its first argument, and a Closure as its second. The macro's Closure will be executed when calling the macro name from a `ResponseFactory` implementation or the `response` helper:
 
-Bir grup composer'i bir defada kayda geçirmek için `composers` metodunu kullanabilirsiniz:
-
-	View::composers(array(
-		'AdminComposer' => array('admin.index', 'admin.profile'),
-		'UserComposer' => 'user',
-		'ProductComposer@create' => 'product' 
-	));
-
-> **Not:** Kompozitör sınıfının nerede saklanacağı konusunda bir gelenek olmadığına dikkat edin. `composer.json` dosyanızdaki yönergeleri kullanarak otomatik yüklenebildikleri sürece, bunları istediğiniz yerde depolayabilirsiniz.
-
-### Görünüm Oluşturucular
-
-Görünüm **oluşturucuları** tam olarak görünüm kompozitörleri gibi çalışırlar; ancak bunlar görünüm oluşturulur oluşturulmaz aktifleştirilirler. Görünüm oluşturucusu kaydetmek için, basitçe `creator` metodunu kullanınız:
-
-	View::creator('profil', function($view)
-	{
-		$view->with('adet', Uye::count());
-	});
-
-<a name="special-responses"></a>
-## Özel Cevaplar
-
-#### Bir JSON Cevabı Oluşturma
-
-	return Response::json(array('isim' => 'Tuana Şeyma', 'il' => 'Bursa'));
-
-#### Bir JSONP Cevabı Oluşturma
-
-	return Response::json(array('isim' => 'Tuana Şeyma', 'il' => 'Bursa'))->setCallback(Input::get('callback'));
-
-#### Bir Dosya İndirme Cevabı Oluşturma
-
-	return Response::download($indirilecekDosyaYolu);
-
-	return Response::download($indirilecekDosyaYolu, $isim, $basliklar);
-
-> **Not:** Dosya indirmelerini yöneten Symfony HttpFoundation, indirilecek olan dosyanın bir ASCII dosya ismi olmasını gerektirir.
-
-<a name="response-macros"></a>
-## Cevap Makroları
-
-Çeşitli rota ve controllerlerinizde tekrar tekrar kullanabileceğiniz özel bir cevap tanımlamak isterseniz, `Response::macro` metodunu kullanabilirsiniz:
-
-	Response::macro('caps', function($value)
-	{
-		return Response::make(strtoupper($value));
-	});
-
-Bu `macro` fonksiyonu birinci parametre olarak bir isim ve ikinci parametre olarak bir Closure kabul eder. `Response` sınıfı üzerinde makro ismi çağrıldığı zaman makronun Closure fonksiyonu çalıştırılacaktır:
-
-	return Response::caps('falan');
-
-Makrolarınızı `app/start` dosyalarınızın birinde tanımlayabilirsiniz. Alternatif olarak, makrolarınızı ayrı bir dosya içerisinde organize edip, bu dosyayı `start` dosyalarınızın birisinden "include" edebilirsiniz.
+	return response()->caps('foo');

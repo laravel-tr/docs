@@ -1,146 +1,139 @@
-# Yapılandırma
+# Configuration
 
-- [Giriş](#introduction)
-- [Ortam Yapılandırması](#environment-configuration)
-- [Sağlayıcı Yapılandırması](#provider-configuration)
-- [Hassas Yapılandırmaları Korumak](#protecting-sensitive-configuration)
-- [Bakım Modu](#maintenance-mode)
+- [Introduction](#introduction)
+- [After Installation](#after-installation)
+- [Accessing Configuration Values](#accessing-configuration-values)
+- [Environment Configuration](#environment-configuration)
+- [Protecting Sensitive Configuration](#protecting-sensitive-configuration)
+- [Maintenance Mode](#maintenance-mode)
+- [Pretty URLs](#pretty-urls)
 
 <a name="introduction"></a>
-## Giriş
+## Introduction
 
-Laravel'in tüm yapılandırma dosyaları `app/config` dizini içindedir. Tüm dosyalardaki yapılandırma seçenekleri açıklanmıştır, dosyalara göz gezdirip size sunulan seçeneklere göz atabilirsiniz.
+All of the configuration files for the Laravel framework are stored in the `config` directory. Each option is documented, so feel free to look through the files and get familiar with the options available to you.
 
-Bazen yapılandırma değerlerine run-time (çalışma anı) esnasında erişmeniz gerekir. Bunu `Config` sınıfını kullanarak yapabilirsiniz:
+<a name="configuration"></a>
+## After Installation
 
-**Bir Yapılandırma Değerine Erişmek**
+### Naming Your Application
 
-	Config::get('app.timezone');
+After installing Laravel, you may wish to "name" your application. By default, the `app` directory is namespaced under `App`, and autoloaded by Composer using the [PSR-4 autoloading standard](http://www.php-fig.org/psr/psr-4/). However, you may change the namespace to match the name of your application, which you can easily do via the `app:name` Artisan command.
 
-Eğer yapılandırma değeri bulunamazsa dönecek değeri ise, ikinci bir parametreyle belirleyebilirsiniz:
+For example, if your application is named "Horsefly", you could run the following command from the root of your installation:
 
-	$timezone = Config::get('app.timezone', 'UTC');
+	php artisan app:name Horsefly
 
-**Bir Yapılandırma Değeri Ayarlamak**
+Renaming your application is entirely optional, and you are free to keep the `App` namespace if you wish.
 
-Lütfen dikkat edin, "nokta" şeklindeki kullanım biçimi tüm yapılandırma dosyalarına erişmenizi sağlar. Dilerseniz yapılandırma değerlerini run-time (çalışma anı) esnasında da ayarlayabilirsiniz:
+### Other Configuration
 
-	Config::set('database.default', 'sqlite');
+Laravel needs very little configuration out of the box. You are free to get started developing! However, you may wish to review the `config/app.php` file and its documentation. It contains several options such as `timezone` and `locale` that you may wish to change according to your location.
 
-Çalışma zamanında ayarlanan yapılandırma değerleri sadece güncel istek süresince ayarlanırlar ve sonraki isteklere aktarılmayacaklardır.
+Once Laravel is installed, you should also [configure your local environment](/docs/master/configuration#environment-configuration).
+
+> **Note:** You should never have the `app.debug` configuration option set to `true` for a production application.
+
+<a name="permissions"></a>
+### Permissions
+
+Laravel may require one set of permissions to be configured: folders within `storage` require write access by the web server.
+
+<a name="accessing-configuration-values"></a>
+## Accessing Configuration Values
+
+You may easily access your configuration values using the `Config` facade:
+
+	$value = Config::get('app.timezone');
+
+	Config::set('app.timezone', 'America/Chicago');
+
+You may also use the `config` helper function:
+
+	$value = config('app.timezone');
 
 <a name="environment-configuration"></a>
-## Ortam Yapılandırması
+## Environment Configuration
 
-Uygulamanın çalışma ortamına göre farklı yapılandırma değerlerine sahip olmak çoğu zaman iyidir. Örneğin, kişisel bilgisayarınızda, sunucudan farklı bir önbellekleme uygulaması kullanmak isteyebilirsiniz. Bunu ortam tabanlı yapılandırmalar oluşturarak sağlayabilirsiniz.
+It is often helpful to have different configuration values based on the environment the application is running in. For example, you may wish to use a different cache driver locally than you do on your production server. It's easy using environment based configuration.
 
-Bunu yapmak çok basit! `config` dizini içerisinde, ortam isminizi kullandığınız (örneğin `local`) bir dizin daha oluşturun. Şimdi, belirttiğiniz ortam için üzerine yazmak istediğiniz yapılandırma dosyalarınızı ve seçeneklerinizi geçirin. Örneğin, önbellekleme yapılandırmasının üzerine yazmak için, `app/config/local` dizini içerisinde `cache.php` dosyası oluşturmanız gerekir. Oluşturduğunuz dosyanın içerisine şunları yazın:
+To make this a cinch, Laravel utilizes the [DotEnv](https://github.com/vlucas/phpdotenv) PHP library by Vance Lucas. In a fresh Laravel installation, the root directory of your application will contain a `.env.example` file. If you install Laravel via Composer, this file will automatically be renamed to `.env`. Otherwise, you should rename the file manually.
 
-	<?php
+All of the variables listed in this file will be loaded into the `$_ENV` PHP super-global when your application receives a request. You may use the `env` helper to retrieve values from these variables. In fact, if you review the Laravel configuration files, you will notice several of the options already using this helper!
 
-	return array(
+Feel free to modify your environment variables as needed for your own local server, as well as your production environment. However, your `.env` file should not be committed to your application's source control, since each developer / server using your application could require a different environment configuration.
 
-		'driver' => 'file',
+If you are developing with a team, you may wish to continue including a `.env.example` file with your application. By putting place-holder values in the example configuration file, other developers on your team can clearly see which environment variables are needed to run your application.
 
-	);
+#### Accessing The Current Application Environment
 
-> **Not:** 'testing' adını ortam ismi olarak kullanmayın. Bu isim Unit Testing amacıyla rezerve edilmiştir.
+You may access the current application environment via the `environment` method on the `Application` instance:
 
-Dikkat ederseniz, bu dosyada _bütün_ değerleri yazmanıza gerek yok. Sadece üzerine yazmak istediklerinizi eklemeniz yeterli. Geri kalan değerler, öntanımlı yapılandırma değerlerinden alınacaktır.
+	$environment = $app->environment();
 
-Şimdi yapmamız gereken Laravel'e hangi ortamda çalıştığını belirtmek. Öntanımlı ortam daima `production` ortamıdır. Ancak ana dizindeki `bootstrap/start.php` dosyası içerisine eklemeler yaparak farklı ortamlar oluşturmak mümkündür. Bu dosya içerisinde `$app->detectEnvironment` adında bir tanım bulacaksınız. Bu metoda eklenen bir parametre ile Laravel'e hangi ortamda çalıştığını belirtebilirsiniz. Hatta ihtiyacınız olursa, diğer ortam ve makine isimlerini de dizi olarak ekleyebilirsiniz:
+You may also pass arguments to the `environment` method to check if the environment matches a given value:
 
-    <?php
-
-    $env = $app->detectEnvironment(array(
-
-        'local' => array('bilgisayarınızın-ismi'),
-
-    ));
-
-Bu örnekte, 'local' ortamın ismi ve 'bilgisayarınızın-ismi' sunucunuzun makine ismidir. Linux ve Mac işletim sistemlerinde, terminalde `hostname` komutunu çalıştırarak sunucunuzun makine ismini öğrenebilirsiniz.
-
-Dilerseniz, `detectEnvironment` methoduna `Closure` ekleyip ortam algılama özelliğini kendiniz de yazabilirsiniz:
-
-	$env = $app->detectEnvironment(function()
+	if ($app->environment('local'))
 	{
-		return $_SERVER['MY_LARAVEL_ENV'];
-	});
+		// The environment is local
+	}
 
-#### Şu anki Uygulama Ortamına Erişmek
+	if ($app->environment('local', 'staging'))
+	{
+		// The environment is either local OR staging...
+	}
 
-Şu anki uygulama ortamına `environment` metoduyla erişebilirsiniz:
+To obtain an instance of the application, resolve the `Illuminate\Contracts\Foundation\Application` contract via the [service container](/docs/master/container). Of course, if you are within a [service provider](/docs/master/providers), the application instance is available via the `$this->app` instance variable.
+
+An application instance may also be accessed via the `app` helper of the `App` facade:
+
+	$environment = app()->environment();
 
 	$environment = App::environment();
 
-Ayrıca `environment` metoduna bir veya daha fazla parametre girerek, ortamın girilen parametrelerden biriyle eşleşip eşleşmediğini kontrol edebilirsiniz:
-
-	if (App::environment('local'))
-	{
-		// Ortam 'local'
-	}
-
-	if (App::environment('local', 'staging'))
-	{
-		// Ortam 'local' veya 'staging'
-	}
-
-<a name="provider-configuration"></a>
-### Sağlayıcı Yapılandırması
-
-Ortam yapılandırması kullanırken ana `app` yapılandırma dosyanıza ortam [hizmet sağlayıcıları](/docs/ioc#service-providers) eklemek isteyebilirsiniz. Denediğinizde, ortama ait sağlayıcıların, ana `app` yapılandırmasındaki sağlayıcıları geçersiz kıldığını fark edeceksiniz. Ortama ait sağlayıcıların, diğerlerini geçersiz kılmak yerine onlara eklenmesini sağlamak için ortam yapılandırma dosyalarınızda `append_config` yardımcı fonksiyonunu kullanmanız gerekir:
-
-	'providers' => append_config(array(
-		'LocalOnlyServiceProvider',
-	))
-
-<a name="protecting-sensitive-configuration"></a>
-## Hassas Yapılandırmaları Korumak
-
-"Gerçek" uygulamalarda, hassas yapılandırmaları yapılandırma dosyalarında tutmamanız önerilir. Veritabanı şifreleri, Stripe API anahtarları ve kriptolama anahtarları mümkün olduğunca yapılandırma dosyalarının dışında tutulmalıdır. O zaman nerede tutacağız bu bilgileri? Neyse ki, Laravel bu tip bilgilerin korunabilmesi için "nokta" yapılandırma dosyaları adında oldukça basit bir çözüm sağlıyor.
-
-Öncelikle uygulamanızı 'local' ortamınızı tanıyacak şekilde [yapılandır](/docs/configuration#environment-configuration)malısınız. Sonra projenizin kök dizininde, yani composer.json dosyanızın bulunduğu dizinde `.env.local.php` dosyanızı oluşturmalısınız. Bu dosya tıpkı diğer Laravel yapılandırma dosyaları gibi anahtar-değer çiftlerine sahip bir dizi döndürmelidir.
-
-	<?php
-
-	return array(
-
-		'TEST_STRIPE_KEY' => 'super-secret-sauce',
-
-	);
-
-Bu dosyadaki tüm anahtar-değer çiftleri PHP'nin `$_ENV` ve `$_SERVER` "süperküresel" değişkenlerinde erişilebilir olacaktır. Artık yapılandırma dosyalarınızda bu değişkenlere erişebilirsiniz:
-
-	'key' => $_ENV['TEST_STRIPE_KEY']
-
-`.env.local.php` dosyasını `.gitignore` dosyasına eklemeyi unutmayın. Bu, dosyanın kaynak kontrol sistemine (Git) girmesini ve ortamınızın kişisel bilgilerine erişilmesini engeller.
-
-Şimdi bir de projenizi yayınladığınız sunucuda `.env.php` dosyası oluşturup gerekli yapılandırmaları aynı formatta girin. Aynı `.env.local.php` dosyası gibi, bu `.env.php` üretim ortamı dosyası da hiçbir zaman kaynak kontrolde bulunmamalıdır.
-
-> **Not:** Her bir ortam için gerekli yapılandırma dosyasını oluşturabilirsiniz. Örneğin, `development` ortamında çalışan proje, eğer varsa `.env.development.php` dosyasını sisteme dahil edecektir. Bununla birlikte, `production` ortamı her zaman için `.env.php` dosyasını kullanır.
-
 <a name="maintenance-mode"></a>
-## Bakım Modu
+## Maintenance Mode
 
-Uygulamanız bakım modundayken, her istek için standart bir view gösterilir. Böylece uygulamanız güncellenirken, bir süreliğine uygulamayı "çalışmaz hale" getirebilirsiniz. Halihazırda `App::down` methoduna yapılan bir istek `app/start/global.php` dosyasında bulunmaktadır. Uygulamanız bakım modunda olduğunda, kullanıcılara bu metoddan dönen yanıt gönderilecektir.
+When your application is in maintenance mode, a custom view will be displayed for all requests into your application. This makes it easy to "disable" your application while it is updating or when you are performing maintenance. A maintenance mode check is included in the default middleware stack for your application. If the application is in maintenance mode, an `HttpException` will be thrown with a status code of 503.
 
-Bakım modunu açmak için `down` komutunu Artisan üzerinde çalıştırın:
+To enable maintenance mode, simply execute the `down` Artisan command:
 
 	php artisan down
 
-Bakım modunu kapatmak içinse, `up` komutunu çalıştırabilirsiniz:
+To disable maintenance mode, use the `up` command:
 
 	php artisan up
 
-Uygulamanız bakım modundayken kullanıcılara özel bir view göstermek için `app/start/global.php` dosyası içerisindeki `down` methodunu dilediğiniz gibi değiştirebilirsiniz:
+### Maintenance Mode Response Template
 
-	App::down(function()
-	{
-		return Response::view('bakim_sayfasi', array(), 503);
-	})
+The default template for maintenance mode responses is located in `resources/templates/errors/503.blade.php`.
 
-Eğer `down` metoduna girilen anonim fonksiyon (Closure) `NULL` değeri döndürürse, bakım modu o istek için görmezden gelinecektir.
+### Maintenance Mode & Queues
 
-### Bakım Modu ve Kuyruklar
+While your application is in maintenance mode, no [queued jobs](/docs/master/queues) will be handled. The jobs will continue to be handled as normal once the application is out of maintenance mode.
 
-Uygulamanız bakım modunda iken, hiçbir [kuyruk işlemi](/docs/queues) uygulanmaz. Tüm işlemler, uygulama bakım modundan çıktığında normal bir şekilde devam eder.
+<a name="pretty-urls"></a>
+## Pretty URLs
+
+### Apache
+
+The framework ships with a `public/.htaccess` file that is used to allow URLs without `index.php`. If you use Apache to serve your Laravel application, be sure to enable the `mod_rewrite` module.
+
+If the `.htaccess` file that ships with Laravel does not work with your Apache installation, try this one:
+
+	Options +FollowSymLinks
+	RewriteEngine On
+
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^ index.php [L]
+
+### Nginx
+
+On Nginx, the following directive in your site configuration will allow "pretty" URLs:
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+Of course, when using [Homestead](/docs/master/homestead), pretty URLs will be configured automatically.

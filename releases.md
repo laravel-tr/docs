@@ -1,118 +1,189 @@
-# Sürüm Notları
+# Release Notes
 
+- [Laravel 5.0](#laravel-5.0)
 - [Laravel 4.2](#laravel-4.2)
 - [Laravel 4.1](#laravel-4.1)
+
+<a name="laravel-5.0"></a>
+## Laravel 5.0
+
+Laravel 5.0 introduces a fresh application structure to the default Laravel project. This new structure serves as a better foundation for building robust application in Laravel, as well as embraces new auto-loading standards (PSR-4) throughout the application. First, let's examine two of the major changes:
+
+### New Folder Structure
+
+The old `app/models` directory has been entirely removed. Instead, all of your code lives directly within the `app` folder, and, by default, is organized to the `App` namespace. This default namespace can be quickly changed using the new `app:name` Artisan command. The Laravel class generators will remember your application namespace by examining the new `config/namespaces.php` configuration file.
+
+Controllers, filters, and requests (a new type of class in Laravel 5.0) are now grouped under the `app/Http` directory, as they are all classes related to the HTTP transport layer of your application. Instead of a single, flat file of route filters, all filters are now broken into their own class files.
+
+A new `app/Providers` directory replaces the `app/start` files from previous versions of Laravel 4.x. These service providers provide various bootstrapping functions to your application, such as error handling, logging, route loading, and more. Of course, you are free to create additional service providers for your application.
+
+Application language files and views have been moved to the `resources` directory.
+
+### Thorough Namespacing
+
+Laravel 5.0 ships with the entire `app` directory under the `App` namespace. Out of the box, Composer will auto-load all classes within the `app` directory using the PSR-4 auto-loading standard, eliminating the need to `composer dump-autoload` every time you add a new class to your project. Of course, since controllers are namespaced, you will need to import any classes you utilize from other namespaces.
+
+### Dependency Injection On Routes & Controller Methods
+
+In previous versions of Laravel 4.x, you can type-hint controller dependencies in the controller's constructor and they will automatically be injected into the controller instance. Of course, this is still possible in Laravel 5.0; however, you can also type-hint dependencies on your controller **methods** as well! For example:
+
+	public function show(PhotoService $photos, $id)
+	{
+		$photo = $photos->find($id);
+
+		//
+	}
+
+### Form Requests
+
+Laravel 5.0 introduces **form requests**, which extend the `Illuminate\Foundation\Http\FormRequest` class. These request objects can be combined with the method injection described above to provide a boiler-plate free method of validating user input. Let's dig in and look at a sample `FormRequest`:
+
+	<?php namespace App\Http\Requests;
+
+	class RegisterRequest extends FormRequest {
+
+		public function rules()
+		{
+			return [
+				'email' => 'required|email|unique:users',
+				'password' => 'required|confirmed|min:8',
+			];
+		}
+
+		public function authorize()
+		{
+			return true;
+		}
+
+	}
+
+Once the class has been defined, we can type-hint it on our controller action:
+
+	public function register(RegisterRequest $request)
+	{
+		var_dump($request->input());
+	}
+
+When the Laravel IoC container identifies that the class it is injecting is a `FormRequest` instance, the request will **automatically be validated**. This means that if your controller action is called, you can safely assume the HTTP request input has been validated according to the rules you specified in your form request class. Even more, if the request is invalid, an HTTP redirect, which you may customize, will automatically be issued, and the error messages will be either flashed to the session or converted to JSON. **Form validation has never been more simple.** For more information on `FormRequest` validation, check out the [documentation](/docs/validation#form-requests).
+
+### New Generators
+
+To compliment the new default application structure, `make:provider`, `make:filter`, and `make:request` Artisan commands have been added to the framework.
+
+### Route Cache
+
+If your application is made up entirely of controller routes, you may utilize the new `route:cache` Artisan command to drastically speed up the registration of your routes. This is primarily useful on applications with 100+ routes and typically makes this portion of your code 50x faster. Literally!
 
 <a name="laravel-4.2"></a>
 ## Laravel 4.2
 
-Bu sürümün tam değişiklik listesi bir 4.2 yüklemesinden `php artisan changes` komutunu vererek veya [Github'daki değişiklik dosyasına](https://github.com/laravel/framework/blob/4.2/src/Illuminate/Foundation/changes.json) bakarak görülebilir. Bu notlar sadece bu sürümdeki önemli geliştirmeleri ve değişiklikleri kapsamaktadır.
+The full change list for this release by running the `php artisan changes` command from a 4.2 installation, or by [viewing the change file on Github](https://github.com/laravel/framework/blob/4.2/src/Illuminate/Foundation/changes.json). These notes only cover the major enhancements and changes for the release.
 
-> **Not:** 4.2 salınım döngüsü süresince, çeşitli Laravel 4.1 nokta salımlarına birçok küçük hata düzeltmeleri ve geliştirmeler katılmıştır. Bu yüzden, Laravel 4.1 için değişiklik listesini de kontrol ettiğinizden emin olun!
+> **Note:** During the 4.2 release cycle, many small bug fixes and enhancements were incorporated into the various Laravel 4.1 point releases. So, be sure to check the change list for Laravel 4.1 as well!
 
-### PHP 5.4 Gerekliliği
+### PHP 5.4 Requirement
 
-Laravel 4.2 PHP 5.4 veya daha üstünü gerektirir. Bu yükseltilmiş PHP  gerekliliği bize [Laravel Cashier](/docs/billing) benzeri araçlar için daha anlamlı ve etkileyici interface'ler için trait'ler gibi yeni PHP özelliklerini kullanmamıza imkan verir. PHP 5.4 aynı zamanda PHP 5.3'e göre önemli bir hız ve performans iyileştireleri de getirmektedir.
+Laravel 4.2 requires PHP 5.4 or greater. This upgraded PHP requirement allows us to use new PHP features such as traits to provide more expressive interfaces for tools like [Laravel Cashier](/docs/billing). PHP 5.4 also brings significant speed and performance improvements over PHP 5.3.
 
 ### Laravel Forge
 
-Laravel Forge, web tabanlı yeni bir uygulama olup, aralarında Linode, DigitalOcean, Rackspace ve Amazon EC2'nin yer aldığı istediğiniz bir bulut üzerinde PHP sunucuları oluşturmak ve yönetmek için kolay bir yol sağlar. Otomatize Nginx yapılandırması, SSH key erişimi, Cron job otomasyonu, NewRelic & Papertrail aracılığıyla sunucu takibi, "Yayımlamak için Bas (Push To Deploy)", Laravel kuyruk işçisi yapılandırması ve pek çok şeyi desteklemek suretiyle, Forge sizin tüm Laravel uygulamalarınızın başlatılmasının en basit ve en uygun fiyatlı yolunu sağlar.
+Laravel Forge, a new web based application, provides a simple way to create and manage PHP servers on the cloud of your choice, including Linode, DigitalOcean, Rackspace, and Amazon EC2. Supporting automated Nginx configuration, SSH key access, Cron job automation, server monitoring via NewRelic & Papertrail, "Push To Deploy", Laravel queue worker configuration, and more, Forge provides the simplest and most affordable way to launch all of your Laravel applications.
 
-Varsayılan Laravel 4.2 yüklemenizin `app/config/database.php` yapılandırma dosyası, yepyeni uygulamalarınızı platforma daha uygun yayımlamanıza imkan verecek şekilde artık ön tanımlı olarak Forge kullanımı için yapılandırılmıştır.
+The default Laravel 4.2 installation's `app/config/database.php` configuration file is now configured for Forge usage by default, allowing for more convenient deployment of fresh applications onto the platform.
 
-Laravel Forge hakkında daha fazla bilgi [resmi Forge web sitesinde](https://forge.laravel.com) bulunabilir.
+More information about Laravel Forge can be found on the [official Forge website](https://forge.laravel.com).
 
 ### Laravel Homestead
 
-Laravel Homestead sağlam ve güçlü Laravel ve PHP uygulamaları geliştirilmesi için resmi bir Vagrant ortamıdır. Box'ların ihtiyaçlarının büyük çoğunluğu box dağıtım için paketlenmeden önce halledilir, böyleye box'un boot edilmesi son derece hızlıdır. Homestead'da Nginx 1.6, PHP 5.6, MySQL, Postgres, Redis, Memcached, Beanstalk, Node, Gulp, Grunt ve Bower yer almaktadır. Homestead birden çok Laravel uygulamasının tek bir box'ta yönetilmesi için basit bir `Homestead.yaml` yapılandırma dosyası içerir.
+Laravel Homestead is an official Vagrant environment for developing robust Laravel and PHP applications. The vast majority of the boxes' provisioning needs are handled before the box is packaged for distribution, allowing the box to boot extremely quickly. Homestead includes Nginx 1.6, PHP 5.6, MySQL, Postgres, Redis, Memcached, Beanstalk, Node, Gulp, Grunt, & Bower. Homestead includes a simple `Homestead.yaml` configuration file for managing multiple Laravel applications on a single box.
 
-Varsayılan Laravel 4.2 yüklemesi şimdi artık box'un Homestead veritabanını kullanması, böylece Laravel'in ilk yükleme ve yapılandırmasının daha kolay olması için yapılandırılmış bir `app/config/local/database.php` yapılandırma dosyası taşımaktadır.
+The default Laravel 4.2 installation now includes an `app/config/local/database.php` configuration file that is configured to use the Homestead database out of the box, making Laravel initial installation and configuration more convenient.
 
-Ayrıca resmi dokümantasyon [Homestead](/docs/homestead) dokümantasyonunu içerecek şekilde güncellenmiştir.
+The official documentation has also been updated to include [Homestead documentation](/docs/homestead).
 
 ### Laravel Cashier
 
-Laravel Cashier, Stripe ile abonelik faturalaması yönetilmesi için basit, ifade edici bir kitaplıktır. Laravel 4.2'nin başlamasıyla birlikte biz Cashier dokümantasyonunu ana Laravel dokümantasyonuna dahil ediyoruz, ancak bu bileşenin yüklenmesi hala isteğe bağlıdır. Cashier'in bu salınımı çok sayıda hata düzeltmeleri, birden çok para birimi desteği ve en son Stripe API ile uyumluluk getirmektedir.
+Laravel Cashier is a simple, expressive library for managing subscription billing with Stripe. With the introduction of Laravel 4.2, we are including Cashier documentation along with the main Laravel documentation, though installation of the component itself is still optional. This release of Cashier brings numerous bug fixes, multi-currency support, and compatibility with the latest Stripe API.
 
-### Daemon Kuyruk İşçileri
+### Daemon Queue Workers
 
-Artisan `queue:work` komutu "deamon modunda" bir işçi başlatmak için şimdi bir `--daemon` seçeneğini destekliyor, bunun anlamı bu işçinin framework yeniden boot edilmesi hiç olmaksızın işleri işlemeye devam edeceğidir. Bu, hafifçe daha karmaşık bir uygulama yayımlama süreci maliyetiyle birlikte, CPU kullanımında önemli bir azalmayla sonuçlanır.
+The Artisan `queue:work` command now supports a `--daemon` option to start a worker in "daemon mode", meaning the worker will continue to process jobs without ever re-booting the framework. This results in a significant reduction in CPU usage at the cost of a slightly more complex application deployment process.
 
-Daemon kuyruk işçileriyle ilgili daha fazla bilgi [queue documentation](/docs/queues#daemon-queue-worker) dokümantasyonunda bulunabilir.
+More information about daemon queue workers can be found in the [queue documentation](/docs/queues#daemon-queue-worker).
 
-### Mail API Sürücüleri
+### Mail API Drivers
 
-Laravel 4.2, `Mail` fonksiyonları için yeni Mailgun ve Mandrill API sürecilerini getirdi. Bu birçok uygulama için, e-mailler göndermenin SMTP seçeneğinden daha hızlı ve daha güvenilir bir yöntemini sağlar. Bu yeni sürücüler Guzzle 4 HTTP kitaplığını kullanmaktadır.
+Laravel 4.2 introduces new Mailgun and Mandrill API drivers for the `Mail` functions. For many applications, this provides a faster and more reliable method of sending e-mails than the SMTP options. The new drivers utilize the Guzzle 4 HTTP library.
 
-### Belirsiz Silme Trait'leri
+### Soft Deleting Traits
 
-PHP 5.4 trait'ler sayesinde "soft delete"ler ve diğer "global scope"ler için çok daha temiz bir mimari sunulmuştur. Bu yeni mimari benzer global trait'lerin daha kolay inşa edilmesini ve frameworkün kendisi içerisinde daha temiz bir "ilgilerin ayrılığı" sağlar.
+A much cleaner architecture for "soft deletes" and other "global scopes" has been introduced via PHP 5.4 traits. This new architecture allows for the easier construction of similar global traits, and a cleaner separation of concerns within the framework itself.
 
-Yeni `SoftDeletingTrait` hakkında daha fazla bilgi [Eloquent](/docs/eloquent#soft-deleting) dokümantasyonunda bulunabilir.
+More information on the new `SoftDeletingTrait` may be found in the [Eloquent documentation](/docs/eloquent#soft-deleting).
 
-### Uygun Auth & Remindable Trait'leri
+### Convenient Auth & Remindable Traits
 
-Varsayılan Laravel 4.2 yüklemesi authentication ve password reminder user interface'lerinin gerekli özellikleri içermesi için artık basit trait'ler kullanmaktadır. Bu, Laravel'le gelen default `User` model dosyasının çok daha temiz olmasını sağlamaktadır.
+The default Laravel 4.2 installation now uses simple traits for including the needed properties for the authentication and password reminder user interfaces. This provides a much cleaner default `User` model file out of the box.
 
-### "Basit Sayfalandırma"
+### "Simple Paginate"
 
-Sayfalandırma view'inizde basit "Sonraki" ve "Önceki" linkleri kullanıyorken daha verimli sorgulara imkan vermek amacıyla Sorgu oluşturucusu ve Eloquent'e yeni bir `simplePaginate` metodu eklenmiştir.
+A new `simplePaginate` method was added to the query and Eloquent builder which allows for more efficient queries when using simple "Next" and "Previous" links in your pagination view.
 
-### Migration Teyidi
+### Migration Confirmation
 
-Üretim ortamında, yıkıcı migrasyon işlemleri artık teyit isteyeceklerdir. `--force` seçeneği kullanılarak, komutlar herhangi bir teyit istemeksizin çalıştırılmaya zorlanabilir.
+In production, destructive migration operations will now ask for confirmation. Commands may be forced to run without any prompts using the `--force` command.
 
 <a name="laravel-4.1"></a>
 ## Laravel 4.1
 
-### Değişikliklerin Tam Listesi
+### Full Change List
 
-Bu sürümün tam değişiklik listesi bir 4.1 yüklemesinden `php artisan changes` komutunu vererek veya [Github'daki değişiklik dosyasına](https://github.com/laravel/framework/blob/4.1/src/Illuminate/Foundation/changes.json) bakarak görülebilir. Bu notlar sadece bu sürümdeki önemli geliştirmeleri ve değişiklikleri kapsamaktadır.
+The full change list for this release by running the `php artisan changes` command from a 4.1 installation, or by [viewing the change file on Github](https://github.com/laravel/framework/blob/4.1/src/Illuminate/Foundation/changes.json). These notes only cover the major enhancements and changes for the release.
 
-### Yeni SSH Bileşeni
+### New SSH Component
 
-Bu sürümle birlikte tamamen yeni bir `SSH` bileşeni getirilmiştir. Bu özellik sizin uzak suncuculara kolaylıkla SSH iletişimi kurmanıza ve komut çalıştırmanıza imkan verir. Daha fazla öğrenmek için [SSH bileşeni dokümantasyonuna](/docs/ssh) bakın.
+An entirely new `SSH` component has been introduced with this release. This feature allows you to easily SSH into remote servers and run commands. To learn more, consult the [SSH component documentation](/docs/ssh).
 
-Yeni `php artisan tail` komutu yeni SSH bileşenini kullanmaktadır. Daha fazla bilgi için, `tail` [komut dokümantasyonuna](/docs/ssh#tailing-remote-logs) bakın.
+The new `php artisan tail` command utilizes the new SSH component. For more information, consult the `tail` [command documentation](http://laravel.com/docs/ssh#tailing-remote-logs).
 
-### Tinker'de Boris
+### Boris In Tinker
 
-Eğer sisteminiz destekliyorsa `php artisan tinker` komutu şimdi [Boris REPL](https://github.com/d11wtq/boris) kullanmaktadır. Bu özelliği kullanmak için `readline` ve `pcntl` PHP uzantıları başlatılmış olmalıdır. Bu uzantılara sahip değilseniz, 4.0'daki kabuk kullanılacaktır.
+The `php artisan tinker` command now utilizes the [Boris REPL](https://github.com/d11wtq/boris) if your system supports it. The `readline` and `pcntl` PHP extensions must be installed to use this feature. If you do not have these extensions, the shell from 4.0 will be used.
 
-### Eloquent Geliştirmeleri
+### Eloquent Improvements
 
-Eloquent'e yeni bir `hasManyThrough` ilişkisi eklenmiştir. Bunun nasıl kullanılacağını öğrenmek için [Eloquent dokümantasyonuna](/docs/eloquent#has-many-through) bakın.
+A new `hasManyThrough` relationship has been added to Eloquent. To learn how to use it, consult the [Eloquent documentation](/docs/eloquent#has-many-through).
 
-[Modelleri ilişki sınırlandırmalarına dayalı getirmeye](/docs/eloquent#querying-relations) imkan vermek amacıyla yeni bir `whereHas` metodu kullanıma girmiştir.
+A new `whereHas` method has also been introduced to allow [retrieving models based on relationship constraints](/docs/eloquent#querying-relations).
 
-### Veritabanı Okuma / Yazma Bağlantıları
+### Database Read / Write Connections
 
-Sorgu oluşturucu ve Eloquent de dahil olmak üzere veritabanı katmanı boyunca artık okuma / yazma bağlantılarının otomatik olarak ayrı ayrı ele alınması mümkün bulunmaktadır. Daha fazla bilgi için [dokümantasyonuna](/docs/database#read-write-connections) bakın.
+Automatic handling of separate read / write connections is now available throughout the database layer, including the query builder and Eloquent. For more information, consult [the documentation](/docs/database#read-write-connections).
 
-### Kuyruk (Queue) Önceliği
+### Queue Priority
 
-Kuyruk öncelikleri şimdi `queue:listen` komutuna virgülle ayrılmış bir liste geçilmesi şeklinde desteklenmektedir.
+Queue priorities are now supported by passing a comma-delimited list to the `queue:listen` command.
 
-### Gerçekleştirilememiş Kuyruk İşinin İşlenmesi
+### Failed Queue Job Handling
 
-Kuyruk araçları şimdi `queue:listen` üzerinde yeni `--tries` anahtarı kullanılması halinde, başarısız kalmış işlerin otomatik işlenmesini içermektedir. Başarısız kalmış işlerin işlenmesiyle ilgili daha fazla bilgi [kuyruklar dokümantasyonunda](/docs/queues#failed-jobs) bulunabilir.
+The queue facilities now include automatic handling of failed jobs when using the new `--tries` switch on `queue:listen`. More information on handling failed jobs can be found in the [queue documentation](/docs/queues#failed-jobs).
 
-### Cache Tagları
+### Cache Tags
 
-Cache "section"larının yerini "tag"lar almıştır. Cache tagları bir cache öğesine birden çok "tag" atamanıza ve tek bir tag'a atanmış tüm öğeleri boşaltmanıza (flush) imkan verir. Cache taglarının kullanılması üzerine daha fazla bilgi [cache dokümantasyonunda](/docs/cache#cache-tags) bulunabilir.
+Cache "sections" have been superseded by "tags". Cache tags allow you to assign multiple "tags" to a cache item, and flush all items assigned to a single tag. More information on using cache tags may be found in the [cache documentation](/docs/cache#cache-tags).
 
-### Esnek Şifre Hatırlatıcıları
+### Flexible Password Reminders
 
-Şifre hatırlatıcı motoru şifreler geçerlilik denetiminden geçirilirken, session'a durum mesajları flaşlanırken v.b., geliştiriciye daha büyük esneklik sağlayacak şekilde değiştirilmiştir. Gelişmiş şifre hatırlatıcı motorunun kullanımı hakkında daha fazla bilgi için [dokümantasyonuna](/docs/security#password-reminders-and-reset) bakın.
+The password reminder engine has been changed to provide greater developer flexibility when validating passwords, flashing status messages to the session, etc. For more information on using the enhanced password reminder engine, [consult the documentation](/docs/security#password-reminders-and-reset).
 
-### Gelişmiş Rotalama Motoru
+### Improved Routing Engine
 
-Laravel 4.1 tamamen yeniden yazılmış bir rotalama katmanına sahiptir. API aynıdır; ancak, rotaların kayda geçirilmesi 4.0 ile karşılaştırıldığında tam % 100 daha hızlıdır. Bütün motor büyük ölçüde basitleştirilmiştir ve rota ifadelerinin derlenmesinde Symfony Routing Katmanına bağımlılık en aza indirilmiştir.
+Laravel 4.1 features a totally re-written routing layer. The API is the same; however, registering routes is a full 100% faster compared to 4.0. The entire engine has been greatly simplified, and the dependency on Symfony Routing has been minimized to the compiling of route expressions.
 
-### Gelişmiş Session Motoru
+### Improved Session Engine
 
-Bu yeni sürümde biz aynı zamanda tamamen yeni bir session motorunu da kullanıma sokuyoruz. Rotalama geliştirmelerine benzer şekilde, yeni session katmanı da daha yalın ve daha hızlıdır. Artık Symfony'nin (ve dolayısıyla PHP'nin) session işleme araçlarını kullanmıyoruz ve daha basit ve sürdürülmesi daha kolay olan özel bir çözüm kullanıyoruz.
+With this release, we're also introducing an entirely new session engine. Similar to the routing improvements, the new session layer is leaner and faster. We are no longer using Symfony's (and therefore PHP's) session handling facilities, and are using a custom solution that is simpler and easier to maintain.
 
 ### Doctrine DBAL
 
-Eğer migrasyonlarınızda `renameColumn` fonksiyonunu kullanıyorsanız, `composer.json` dosyanıza `doctrine/dbal` bağımlılığını eklemeniz gerekecek. Bu paket artık ön tanımlı olarak Laravel'e dahil edilmemektedir.
+If you are using the `renameColumn` function in your migrations, you will need to add the `doctrine/dbal` dependency to your `composer.json` file. This package is no longer included in Laravel by default.

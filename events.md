@@ -1,171 +1,139 @@
-# Olaylar (Events)
+# Events
 
-- [Temel Kullanım](#basic-usage)
-- [Joker Dinleyiciler](#wildcard-listeners)
-- [Dinleyici Olarak Sınıfları Kullanma](#using-classes-as-listeners)
-- [Olayları Sıraya Sokma](#queued-events)
-- [Olay Abonecileri](#event-subscribers)
+- [Basic Usage](#basic-usage)
+- [Queued Event Handlers](#queued-event-handlers)
+- [Event Subscribers](#event-subscribers)
 
 <a name="basic-usage"></a>
-## Temel Kullanım
+## Basic Usage
 
-Laravel'in `Event` sınıfı, uygulamanızdaki olaylara abone olmanıza ve dinlemenize imkan veren basit bir gözlemci aracıdır.
+The Laravel event facilities provides a simple observer implementation, allowing you to subscribe and listen for events in your application. Event classes are typically stored in the `app/Events` directory, while their handlers are stored in `app/Handlers/Events`.
 
-#### Bir Olaya Abone Olma
+You can generate a new event class using the Artisan CLI tool:
 
-	Event::listen('uye.login', function($uye)
+	php artisan make:event PodcastWasPurchased
+
+#### Subscribing To An Event
+
+The `EventServiceProvider` included with your Laravel application provides a convenient place to register all event handlers. The `listen` property contains an array of all events (keys) and their handlers (values). Of course, you may add as many events to this array as your application requires. For example, let's add our `PodcastWasPurchased` event:
+
+	/**
+	 * The event handler mappings for the application.
+	 *
+	 * @var array
+	 */
+	protected $listen = [
+		'App\Events\PodcastWasPurchased' => [
+			'App\Handlers\Events\EmailPurchaseConfirmation@handle',
+		],
+	];
+
+To generate a handler for an event, use the `handler:event` Artisan CLI command:
+
+	php artisan handler:event EmailPurchaseConfirmation --event=PodcastWasPurchased
+
+#### Firing An Event
+
+Now we are ready to fire our event using the `Event` facade:
+
+	$response = Event::fire(new PodcastWasPurchased($podcast));
+
+The `fire` method returns an array of responses that you can use to control what happens next in your application.
+
+You may also use the `event` helper to fire an event:
+
+	event(new PodcastWasPurchased($podcast));
+
+#### Closure Listeners
+
+You can even listen to events without creating a separate handler class at all. For example, in the `boot` method of your `EventServiceProvider`, you could do the following:
+
+	Event::listen('App\Events\PodcastWasPurchased', function($event)
 	{
-		$uye->last_login = new DateTime;
-
-		$uye->save();
+		// Handle the event...
 	});
 
-#### Bir Olayı Ateşleme
+#### Stopping The Propagation Of An Event
 
-	$response = Event::fire('auth.login', array($user));
+Sometimes, you may wish to stop the propagation of an event to other listeners. You may do so using by returning `false` from your handler:
 
-Bu `fire` metodu, uygulamanızda daha sonra olacakları kontrol etmekte kullanacağınız bir response'lar dizisi döndürür.
-
-#### Bir Olaya Abone Olurken Öncelik Belirtme
-
-Olaylara abone olurken bir öncelik de belirtebilirsiniz. Daha yüksek önceliği olan dinleyiciler daha önce çalışacak, aynı önceliğe sahip dinleyiciler ise abonelik sırasına göre çalışacaklardır.
-
-	Event::listen('uye.login', 'LoginHandler', 10);
-
-	Event::listen('uye.login', 'DigerHandler', 5);
-
-#### Bir Olayın Yayılımının Durdurulması
-
-Bazen bir olayın diğer dinleyicilere yayılmasını durdurmak isteyebilirsiniz. Dinleyicinizden `false` döndürerek bunu gerçekleştirebilirsiniz:
-
-	Event::listen('uye.login', function($event)
+	Event::listen('App\Events\PodcastWasPurchased', function($event)
 	{
-		// Olayı işle...
+		// Handle the event...
 
 		return false;
 	});
 
-### Olayların Kayda Geçirileceği Yer
+<a name="queued-evnet-handlers"></a>
+## Queued Event Handlers
 
-Tamam, olayların nasıl kayda geçirileceğini biliyorsunuz ama onların _nerede_ kayda geçirileceğini merak ediyor olabilirsiniz. Dert etmeyin, bu çok sorulan bir şey. Ne yazık ki bu cevaplandırması zor bir soru, çünkü bir olayı neredeyse her yerde kayda geçirebilirsiniz! Fakat, işte bazı ipuçları. Aynı şekilde, diğer pek çok bootstrapping (önce yüklenen) koduna benzer olarak, olayları `app/start/global.php` gibi `start` dosyalarınızın birisinde kayda geçirebilirsiniz.
+Need to [queue](/docs/master/queues) an event handler? It couldn't be any easier. When generating the handler, simply use the `--queued` flag:
 
-Eğer `start` dosyalarınız çok kalabalık bir hale gelirse, bir `start` dosyanızda "include" edilen ayrı bir `app/events.php` dosyası oluşturabilirsiniz. Bu, sizin olay kaydetme işinizi, geri kalan bootstrapping kodundan temiz bir şekilde ayrı tutmanın basit bir çözümüdür. 
+	php artisan handler:make SendPurchaseConfirmation --event=PodcastWasPurchased --queued
 
-Eğer sınıf temelli bir yaklaşımı tercih ederseniz, olaylarınızı bir [servis sağlayıcı](/docs/ioc#service-providers) ile kayda geçirebilirsiniz. Bu yaklaşımlardan hiçbiri "mutlak" doğru olmadığından, ugulamanızın büyüklüğüne göre rahatlık hissedeceğiniz bir yaklaşımı seçin.
+This will generate a handler class that implements the `Illuminate\Contracts\Queue\ShouldBeQueued` interface. That's it! Now when this handler is called for an event, it will be queued automatically by the event dispatcher.
 
-<a name="wildcard-listeners"></a>
-## Joker Dinleyiciler
+If no exceptions are thrown when the handler is executed by the queue, the queued job will be deleted automatically after it has processed. If you need to access the queued job's `delete` and `release` methods manually, you may do so. The `Illuminate\Queue\InteractsWithQueue` trait, which is included by default on queued handlers, gives you access to these methods:
 
-#### Joker Olay Dinleyicilerin Kayda Geçirilmesi
-
-Bir olay dinleyiciyi kayda geçirirken, joker dinleyicileri belirtmek üzere yıldız işareti kullanabilirsiniz:
-
-	Event::listen('falan.*', function($param)
+	public function handle(PodcastWasPurchased $event)
 	{
-		// Olayı işle...
-	});
-
-Bu dinleyici `falan.` ile başlayan tüm olayları işleyecektir.
-
-Tam olarak hangi olayın ateşlendiğini tespit etmek için `Event::firing` metodunu kullanabilirsiniz:
-
-	Event::listen('falan.*', function($param)
-	{
-		if (Event::firing() == 'falan.filan')
+		if (true)
 		{
-			//
+			$this->release(30);
 		}
-	});
-
-<a name="using-classes-as-listeners"></a>
-## Dinleyici Olarak Sınıfları Kullanma
-
-Bazı durumlarda, bir olayı işlemek için bir anonim fonksiyon yerine bir sınıf kullanmak isteyebilirsiniz. Sınıf olay dinleyicileri [Laravel'in IoC konteyneri](/docs/ioc) ile çözümlenecek, böylece size dinleyicileriniz üzerinde tam bir bağımlılık enjeksiyonu gücü verecektir.
-
-#### Bir Sınıf Dinleyicinin Kayda Geçirilmesi
-
-	Event::listen('uye.login', 'LoginIsleyici');
-
-#### Bir Olay Dinleyici Sınıfının Tanımlanması
-
-Ön tanımlı olarak, `LoginIsleyici` sınıfındaki `handle` metodu çağrılacaktır:
-
-	class LoginIsleyici {
-
-		public function handle($data)
-		{
-			//
-		}
-
 	}
 
-#### Hangi Metoda Abone Olunduğunun Tanımlanması
-
-Eğer ön tanımlı `handle` metodunu kullanmak istemiyorsanız, abone olunacak metodu belirleyebilirsiniz:
-
-	Event::listen('uye.login', 'LoginIsleyici@onLogin');
-
-<a name="queued-events"></a>
-## Olayları Sıraya Sokma
-
-#### Sıralı Bir Olayın Kayda Geçirilmesi
-
-`queue` ve `flush` metodlarını kullanarak, bir olayı hemen ateşlemeyip, ateşlenmek üzere "sıraya" sokabilirsiniz:
-
-	Event::queue('falan', array($uye));
-
-"flusher"ı çalıştırabilir ve `flush` metodunu kullanarak sıradaki tüm olayları harekete geçirebilirsiniz:
-
-	Event::flush('falan');
+If you have an existing handler that you would like to convert to a queued handler, simply add the `ShouldBeQueued` interface to the class manually.
 
 <a name="event-subscribers"></a>
-## Olay Abonecileri
+## Event Subscribers
 
-#### Bir Olay Abonecisi Tanımlanması
+#### Defining An Event Subscriber
 
-Olay abonecileri, sınıfın kendi içinden birden çok olaya abone olabilen sınıflardır. Aboneciler bir `subscribe` metodu ile tanımlanırlar ve bu metoda parametre olarak bir olay sevkiyatçısı olgusu geçilecektir:
+Event subscribers are classes that may subscribe to multiple events from within the class itself. Subscribers should define a `subscribe` method, which will be passed an event dispatcher instance:
 
-	class UyeOlayIsleyici {
+	class UserEventHandler {
 
 		/**
-		 * Uye login olaylarını işle.
+		 * Handle user login events.
 		 */
-		public function onUyeLogin($event)
+		public function onUserLogin($event)
 		{
 			//
 		}
 
 		/**
-		 * Uye logout olaylarını hallet.
+		 * Handle user logout events.
 		 */
-		public function onUyeLogout($event)
+		public function onUserLogout($event)
 		{
 			//
 		}
 
 		/**
-		 * Abone dinleyicilerini kayda geçir.
+		 * Register the listeners for the subscriber.
 		 *
 		 * @param  Illuminate\Events\Dispatcher  $events
 		 * @return array
 		 */
 		public function subscribe($events)
 		{
-			$events->listen('uye.login', 'UyeOlayIsleyici@onUyeLogin');
+			$events->listen('App\Events\UserLoggedIn', 'UserEventHandler@onUserLogin');
 
-			$events->listen('uye.logout', 'UyeOlayIsleyici@onUyeLogout');
+			$events->listen('App\Events\UserLoggedOut', 'UserEventHandler@onUserLogout');
 		}
 
 	}
 
-#### Bir Olay Abonecisinin Kayda Geçirilmesi
+#### Registering An Event Subscriber
 
-Aboneci tanımlandıktan sonra, `Event` sınıfı kullanılarak kayda geçirilebilir.
+Once the subscriber has been defined, it may be registered with the `Event` class.
 
-	$aboneci = new UyeOlayIsleyici;
+	$subscriber = new UserEventHandler;
 
-	Event::subscribe($aboneci);
+	Event::subscribe($subscriber);
 
-Ayrıca abonecinizi çözümlemek için [Laravel IoC konteynerini](/docs/ioc) de kullanabilirsiniz. Bunu yapmak için `subscribe` metoduna sadece abonecinizin ismini geçiniz:
+You may also use the [Laravel IoC container](/docs/ioc) to resolve your subscriber. To do so, simply pass the name of your subscriber to the `subscribe` method:
 
-	Event::subscribe('UyeOlayIsleyici');
+	Event::subscribe('UserEventHandler');
+

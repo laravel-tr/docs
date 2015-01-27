@@ -1,35 +1,5 @@
-# Laravel 4 Türkçe Dokümantasyon
+# Laravel Documentation
 
-Nedir?
--------------
+## Contribution Guidelines
 
-Laravel etkileyici ve zarif sözdizimine sahip bir web uygulama çatısıdır (framework'tür). Geliştiriciliğin gerçekte eğlenceli, üretken deneyimlere dayanarak yerine getirilmesi gerektiğine inanır. Laravel birçok web uygulamasında kullanılan yetkilendirme, rotalama, oturum yönetimi ve kaşeleme gibi ortak görevleri kolaylaştırarak geliştiriciliğin zorluklarını ortadan kaldırmak amacını gütmektedir.
-
-Laravel, geliştiriciler için, uygulama işlevselliğinden ödün vermeden geliştirme aşamasını memnuniyet verici hale getirmeyi amaç edinmiştir. En iyi kodu mutlu geliştiriciler yazar. Bu hedef için Ruby on Rails, ASP.NET MVC, ve Sinatra dilleri de dahil olmak üzere, diğer çatılardaki güzel özellikler bir araya getirilmeye çalışılmıştır.
-
-Laravel büyük ve kapsamlı uygulamalar için gereken araçları içeren erişilebilir, aynı zamanda güçlü bir çatıdır. Mükemmel ters kontrol kapsayıcısı, etkileyici göç sistemi ve sağlam yerleşik ünite test desteği size geliştirmeyi amaçladığınız uygulama için gerekli araçları sağlayacaktır.
-
-### Çeviri
-
-[Laravel 4 Türkçe Dokümantasyonu](http://laravel.gen.tr/docs), İngilizce bilmeyen kullanıcıların da istifade edebilmesi amacıyla [Laravel Türkiye Forumları](http://forum.laravel.gen.tr/) kullanıcılarından oluşan gönüllü çeviri ekibi tarafından yapılmış çevirileri içermektedir.
-
-#### Çeviri Ekibi
-
-Katılım Sırasına Göre
-
-* [sineld](https://github.com/sineld)
-* [mecit](https://github.com/mecit)
-* [smh](https://github.com/smhayhan)
-* [Aristona](https://github.com/Aristona)
-* [KenMilabel](https://github.com/KenMilabel)
-* [usirin](https://github.com/usirin)
-* [serginari](https://github.com/serginari)
-* [candelibas](https://github.com/candelibas)
-* [ersinkandemir](https://github.com/ersinkandemir)
-* [ekrembk](https://github.com/ekrembk)
-* [harunyasar](https://github.com/harunyasar)
-* [hkan](https://github.com/hkan)
-
-Çeviriye katkıda bulunmak isterseniz bu repo'yu fork edip, değişiklikleri yaptıktan sonra pull-request edebilirsiniz.
-
-[Çeviri bilgi forumu](http://forum.laravel.gen.tr/viewtopic.php?id=125)
+If you are submitting documentation for the **current stable release**, submit it to the corresponding branch. For example, documentation for Laravel 4.2 would be submitted to the `4.2` branch. Documentation intended for the next release of Laravel should be submitted to the `master` branch.

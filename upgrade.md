@@ -1,30 +1,40 @@
-# Yükseltme Rehberi
+# Upgrade Guide
 
-- [4.1'den 4.2'ye Yükseltme](#upgrade-4.2)
-- [4.1.x ve Öncesinden 4.1.29'a Yükseltme](#upgrade-4.1.29)
-- [4.1.25 ve Öncesinden 4.1.26'ye Yükseltme](#upgrade-4.1.26)
-- [4.0'dan 4.1'e Yükseltme](#upgrade-4.1)
+- [Upgrading To 5.0 From 4.2](#upgrade-5.0)
+- [Upgrading To 4.2 From 4.1](#upgrade-4.2)
+- [Upgrading To 4.1.29 From <= 4.1.x](#upgrade-4.1.29)
+- [Upgrading To 4.1.26 From <= 4.1.25](#upgrade-4.1.26)
+- [Upgrading To 4.1 From 4.0](#upgrade-4.1)
+
+<a name="upgrade-5.0"></a>
+## Upgrading To 5.0 From 4.2
+
+Information coming soon.
+
+### Beanstalk Queuing
+
+Laravel 5.0 now requires `"pda/pheanstalk": "~3.0"` instead of `"pda/pheanstalk": "~2.1"` that Laravel 4.2 required.
 
 <a name="upgrade-4.2"></a>
-## 4.1'den 4.2'ye Yükseltme
+## Upgrading To 4.2 From 4.1
 
 ### PHP 5.4+
 
-Laravel 4.2, PHP 5.4.0 veya daha üstünü gerektirir.
+Laravel 4.2 requires PHP 5.4.0 or greater.
 
-### Kriptolama Varsayılanları
+### Encryption Defaults
 
-`app/config/app.php` yapılandırma dosyanıza yeni bir `cipher` seçeneği ekleyin. Bu seçeneğin değeri `MCRYPT_RIJNDAEL_256` olmalıdır.
+Add a new `cipher` option in your `app/config/app.php` configuration file. The value of this option should be `MCRYPT_RIJNDAEL_256`.
 
 	'cipher' => MCRYPT_RIJNDAEL_256
 
-Bu ayar, Laravel kriptolama araçları tarafından kullanılan varsayılan cipher'i (kriptolama sistemini) kontrol etmek için kullanılabilir.
+This setting may be used to control the default cipher used by the Laravel encryption facilities.
 
-> **Not:** Laravel 4.2'de, default cipher en güvenli cipher olarak kabul edilen `MCRYPT_RIJNDAEL_128` (AES)'dir. Laravel <= 4.1'de kriptolanmış cookies/values'leri dekript etmek için bu cipher'i tekrar `MCRYPT_RIJNDAEL_256`'e değiştirmek gereklidir
+> **Note:** In Laravel 4.2, the default cipher is `MCRYPT_RIJNDAEL_128` (AES), which is considered to be the most secure cipher. Changing the cipher back to `MCRYPT_RIJNDAEL_256` is required to decrypt cookies/values that were encrypted in Laravel <= 4.1
 
-### Modellerdeki Soft Silmeler Artık Trait Kullanıyor
+### Soft Deleting Models Now Use Traits
 
-Modellerde soft silmeler kullanıyorsanız, `softDeletes` propertisi çıkartılmıştır. Artık aşağıdakine benzer şekilde `SoftDeletingTrait` kullanmalısınız:
+If you are using soft deleting models, the `softDeletes` property has been removed. You must now use the `SoftDeletingTrait` like so:
 
 	use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
@@ -32,7 +42,7 @@ Modellerde soft silmeler kullanıyorsanız, `softDeletes` propertisi çıkartıl
 		use SoftDeletingTrait;
 	}
 
-Ayrıca, `dates` propertisine `deleted_at` sütununu elle eklemek zorundasınız:
+You must also manually add the `deleted_at` column to your `dates` property:
 
 	class User extends Eloquent {
 		use SoftDeletingTrait;
@@ -40,45 +50,45 @@ Ayrıca, `dates` propertisine `deleted_at` sütununu elle eklemek zorundasınız
 		protected $dates = ['deleted_at'];
 	}
 
-Tüm soft silme işlemlerinin API'si aynı kalmıştır.
+The API for all soft delete operations remains the same.
 
-> **Not:** Bu `SoftDeletingTrait` base modele uygulanamaz. Gerçek bir model sınıfı üzerinde kullanılmalıdır.
+> **Note:** The `SoftDeletingTrait` can not be applied on a base model. It must be used on an actual model class.
 
-### View / Pagination Environment Sınıflarının Adı Değişti
+### View / Pagination Environment Renamed
 
-Şayet `Illuminate\View\Environment` sınıfını veya `Illuminate\Pagination\Environment` sınıfını doğrudan referans ediyorsanız, kodunuzu bunlar yerine `Illuminate\View\Factory` ve `Illuminate\Pagination\Factory` sınıflarını referans verecek şekilde güncellemelisiniz. Bu iki sınıfın isimleri, işlevlerini daha iyi yansıtması için değiştirilmiştir.
+If you are directly referencing the `Illuminate\View\Environment` class or `Illuminate\Pagination\Environment` class, update your code to reference `Illuminate\View\Factory` and `Illuminate\Pagination\Factory` instead. These two classes have been renamed to better reflect their function.
 
-### Pagination Sunumcusunda Ek Parametre
+### Additional Parameter On Pagination Presenter
 
-Eğer `Illuminate\Pagination\Presenter` sınıfını genişletiyorsanız, `getPageLinkWrapper` abstract metodunun kalıbı  `rel` parametresi eklenecek şekilde değiştirilmiştir:
+If you are extending the `Illuminate\Pagination\Presenter` class, the abstract method `getPageLinkWrapper` signature has changed to add the `rel` argument:
 
 	abstract public function getPageLinkWrapper($url, $page, $rel = null);
 
-### Iron.Io Queue Kriptolama
+### Iron.Io Queue Encryption
 
-Eğer Iron.io queue sürücüsü kullanıyorsanız, bu durumda queue yapılandırma dosyanıza yeni bir `encrypt` seçeneği eklemeniz gerekecektir.
+If you are using the Iron.io queue driver, you will need to add a new `encrypt` option to your queue configuration file:
 
     'encrypt' => true
 
 <a name="upgrade-4.1.29"></a>
-## 4.1.x ve Öncesinden 4.1.29'a Yükseltme
+## Upgrading To 4.1.29 From <= 4.1.x
 
-Laravel 4.1.29 tüm veritabanı sürücüleri için sütunların tırnak içine alınmasını iyileştirmiştir. Bu iyileştirme, modellerde `fillable` özelliğini **kullanmıyorken** uygulamalarınızı bazı toplu atama açıklarından korur. Eğer siz toplu atamaya karşı korumak için modellerinizde `fillable` özelliğini kullanıyorsanız, uygulamanız korunmasız değildir. Buna karşın, eğer `guarded` kullanıyorsanız ve "update" veya "save" tipindeki bir fonksiyona kullanıcının kontrolündeki bir dizi geçiyorsanız, uygulamanız toplu atama riskinde olacağı için hemen `4.1.29`'e yükseltmelisiniz.
+Laravel 4.1.29 improves the column quoting for all database drivers. This protects your application from some mass assignment vulnerabilities when **not** using the `fillable` property on models. If you are using the `fillable` property on your models to protect against mass assignment, your application is not vulnerable. However, if you are using `guarded` and are passing a user controlled array into an "update" or "save" type function, you should upgrade to `4.1.29` immediately as your application may be at risk of mass assignment.
 
-Laravel 4.1.29'ye yükseltmek için, basitçe `composer update` komutunu verin. Bu salınımda başka düzeltmeler gereken bir değişiklik yapılmamıştır.
+To upgrade to Laravel 4.1.29, simply `composer update`. No breaking changes are introduced in this release.
 
 <a name="upgrade-4.1.26"></a>
-## 4.1.25 ve Öncesinden 4.1.26'ye Yükseltme
+## Upgrading To 4.1.26 From <= 4.1.25
 
-Laravel 4.1.26 "remember me" cookie'leri için güvenlik iyileştirmeleri getirdi. Bu güncellemeler öncesinde, eğer bir remember cookie kötü niyetli başka bir kullanıcı tarafından gasp edilmişse ("hijacked"), hesabın gerçek sahibi kendi şifresini yeniledikten, çıkış yaptıktan (logged out) v.b sonra bile ilgili cookie uzun bir zaman süresince geçerli kalırdı.
+Laravel 4.1.26 introduces security improvements for "remember me" cookies. Before this update, if a remember cookie was hijacked by another malicious user, the cookie would remain valid for a long period of time, even after the true owner of the account reset their password, logged out, etc.
 
-Bu değişiklik `users` (veya dengi olan) veritabanı tablonuza yeni bir `remember_token` sütunu eklenmesini gerektirmektedir. Bu değişiklikten sonra, uygulamanıza giriş (login) yaptıkları her seferinde kullanıcıya yepyeni bir token atanacaktır. Bu token ayrıca kullanıcı uygulamadan çıkış yaptığı zaman da yenilenecektir. Bu değişikliğin etkileri şunlardır: eğer bir "remember me" cookie gasp edilirse, sadece uygulamadan çıkış yapılması bu cookie'yi geçersiz kılacaktır.
+This change requires the addition of a new `remember_token` column to your `users` (or equivalent) database table. After this change, a fresh token will be assigned to the user each time they login to your application. The token will also be refreshed when the user logs out of the application. The implications of this change are: if a "remember me" cookie is hijacked, simply logging out of the application will invalidate the cookie.
 
-### Yükseltme Adımları
+### Upgrade Path
 
-Öncelikle, `users` tablonuza VARCHAR(100), TEXT veya dengi yeni bir nullable `remember_token` sütunu ekleyin.
+First, add a new, nullable `remember_token` of VARCHAR(100), TEXT, or equivalent to your `users` table.
 
-Daha sonra, eğer Eloquent authentication sürücüsü kullanıyorsanız, `User` sınıfınızı aşağıdaki üç metodla güncelleyin:
+Next, if you are using the Eloquent authentication driver, update your `User` class with the following three methods:
 
 	public function getRememberToken()
 	{
@@ -95,79 +105,79 @@ Daha sonra, eğer Eloquent authentication sürücüsü kullanıyorsanız, `User`
 		return 'remember_token';
 	}
 
-> **Not:** Bu değişiklikle mevcut tüm "remember me" oturumları geçersiz kılınacaktır, bu nedenle tüm kullanıcılar uygulamanıza yeniden authenticate olmaya (kimliği doğrulanmaya) zorlanacaklardır.
+> **Note:** All existing "remember me" sessions will be invalidated by this change, so all users will be forced to re-authenticate with your application.
 
-### Paket Sürdürücüleri
+### Package Maintainers
 
-`Illuminate\Auth\UserProviderInterface` interface'ine iki yeni metod eklenmiştir. Örnek implementationlar ön tanımlı sürücülerde bulunabilir:
+Two new methods were added to the `Illuminate\Auth\UserProviderInterface` interface. Sample implementations may be found in the default drivers:
 
 	public function retrieveByToken($identifier, $token);
 
 	public function updateRememberToken(UserInterface $user, $token);
 
-Ayrıca, `Illuminate\Auth\UserInterface` de "Yükseltme Adımları" kesiminde açıklanan üç yeni metodu almıştır.
+The `Illuminate\Auth\UserInterface` also received the three new methods described in the "Upgrade Path".
 
 <a name="upgrade-4.1"></a>
-## 4.0'dan 4.1'e Yükseltme
+## Upgrading To 4.1 From 4.0
 
-### Composer Bağımlılığının Yükseltilmesi
+### Upgrading Your Composer Dependency
 
-Uygulamanızı Laravel 4.1'e yükseltmek için, `composer.json` dosyanızdaki `laravel/framework` sürümünü `4.1.*` olarak değiştirin.
+To upgrade your application to Laravel 4.1, change your `laravel/framework` version to `4.1.*` in your `composer.json` file.
 
-### Dosyaların Değiştirilmesi
+### Replacing Files
 
-Uygulamanızdaki `public/index.php` dosyasını [ambardaki bu yeni kopya](https://github.com/laravel/laravel/blob/master/public/index.php) ile değiştirin.
+Replace your `public/index.php` file with [this fresh copy from the repository](https://github.com/laravel/laravel/blob/master/public/index.php).
 
-Uygulamanızdaki `artisan` dosyasını [ambardaki bu yeni kopya](https://github.com/laravel/laravel/blob/master/artisan) ile değiştirin.
+Replace your `artisan` file with [this fresh copy from the repository](https://github.com/laravel/laravel/blob/master/artisan).
 
-### Yapılandırma Dosya ve Seçeneklerinin Eklenmesi
+### Adding Configuration Files & Options
 
-Uygulamanızdaki `app/config/app.php` yapılandırma dosyanızdaki `aliases` ve `providers` dizilerini güncelleyin. Bu dizilerin güncellenmiş değerleri [bu dosyada](https://github.com/laravel/laravel/blob/master/app/config/app.php) bulunabilir. Kendi özel ve paket servis sağlayıcılarını / aliasları tekrar eklemeyi unutmayın.
+Update your `aliases` and `providers` arrays in your `app/config/app.php` configuration file. The updated values for these arrays can be found [in this file](https://github.com/laravel/laravel/blob/master/app/config/app.php). Be sure to add your custom and package service providers / aliases back to the arrays.
 
-[Ambardaki](https://github.com/laravel/laravel/blob/master/app/config/remote.php) yeni `app/config/remote.php` dosyasını ekleyin.
+Add the new `app/config/remote.php` file [from the repository](https://github.com/laravel/laravel/blob/master/app/config/remote.php).
 
-Uygulamanızdaki `app/config/session.php` dosyanıza yeni `expire_on_close` yapılandırma seçeneğini ekleyin. Ön tanımlı değer `false` olmalıdır.
+Add the new `expire_on_close` configuration option to your `app/config/session.php` file. The default value should be `false`.
 
-Uygulamanızdaki `app/config/queue.php` dosyanıza yeni `failed` yapılandırma kesimini ekleyin. Bu kesimin default değerleri şöyledir:
+Add the new `failed` configuration section to your `app/config/queue.php` file. Here are the default values for the section:
 
 	'failed' => array(
 		'database' => 'mysql', 'table' => 'failed_jobs',
 	),
 
-**(İsteğe Bağlı)** Uygulamanızdaki `app/config/view.php` dosyanızdaki `pagination` yapılandırma seçeneğini `pagination::slider-3` olarak güncelleyin.
+**(Optional)** Update the `pagination` configuration option in your `app/config/view.php` file to `pagination::slider-3`.
 
-### Controller Güncellemeleri
+### Controller Updates
 
-Eğer `app/controllers/BaseController.php` dosyasında en üstte bir `use` cümlesi varsa, buradaki `use Illuminate\Routing\Controllers\Controller;` olan yeri `use Illuminate\Routing\Controller;` olarak güncelleyin.
+If `app/controllers/BaseController.php` has a `use` statement at the top, change `use Illuminate\Routing\Controllers\Controller;` to `use Illuminate\Routing\Controller;`.
 
-### Password Reminders Güncellemeleri
+### Password Reminders Updates
 
-Şifre hatırlatıcıları daha büyük esneklik olması için elden geçirilmiştir. Artisan `php artisan auth:reminders-controller` komutunu çalıştırmak suretiyle yeni iskelet controlleri inceleyebilirsiniz. Ayrıca [güncellenmiş dokümantasyonu](/docs/security#password-reminders-and-reset) da okuyabilir ve uygulamanızı ona göre güncelleyebilirsiniz.
+Password reminders have been overhauled for greater flexibility. You may examine the new stub controller by running the `php artisan auth:reminders-controller` Artisan command. You may also browse the [updated documentation](/docs/security#password-reminders-and-reset) and update your application accordingly.
 
-Uygulamanızdaki `app/lang/en/reminders.php` dil dosyasını [güncellenen bu dosyaya](https://github.com/laravel/laravel/blob/master/app/lang/en/reminders.php) uyacak şekilde güncelleyin.
+Update your `app/lang/en/reminders.php` language file to match [this updated file](https://github.com/laravel/laravel/blob/master/app/lang/en/reminders.php).
 
-### Ortam Saptama Güncellemeleri
+### Environment Detection Updates
 
-Güvenlik sebepleri nedeniyle, uygulama ortamınızı tespit etmek için URL domainleri artık kullanılmayabilir. Bu değerler kolaylıkla kafeslenebilir ve saldırganların bir istek için ortamı modifiye etmesine imkan verebilir. Ortam tespitinizi makine host adları (Mac, Linux ve Windows üzerinde `hostname` komutu) kullanacak şekilde değiştirmelisiniz.
+For security reasons, URL domains may no longer be used to detect your application environment. These values are easily spoofable and allow attackers to modify the environment for a request. You should convert your environment detection to use machine host names (`hostname` command on Mac, Linux, and Windows).
 
-### Daha Sade ve Basit Günlük Dosyaları
+### Simpler Log Files
 
-Laravel artık tek bir log dosyası üretir: `app/storage/logs/laravel.log`. Bununla birlikte, bu davranışı yine de `app/start/global.php` dosyanızda yapılandırabilirsiniz.
+Laravel now generates a single log file: `app/storage/logs/laravel.log`. However, you may still configure this behavior in your `app/start/global.php` file.
 
-### En Sonda Bölü Varsa Yeniden Yönlendirin Çıkartılması
+### Removing Redirect Trailing Slash
 
-Uygulamanızın `bootstrap/start.php` dosyasından `$app->redirectIfTrailingSlash()` çağrısını çıkartın. Bu işlevsellik şimdi frameworkle gelen `.htaccess` dosyası tarafından halledildiği için bu metod artık gerekli değildir.
+In your `bootstrap/start.php` file, remove the call to `$app->redirectIfTrailingSlash()`. This method is no longer needed as this functionality is now handled by the `.htaccess` file included with the framework.
 
-Sonra da, sizin Apache `.htaccess` dosyanızın yerine, sondaki bölüleri halleden [bu yenisini](https://github.com/laravel/laravel/blob/master/public/.htaccess) koyun.
+Next, replace your Apache `.htaccess` file with [this new one](https://github.com/laravel/laravel/blob/master/public/.htaccess) that handles trailing slashes.
 
-### Güncel Rotaya Erişim
+### Current Route Access
 
-Güncel rotaya `Route::getCurrentRoute()` yerine şimdi `Route::current()` ile erişilmektedir.
+The current route is now accessed via `Route::current()` instead of `Route::getCurrentRoute()`.
 
-### Composer Güncellemesi
+### Composer Update
 
-Yukarıdaki değişiklikleri tamamladıktan sonra, çekirdek application dosyalarını güncellemek için `composer update` fonksiyonunu çalıştırabilirsiniz! Eğer sınıf yükleme (class load) hataları alırsanız, `update` komutunu şu şekilde etkinleştirilmiş `--no-scripts` seçeneği ile kullanmayı deneyin: `composer update --no-scripts`.
+Once you have completed the changes above, you can run the `composer update` function to update your core application files! If you receive class load errors, try running the `update` command with the `--no-scripts` option enabled like so: `composer update --no-scripts`.
 
-### Joker Olay Dinleyiciler
+### Wildcard Event Listeners
 
-Joker Olay Dinleyiciler artık handler fonksiyon parametrelerinize event'i eklemez. Şayet ateşlenen olayı bulmanız gerekiyorsa, `Event::firing()` kullanmalısınız.
+The wildcard event listeners no longer append the event to your handler functions parameters. If you require finding the event that was fired you should use `Event::firing()`.

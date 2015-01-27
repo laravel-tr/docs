@@ -1,75 +1,77 @@
 # Redis
 
-- [Giriş](#introduction)
-- [Yapılandırma](#configuration)
-- [Kullanım](#usage)
-- [Pipeline Kullanma](#pipelining)
+- [Introduction](#introduction)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Pipelining](#pipelining)
 
 <a name="introduction"></a>
-## Giriş
+## Introduction
 
-[Redis](http://redis.io) açık kaynak, gelişmiş bir anahtar-değer deposudur. Anahtarlar [stringler](http://redis.io/topics/data-types#strings), [hashler](http://redis.io/topics/data-types#hashes), [listeler](http://redis.io/topics/data-types#lists), [kümeler](http://redis.io/topics/data-types#sets) ve [sıralı kümeler](http://redis.io/topics/data-types#sorted-sets) taşıyabildikleri için sıklıkla bir veri yapısı sunucusu olarak da ifade edilmektedir.
+[Redis](http://redis.io) is an open source, advanced key-value store. It is often referred to as a data structure server since keys can contain [strings](http://redis.io/topics/data-types#strings), [hashes](http://redis.io/topics/data-types#hashes), [lists](http://redis.io/topics/data-types#lists), [sets](http://redis.io/topics/data-types#sets), and [sorted sets](http://redis.io/topics/data-types#sorted-sets).
 
-> **Not:** Eğer PECL aracılığıyla yüklenmiş Redis PHP eklentiniz varsa, `app/config/app.php` dosyanızda Redis için kullanılan lakabın ismini değiştirmeniz gereklidir.
+Before using Redis with Laravel, you will need to install the `predis/predis` package (~1.0) via Composer.
+
+> **Note:** If you have the Redis PHP extension installed via PECL, you will need to rename the alias for Redis in your `config/app.php` file.
 
 <a name="configuration"></a>
-## Yapılandırma
+## Configuration
 
-Uygulamanızdaki Redis yapılandırması **app/config/database.php** dosyasında saklanır. Bu dosya içerisinde, uygulamanız tarafından kullanılan Redis sunucularını içeren bir **redis** dizisi göreceksiniz:
+The Redis configuration for your application is stored in the `config/database.php` file. Within this file, you will see a `redis` array containing the Redis servers used by your application:
 
-	'redis' => array(
+	'redis' => [
 
 		'cluster' => true,
 
-		'default' => array('host' => '127.0.0.1', 'port' => 6379),
+		'default' => ['host' => '127.0.0.1', 'port' => 6379],
 
-	),
+	],
 
-Geliştirme için bu "default" sunucu yapılandırması yeterlidir. Yine de siz ortamınıza göre bu diziyi değiştirmekte serbestsiniz. Sadece her Redis sunucusuna bir ad verin ve bu sunucu tarafından kullanılan ana bilgisayarı (host) ve bağlantı noktasını (port) belirtin.
+The default server configuration should suffice for development. However, you are free to modify this array based on your environment. Simply give each Redis server a name, and specify the host and port used by the server.
 
-Buradaki `cluster` seçeneği Laravel Redis istemcisine Redis düğümleriniz arasında istemci taraflı bölümlendirme (sharding) yapmasını söylemektedir. Böylece siz düğüm havuzu ve büyük miktarda kullanılabilir RAM oluşturabilirsiniz. Bununla birlikte istemci taraflı bölümlendirmenin başarısızlık durumlarını halledemediğini unutmayın. Bu nedenle, istemci taraflı bölümlendirme, esasında başka bir asıl veri deposunda olup da önbelleğe alınmış veriler için uygundurlar.
+The `cluster` option will tell the Laravel Redis client to perform client-side sharding across your Redis nodes, allowing you to pool nodes and create a large amount of available RAM. However, note that client-side sharding does not handle failover; therefore, is primarily suited for cached data that is available from another primary data store.
 
-Şayet sizin Redis serveriniz authentication istiyorsa, Redis server yapılandırma dizinize bir `password` anahtar / değer çifti eklemek suretiyle bir şifre sağlayabilirsiniz.
+If your Redis server requires authentication, you may supply a password by adding a `password` key / value pair to your Redis server configuration array.
 
 <a name="usage"></a>
-## Kullanım
+## Usage
 
-Bir Redis olgusunu `Redis::connection` metodunu çağırarak getirebilirsiniz:
+You may get a Redis instance by calling the `Redis::connection` method:
 
 	$redis = Redis::connection();
 
-Bu size "default" Redis sunucusunun bir olgusunu verecektir. Eğer sunucu öbekleme (clustering) kullanmıyorsanız, Redis yapılandırmanızda tanımlanan belirli bir sunucuyu getirmek için `connection` metodunda parametre olarak o sunucunun adını geçersiniz:
+This will give you an instance of the default Redis server. If you are not using server clustering, you may pass the server name to the `connection` method to get a specific server as defined in your Redis configuration:
 
-	$redis = Redis::connection('digerSunucu');
+	$redis = Redis::connection('other');
 
-Redis istemci olgusu oluşturduktan sonra, artık bu olguya her türlü [Redis komutu](http://redis.io/commands) verebiliriz. Laravel Redis sunucusuna komut geçerken sihirli metodlar tekniğini kullanır:
+Once you have an instance of the Redis client, we may issue any of the [Redis commands](http://redis.io/commands) to the instance. Laravel uses magic methods to pass the commands to the Redis server:
 
-	$redis->set('isim', 'Tuana Şeyma');
+	$redis->set('name', 'Taylor');
 
-	$isim = $redis->get('isim');
+	$name = $redis->get('name');
 
-	$degerler = $redis->lrange('isimler', 5, 10);
+	$values = $redis->lrange('names', 5, 10);
 
-Görüldüğü gibi komut parametreleri basitçe sihirli metodlara geçilmektedir. Tabii ki siz sihirli metod tekniğini kullanmak zorunda değilsiniz, `command` metodunu kullanarak da sunucuya komut geçebilirsiniz:
+Notice the arguments to the command are simply passed into the magic method. Of course, you are not required to use the magic methods, you may also pass commands to the server using the `command` method:
 
-	$degerler = $redis->command('lrange', array(5, 10));
+	$values = $redis->command('lrange', array(5, 10));
 
-Komutlarınızı sadece "default" bağlantıda çalıştıracağınız zaman, direkt `Redis` sınıfındaki statik sihirli metodları kullanın:
+When you are simply executing commands against the default connection, just use static magic methods on the `Redis` class:
 
-	Redis::set('isim', 'Tuana Şeyma');
+	Redis::set('name', 'Taylor');
 
-	$isim = Redis::get('isim');
+	$name = Redis::get('name');
 
-	$degerler = Redis::lrange('isimler', 5, 10);
+	$values = Redis::lrange('names', 5, 10);
 
-> **Not:** Redis [Önbellekleme](/docs/cache) ve [Oturum](/docs/session) sürücüleri Laravel'de mevcuttur.
+> **Note:** Redis [cache](/docs/master/cache) and [session](/docs/master/session) drivers are included with Laravel.
 
 <a name="pipelining"></a>
-## Pipeline Kullanma
+## Pipelining
 
-Bir operasyonda sunucuya birçok komut göndermeniz gerektiğinde pipeline kullanılmalıdır. Bunu yapmak için `pipeline` komutunu kullanın:
+Pipelining should be used when you need to send many commands to the server in one operation. To get started, use the `pipeline` command:
 
-#### Sunucularınıza Birden Çok Komutun Döşenmesi
+#### Piping Many Commands To Your Servers
 
 	Redis::pipeline(function($pipe)
 	{

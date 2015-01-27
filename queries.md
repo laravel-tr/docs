@@ -1,318 +1,323 @@
-# Sorgu Oluşturucusu
+# Query Builder
 
-- [Giriş](#introduction)
-- [Seçmeler](#selects)
-- [Joinler](#joins)
-- [İleri Where Cümleleri](#advanced-wheres)
-- [Kümeleme (Aggregate) İşlemleri](#aggregates)
-- [Ham İfadeler](#raw-expressions)
-- [Eklemeler](#inserts)
-- [Güncellemeler](#updates)
-- [Silmeler](#deletes)
-- [Birleştirmeler](#unions)
-- [Pesimistik Kilitleme](#pessimistic-locking)
-- [Sorguların Bellekte Saklanması](#caching-queries)
+- [Introduction](#introduction)
+- [Selects](#selects)
+- [Joins](#joins)
+- [Advanced Wheres](#advanced-wheres)
+- [Aggregates](#aggregates)
+- [Raw Expressions](#raw-expressions)
+- [Inserts](#inserts)
+- [Updates](#updates)
+- [Deletes](#deletes)
+- [Unions](#unions)
+- [Pessimistic Locking](#pessimistic-locking)
 
 <a name="introduction"></a>
-## Giriş
+## Introduction
 
-Veritabanı sorgu oluşturucusu veritabanı sorguları oluşturulması ve çalıştırılması için kullanışlı ve akıcı bir arayüz sağlar. Uygulamanızdaki pek çok veritabanı işlemini bununla gerçekleştirebilirsiniz ve desteklenen tüm veritabanı sistemlerinde çalışmaktadır.
+The database query builder provides a convenient, fluent interface to creating and running database queries. It can be used to perform most database operations in your application, and works on all supported database systems.
 
-> **Not:** Laravel sorgu oluşturucusu, uygulamanızı SQL enjeksiyon saldırılarına karşı korumak için PDO parametre bağlayıcı kullanmaktadır. Bağlayıcı olarak geçirilen yazıların temizlenmesine gerek yoktur. Temizlenmeyen yalnızca iki metod vardır, bunlar `groupBy` ve `orderBy`'dır. Kullanıcı girdilerini bu metodlara doğrudan geçmemelisiniz.
+> **Note:** The Laravel query builder uses PDO parameter binding throughout to protect your application against SQL injection attacks. There is no need to clean strings being passed as bindings.
 
 <a name="selects"></a>
-## Seçmeler
+## Selects
 
-#### Bir Tablonun Bütün Satırlarının Alınması
+#### Retrieving All Rows From A Table
 
-	$uyeler = DB::table('uyeler')->get();
+	$users = DB::table('users')->get();
 
-	foreach (uyeler as $uye)
+	foreach ($users as $user)
 	{
-		var_dump($uye->isim);
+		var_dump($user->name);
 	}
 
-#### Bir Tablonun Tek Bir Satırının Alınması
+#### Chunking Results From A Table
 
-	$uye = DB::table('uyeler')->where('isim', 'Can')->first();
+	DB::table('users')->chunk(100, function($users)
+	{
+		foreach ($users as $user)
+		{
+			//
+		}
+	});
 
-	var_dump($uye->isim);
+You may stop further chunks from being processed by returning `false` from the `Closure`:
 
-#### Bir Satırın Tek Bir Sütununun Alınması
+	DB::table('users')->chunk(100, function($users)
+	{
+		//
 
-	$isim = DB::table('uyeler')->where('isim', 'Can')->pluck('isim');
+		return false;
+	});
 
-#### Sütun Değerlerinden Oluşan Bir Liste Elde Edilmesi
+#### Retrieving A Single Row From A Table
 
-	$roller = DB::table('roller')->lists('unvan');
+	$user = DB::table('users')->where('name', 'John')->first();
 
-Bu metod rol ünvanlarından oluşan bir dizi döndürecektir. Döndürülen dizi için özel bir anahtar sütun da belirleyebilirsiniz:
+	var_dump($user->name);
 
-	$roller = DB::table('roller')->lists('unvan', 'isim');
+#### Retrieving A Single Column From A Row
 
-#### Bir Select Bendinin Belirlenmesi
+	$name = DB::table('users')->where('name', 'John')->pluck('name');
 
-	$uyeler = DB::table('uyeler')->select('isim', 'email')->get();
+#### Retrieving A List Of Column Values
 
-	$uyeler = DB::table('uyeler')->distinct()->get();
+	$roles = DB::table('roles')->lists('title');
 
-	$uyeler = DB::table('uyeler')->select('isim as uye_adi')->get();
+This method will return an array of role titles. You may also specify a custom key column for the returned array:
 
-#### Mevcut Bir Sorguya Bir Select Bendinin Eklenmesi
+	$roles = DB::table('roles')->lists('title', 'name');
 
-	$sorgu = DB::table('uyeler')->select('isim');
+#### Specifying A Select Clause
 
-	$uyeler = $query->addSelect('yas')->get();
+	$users = DB::table('users')->select('name', 'email')->get();
 
-#### Where Kullanımı
+	$users = DB::table('users')->distinct()->get();
 
-	$uyeler = DB::table('uyeler')->where('puan', '>', 100)->get();
+	$users = DB::table('users')->select('name as user_name')->get();
 
-#### Or Cümleleri
+#### Adding A Select Clause To An Existing Query
 
-	$uyeler = DB::table('uyeler')
-	                    ->where('puan', '>', 100)
-	                    ->orWhere('isim', 'Can')
-	                    ->get();
+	$query = DB::table('users')->select('name');
 
-#### Where Between Kullanımı
+	$users = $query->addSelect('age')->get();
 
-	$uyeler = DB::table('uyeler')
-	                    ->whereBetween('puan', array(1, 100))->get();
+#### Using Where Operators
 
-#### Where Not Between Kullanımı
+	$users = DB::table('users')->where('votes', '>', 100)->get();
+
+#### Or Statements
 
 	$users = DB::table('users')
-	                    ->whereNotBetween('puan', array(1, 100))->get();
+	                    ->where('votes', '>', 100)
+	                    ->orWhere('name', 'John')
+	                    ->get();
 
-#### Bir Dizi Aracılığıyla Where In Kullanımı
+#### Using Where Between
 
-	$uyeler = DB::table('uyeler')
+	$users = DB::table('users')
+	                    ->whereBetween('votes', array(1, 100))->get();
+
+#### Using Where Not Between
+
+	$users = DB::table('users')
+	                    ->whereNotBetween('votes', array(1, 100))->get();
+
+#### Using Where In With An Array
+
+	$users = DB::table('users')
 	                    ->whereIn('id', array(1, 2, 3))->get();
 
-	$uyeler = DB::table('uyeler')
+	$users = DB::table('users')
 	                    ->whereNotIn('id', array(1, 2, 3))->get();
 
-#### Değer Girilmemiş Kayıtları Bulmak için Where Null Kullanımı
+#### Using Where Null To Find Records With Unset Values
 
-	$uyeler = DB::table('uyeler')
-	                    ->whereNull('guncelleme_vakti')->get();
+	$users = DB::table('users')
+	                    ->whereNull('updated_at')->get();
 
-#### Order By, Group By ve Having
+#### Order By, Group By, And Having
 
-	$uyeler = DB::table('uyeler')
+	$users = DB::table('users')
 	                    ->orderBy('name', 'desc')
 	                    ->groupBy('count')
 	                    ->having('count', '>', 100)
 	                    ->get();
 
-#### Offset ve Limit
+#### Offset & Limit
 
-	$uyeler = DB::table('uyeler')->skip(10)->take(5)->get();
+	$users = DB::table('users')->skip(10)->take(5)->get();
 
 <a name="joins"></a>
-## Joinler
+## Joins
 
-Sorgu oluşturucusu join cümleleri yazmak için de kullanılabilir. Şu örneklere bir bakın:
+The query builder may also be used to write join statements. Take a look at the following examples:
 
-#### Temel Join Cümleleri
+#### Basic Join Statement
 
-	DB::table('uyeler')
-	            ->join('kisiler', 'uyeler.id', '=', 'kisiler.uye_id')
-	            ->join('siparisler', 'uyeler.id', '=', 'siparisler.uye_id')
-	            ->select('uyeler.id', 'kisiler.telefon', 'siparisler.fiyat')
-				->get();
+	DB::table('users')
+	            ->join('contacts', 'users.id', '=', 'contacts.user_id')
+	            ->join('orders', 'users.id', '=', 'orders.user_id')
+	            ->select('users.id', 'contacts.phone', 'orders.price')
+	            ->get();
 
-#### Left Join Cümlesi
+#### Left Join Statement
 
-	DB::table('uyeler')
-		    ->leftJoin('makaleler', 'uyeler.id', '=', 'makaleler.uye_id')
+	DB::table('users')
+		    ->leftJoin('posts', 'users.id', '=', 'posts.user_id')
 		    ->get();
 
-Daha ileri join cümleleri de tanımlayabilirsiniz:
+You may also specify more advanced join clauses:
 
-	DB::table('uyeler')
-	        ->join('kisiler', function($join)
+	DB::table('users')
+	        ->join('contacts', function($join)
 	        {
-	        	$join->on('uyeler.id', '=', 'kisiler.uye_id')->orOn(...);
+	        	$join->on('users.id', '=', 'contacts.user_id')->orOn(...);
 	        })
 	        ->get();
 
-Şayet joinlerinizde "where" biçiminde bir cümlecik kullanmak isterseniz, bir join üzerinde `where` ve `orWhere` metodlarını kullanabilirsiniz. Bu metodlar iki sütunu karşılaştırmak yerine, sütunu bir değer açısından karşılaştıracaktır:
+If you would like to use a "where" style clause on your joins, you may use the `where` and `orWhere` methods on a join. Instead of comparing two columns, these methods will compare the column against a value:
 
-	DB::table('uyeler')
-	        ->join('kisiler', function($join)
+	DB::table('users')
+	        ->join('contacts', function($join)
 	        {
-	        	$join->on('uyeler.id', '=', 'kisiler.uye_id')
-	        	     ->where('kisiler.uye_id', '>', 5);
+	        	$join->on('users.id', '=', 'contacts.user_id')
+	        	     ->where('contacts.user_id', '>', 5);
 	        })
 	        ->get();
 
 <a name="advanced-wheres"></a>
-## İleri Where Cümleleri
+## Advanced Wheres
 
-#### Parametre Gruplaması
+#### Parameter Grouping
 
-Kimi zaman "where exists" veya içi içe parametre gruplaması gibi daha ileri where cümleleri oluşturmanız gerekebilir. Laravel sorgu oluşturucusu bunu da halledecektir:
+Sometimes you may need to create more advanced where clauses such as "where exists" or nested parameter groupings. The Laravel query builder can handle these as well:
 
-	DB::table('uyeler')
-	            ->where('isim', '=', 'Can')
+	DB::table('users')
+	            ->where('name', '=', 'John')
 	            ->orWhere(function($query)
 	            {
-	            	$query->where('puan', '>', 100)
-	            	      ->where('unvan', '<>', 'Müdür');
+	            	$query->where('votes', '>', 100)
+	            	      ->where('title', '<>', 'Admin');
 	            })
 	            ->get();
 
-Yukardaki sorgu aşağıdaki SQL cümlesini oluşturacaktır:
+The query above will produce the following SQL:
 
-	select * from uyeler where isim = 'Can' or (puan > 100 and unvan <> 'Müdür')
+	select * from users where name = 'John' or (votes > 100 and title <> 'Admin')
 
-#### Exists Cümleleri
+#### Exists Statements
 
-	DB::table('uyeler')
+	DB::table('users')
 	            ->whereExists(function($query)
 	            {
 	            	$query->select(DB::raw(1))
-	            	      ->from('siparisler')
-	            	      ->whereRaw('siparisler.uye_id = uyeler.id');
+	            	      ->from('orders')
+	            	      ->whereRaw('orders.user_id = users.id');
 	            })
 	            ->get();
 
-Yukardaki sorgu aşağıdaki SQL cümlesini oluşturacaktır:
+The query above will produce the following SQL:
 
-	select * from uyeler
+	select * from users
 	where exists (
-		select 1 from siparisler where siparisler.uye_id = uyeler.id
+		select 1 from orders where orders.user_id = users.id
 	)
 
 <a name="aggregates"></a>
-## Kümeleme (Aggregate) İşlemleri
+## Aggregates
 
-Sorgu oluşturucusu `count`, `max`, `min`, `avg` ve `sum` gibi çeşitli kümeleme metodları da sağlamaktadır.
+The query builder also provides a variety of aggregate methods, such as `count`, `max`, `min`, `avg`, and `sum`.
 
-#### Aggregate Metodlarının Kullanımı
+#### Using Aggregate Methods
 
-	$uyeler = DB::table('uyeler')->count();
+	$users = DB::table('users')->count();
 
-	$fiyat = DB::table('siparisler')->max('fiyat');
+	$price = DB::table('orders')->max('price');
 
-	$fiyat = DB::table('siparisler')->min('fiyat');
+	$price = DB::table('orders')->min('price');
 
-	$fiyat = DB::table('siparisler')->avg('fiyat');
+	$price = DB::table('orders')->avg('price');
 
-	$toplam = DB::table('uyeler')->sum('puan');
+	$total = DB::table('users')->sum('votes');
 
 <a name="raw-expressions"></a>
-## Ham İfadeler
+## Raw Expressions
 
-Bazen bir sorguda ham ifade kullanma ihtiyacı duyabilirsiniz. Bu ifadeler sorguya doğrudan yazı olarak enjekte edileceğinden, bir SQL enjeksiyon noktası oluşturmamaya özen gösteriniz. Ham ifade oluşturmak için `DB::raw` metodunu kullanabilirsiniz:
+Sometimes you may need to use a raw expression in a query. These expressions will be injected into the query as strings, so be careful not to create any SQL injection points! To create a raw expression, you may use the `DB::raw` method:
 
-#### Ham İfade Kullanımı
+#### Using A Raw Expression
 
-	$uyeler = DB::table('uyeler')
-		->select(DB::raw('count(*) as uye_adedi, durum'))
-		->where('durum', '<>', 1)
-		->groupBy('durum')
-		->get();
+	$users = DB::table('users')
+	                     ->select(DB::raw('count(*) as user_count, status'))
+	                     ->where('status', '<>', 1)
+	                     ->groupBy('status')
+	                     ->get();
 
 <a name="inserts"></a>
-## Eklemeler
+## Inserts
 
-#### Bir Tabloya Kayıt Eklenmesi
+#### Inserting Records Into A Table
 
-	DB::table('uyeler')->insert(
-		array('email' => 'can@numune.com', 'puan' => 0)
+	DB::table('users')->insert(
+		array('email' => 'john@example.com', 'votes' => 0)
 	);
 
-#### Otomatik Artan Bir Id Alanı Olan Tabloya Kayıt Eklenmesi
+#### Inserting Records Into A Table With An Auto-Incrementing ID
 
-Şayet tabloda otomatik artan bir id alanı varsa, bir kayıt eklemek ve oluşan otomatik id'i öğrenmek için `insertGetId` metodu kullanılabilir:
+If the table has an auto-incrementing id, use `insertGetId` to insert a record and retrieve the id:
 
-	$id = DB::table('uyeler')->insertGetId(
-		array('email' => 'can@numune.com', 'puan' => 0)
+	$id = DB::table('users')->insertGetId(
+		array('email' => 'john@example.com', 'votes' => 0)
 	);
 
-> **Not:** PostgreSQL ile kullanıldığı zaman insertGetId metodu, otomatik artan alanın adının da "id" olmasını bekler.
+> **Note:** When using PostgreSQL the insertGetId method expects the auto-incrementing column to be named "id".
 
-#### Bir Tabloya Birden Çok Kayıt Eklenmesi
+#### Inserting Multiple Records Into A Table
 
-	DB::table('uyeler')->insert(array(
-		array('email' => 'sinan@numune.com', 'puan' => 0),
-		array('email' => 'ozan@numune.com', 'puan' => 0),
+	DB::table('users')->insert(array(
+		array('email' => 'taylor@example.com', 'votes' => 0),
+		array('email' => 'dayle@example.com', 'votes' => 0),
 	));
 
 <a name="updates"></a>
-## Güncellemeler
+## Updates
 
-#### Bir Tablodaki Kayıtların Güncellenmesi
+#### Updating Records In A Table
 
-	DB::table('uyeler')
+	DB::table('users')
 	            ->where('id', 1)
-	            ->update(array('puan' => 1));
+	            ->update(array('votes' => 1));
 
-#### Bir Sütun Değerinin Artırılması veya Azaltılması
+#### Incrementing or decrementing a value of a column
 
-	DB::table('uyeler')->increment('puan');
+	DB::table('users')->increment('votes');
 
-	DB::table('uyeler')->increment('puan', 5);
+	DB::table('users')->increment('votes', 5);
 
-	DB::table('uyeler')->decrement('puan');
+	DB::table('users')->decrement('votes');
 
-	DB::table('uyeler')->decrement('puan', 5);
+	DB::table('users')->decrement('votes', 5);
 
-Ayrıca, güncellenecek ek sütunlar belirtebilirsiniz:
+You may also specify additional columns to update:
 
-	DB::table('uyeler')->increment('puan', 1, array('isim' => 'Tuana Şeyma'));
+	DB::table('users')->increment('votes', 1, array('name' => 'John'));
 
 <a name="deletes"></a>
-## Silmeler
+## Deletes
 
-#### Bir Tablodaki Kayıtların Silinmesi
+#### Deleting Records In A Table
 
-	DB::table('uyeler')->where('puan', '<', 100)->delete();
+	DB::table('users')->where('votes', '<', 100)->delete();
 
-#### Bir Tablodaki Tüm Kayıtların Silinmesi
+#### Deleting All Records From A Table
 
-	DB::table('uyeler')->delete();
+	DB::table('users')->delete();
 
-#### Bir Tablonun Budanması
+#### Truncating A Table
 
-	DB::table('uyeler')->truncate();
+	DB::table('users')->truncate();
 
 <a name="unions"></a>
-## Birleştirmeler
+## Unions
 
-Sorgu oluşturucusu, iki ayrı sorgunun tek bir "birlik" haline getirilmesi için de hızlı bir yol sağlamaktadır:
+The query builder also provides a quick way to "union" two queries together:
 
-	$ilksorgu = DB::table('uyeler')->whereNull('ismi');
+	$first = DB::table('users')->whereNull('first_name');
 
-	$uyeler = DB::table('uyeler')->whereNull('soy_ismi')->union($ilksorgu)->get();
+	$users = DB::table('users')->whereNull('last_name')->union($first)->get();
 
-Ayrıca `unionAll` metodu da mevcut olup, aynı `union` gibi kullanılır.
+The `unionAll` method is also available, and has the same method signature as `union`.
 
 <a name="pessimistic-locking"></a>
-## Pesimistik Kilitleme
+## Pessimistic Locking
 
-Sorgu oluşturucusu SELECT cümleleriniz üzerinde "pesimistik kilitleme" yapmanıza yardımcı olacak birkaç fonksiyon içermektedir.
+The query builder includes a few functions to help you do "pessimistic locking" on your SELECT statements.
 
-Bir SELECT cümlesini bir "shared lock (paylaşılan kilit)" ile çalıştırmak için bir sorgu üzerinde `sharedLock` metodunu kullanabilirsiniz:
+To run the SELECT statement with a "shared lock", you may use the `sharedLock` method on a query:
 
-	DB::table('uyeler')->where('puan', '>', 100)->sharedLock()->get();
+	DB::table('users')->where('votes', '>', 100)->sharedLock()->get();
 
-Bir SELECT cümlesinde "güncelleme için kilitlemek" için bir sorgu üzerinde `lockForUpdate` metodunu kullanabilirsiniz:
+To "lock for update" on a SELECT statement, you may use the `lockForUpdate` method on a query:
 
-	DB::table('uyeler')->where('puan', '>', 100)->lockForUpdate()->get();
-
-<a name="caching-queries"></a>
-## Sorguların Bellekte Saklanması
-
-Bir sorgunun sonuçları `remember` metodu kullanılarak bellekte saklanabilir:
-
-	$uyeler = DB::table('uyeler')->remember(10)->get();
-
-Bu örnekte, sorgunun sonuçları on dakika süreyle bellekte saklanacaktır. Sonuçlar bellekte tutulduğu süre boyunca bu sorgu artık veritabanında çalıştırılmayacak, onun yerine sonuçlar uygulamanız için belirlediğiniz ön tanımlı bellekleme sürücüsü tarafından yüklenecektir.
-
-Eğer cache taglarını [destekleyen bir cache sürücüsü](/docs/cache#cache-tags) kullanıyorsanız, önbelleğe taglar da ekleyebilirsiniz:
-
-	$uyeler = DB::table('uyeler')->cacheTags(array('insanlar', 'yazarlar'))->remember(10)->get();
+	DB::table('users')->where('votes', '>', 100)->lockForUpdate()->get();

@@ -1,114 +1,99 @@
-# Hatalar ve Günlüğe Ekleme
+# Errors & Logging
 
-- [Yapılandırma](#configuration)
-- [Hataların İşlenmesi](#handling-errors)
-- [HTTP İstisnaları](#http-exceptions)
-- [404 Hatalarının İşlenmesi](#handling-404-errors)
-- [Günlüğe Ekleme](#logging)
+- [Configuration](#configuration)
+- [Handling Errors](#handling-errors)
+- [HTTP Exceptions](#http-exceptions)
+- [Logging](#logging)
 
 <a name="configuration"></a>
-## Yapılandırma
+## Configuration
 
-Uygulamanız için günlük işleyicisi `app/start/global.php` [start dosyasında](/docs/lifecycle#start-files) kayda geçirilir. Ön tanımlı olarak, bu logger tek bir günlük dosyası kullanacak şekilde yapılandırılmıştır; bununla birlikte siz bu davranışı gereken şekilde özelleştirebilirsiniz. Laravel popüler [Monolog](https://github.com/Seldaek/monolog) günlükleme kitaplığını kullandığığı için, Monolog'un sunduğu çeşitli işleyicilerin avantajından yararlanabilirsiniz.
+The logging facilities for your application are configured in the `Illuminate\Foundation\Bootstrap\ConfigureLogging` bootstrapper class. This class utilizees the `log` configuration option from your `config/app.php` configuration file.
 
-Örneğin, tek bir büyük dosya yerine günlük log dosyaları kullanmak istiyorsanız, start dosyanızda aşağıdaki değişikliği yapabilirsiniz:
+By default, the logger is configured to use daily log files; however, you may customize this behavior as needed. Since Laravel uses the popular [Monolog](https://github.com/Seldaek/monolog) logging library, you can take advantage of the variety of handlers that Monolog offers.
 
-	$logFile = 'laravel.log';
+For example, if you wish to use a single log file instead of daily files, you can make the following change to your `config/app.php` configuration file:
 
-	Log::useDailyFiles(storage_path().'/logs/'.$logFile);
+	'log' => 'single'
 
-### Hata Ayrıntısı
+Out of the box, Laravel supported `single`, `daily`, and `syslog` logging modes. However, you are free to customize the logging for your application as you wish by overriding the `ConfigureLogging` bootstrapper class.
 
-Ön tanımlı olarak hata ayrıntısı uygulamanızda etkindir. Yani bir hata oluştuğu zaman ayrıntılı bir sorun listesi ve hata iletisi gösterebileceksiniz. `app/config/app.php` dosyanızdaki `debug` seçeneğini `false` ayarlayarak hata ayrıntılarını devre dışı bırakabilirsiniz.
+### Error Detail
 
-> **Not:** Bir üretim (production) ortamında hata ayrıntılarını devre dışı bırakmanız kuvvetle önerilir.
+The amount of error detail your application displays through the browser is controlled by the `app.debug` configuration option in your `config/app.php` configuration file. By default, this configuration option is set to respect the `APP_DEBUG` environment variable, which is stored in your `.env` file.
+
+For local development, you should set the `APP_DEBUG` environment variable to `true`. **In your production environment, this value should always be `false`.**
 
 <a name="handling-errors"></a>
-## Hataların İşlenmesi
+## Handling Errors
 
-Ön tanımlı olarak, `app/start/global.php` dosyasında tüm istisnalar için bir hata işleyici bulunmaktadır:
+All exceptions are handled by the `App\Exceptions\Handler` class. This class contains two methods: `report` and `render`.
 
-	App::error(function(Exception $exception)
+The `report` method is used to log exceptions or send them to an external service like [BugSnag](https://bugsnag.com). By default, the `report` method simply passes the exception to the base implementation on the parent class where the exception is logged. However, you are free to log exceptions however you wish. If you need to report different types of exceptions in different ways, you may use the PHP `instanceof` comparison operator:
+
+	/**
+	 * Report or log an exception.
+	 *
+	 * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
+	 *
+	 * @param  \Exception  $e
+	 * @return void
+	 */
+	public function report(Exception $e)
 	{
-		Log::error($exception);
-	});
+		if ($e instanceof CustomException)
+		{
+			//
+		}
 
-En temel hata işleyici budur. Ancak siz gerektiği kadar işleyici belirleyebilirsiniz. İşleyicilere işledikleri istisnaların tipine işaret eden isimler verilir. Örneğin, sadece `RuntimeException` olgularını işleyen bir işleyici oluşturabilirsiniz:
+		return parent::report($e);
+	}
 
-	App::error(function(RuntimeException $exception)
-	{
-		// İstisnayı işle...
-	});
+The `render` method is responsible for converting the exception into an HTTP response that should be sent back to the browser. By default, the exception is passed to the base class which generates a response for you. However, you are free to check the exception type or return your own custom response.
 
-Bir istisna işleyicisinin bir cevap döndürmesi halinde, bu cevap tarayıcıya gönderilecek ve başka bir hata işleyici çağrılmayacaktır:
-
-	App::error(function(InvalidUserException $exception)
-	{
-		Log::error($exception);
-
-		return 'Maalesef bu hesapla ilgili yanlış bir şeyler var!';
-	});
-
-PHP'nin önemli hatalarını (fatal error) izlemek için, `App::fatal` metodunu kullanabilirsiniz:
-
-	App::fatal(function($exception)
-	{
-		//
-	});
-
-Eğer birkaç istisna işleyiciniz varsa, bunlar en genelde en spesifik olana doğru tanımlanmalıdır. Bu yüzden, örneğin, `Exception` tipindeki tüm istisnaları işleyen bir işleyici `Illuminate\Encryption\DecryptException` gibi özel bir istisna tipinin işleyicisinden daha önce tanımlanmalıdır.
-
-### Hata İşleyicileri Nereye Konacak
-
-Hata işleyici kayıtları için ön tanımlı bir "konum" yoktur. Laravel bu alanda size seçme hakkı verir. Bir seçenek işleyicileri `start/global.php` dosyanızda tanımlamaktır. Genelde, burası her türlü "bootstrapping" (önce yüklenen) kodun koyulması için uygun bir yerdir. Eğer bu dosya çok kalabalık bir hale gelirse, bir `app/errors.php` dosyası oluşturabilir ve bu dosyayı `start/global.php` skriptinizde `require` yapabilirsiniz. Üçüncü bir seçenek, işleyicileri kayda geçiren bir [servis sağlayıcı](/docs/ioc#service-providers) oluşturmaktır. Tekrar belirtelim, tek bir "doğru" cevap yoktur. Rahat edeceğiniz bir konum seçin.
+The `dontReport` property of the exception handler contains an array of exception types that will not be logged. By default, exceptions resulting from 404 errors are not written to your log files. You may add other exception types to this array as needed.
 
 <a name="http-exceptions"></a>
-## HTTP İstisnaları
+## HTTP Exceptions
 
-HTTP istisnaları bir istemci isteği sırasında oluşabilecek hatalar demektir. Bu bir sayfa bulunamadı hatası (404), bir yetkisizlik hatası (401), hatta genel 500 hatası olabilir. Böyle bir cevap döndürmek için aşağıdaki biçimi kullanın:
+Some exceptions describe HTTP error codes from the server. For example, this may be a "page not found" error (404), an "unauthorized error" (401) or even a developer generated 500 error. In order to return such a response, use the following:
 
-	App::abort(404);
+	abort(404);
 
-İsteğe bağlı olarak, bir cevap verebilirsiniz:
+Optionally, you may provide a response:
 
-	App::abort(401, 'Yetkili değilsiniz.');
+	abort(403, 'Unauthorized action.');
 
-Bu istisnalar, isteğin yaşam döngüsü boyunca herhangi bir zamanda kullanılabilir.
+This method may be used at any time during the request's lifecycle.
 
-<a name="handling-404-errors"></a>
-## 404 Hatalarının İşlenmesi
+### Custom 404 Error Page
 
-Uygulamanızdaki tüm "404 Not Found" hatalarını işleyerek özel 404 hata hata sayfaları döndürmenize imkan veren bir hata işleyici kaydı yapabilirsiniz:
-
-	App::missing(function($exception)
-	{
-		return Response::view('errors.missing', array(), 404);
-	});
+To return a custom view for all 404 errors, create a `resources/views/errors/404.blade.php` file. This view will be served on all 404 errors generated by your application.
 
 <a name="logging"></a>
-## Günlüğe Ekleme
+## Logging
 
-Laravel'in günlüğe ekleme imkanları güçlü [Monolog](http://github.com/seldaek/monolog) üstünde basit bir katman sağlar. Laravel, ön tanımlı olarak uygulamanız için tek bir günlük dosyası oluşturacak şekilde yapılandırılmıştır ve bu dosya `app/storage/logs/laravel.log` içinde tutulmaktadır. Bu günceye aşağıdakilere benzer şekilde bilgi yazabilirsiniz:
+The Laravel logging facilities provide a simple layer on top of the powerful [Monolog](http://github.com/seldaek/monolog) library. By default, Laravel is configured to create daily log files for your application which are stored in the `storage/logs` directory. You may write information to the log like so:
 
-	Log::info('İşte bu yararlı bir bilgidir.');
+	Log::info('This is some useful information.');
 
-	Log::warning('Yanlış giden bir şeyler olabilir.');
+	Log::warning('Something could be going wrong.');
 
-	Log::error('Gerçekten yanlış giden bir şey var.');
+	Log::error('Something is really going wrong.');
 
-Günlük tutucu, [RFC 5424](http://tools.ietf.org/html/rfc5424)'de tanımlanmış yedi günlük ekleme düzeyi sağlamaktadır: **debug**, **info**, **notice**, **warning**, **error**, **critical** ve **alert**.
+The logger provides the seven logging levels defined in [RFC 5424](http://tools.ietf.org/html/rfc5424): **debug**, **info**, **notice**, **warning**, **error**, **critical**, and **alert**.
 
-Log metodlarına bağlamsal bir veri dizisi de geçilebilir:
+An array of contextual data may also be passed to the log methods:
 
-	Log::info('Günce mesajı', array('context' => 'Diğer yardımcı bilgi'));
+	Log::info('Log message', ['context' => 'Other helpful information']);
 
-Monolog, günlüğe ekleme için kullanabileceğiniz bir takım başka işleyicilere de sahiptir. Gerektiğinde, Laravel tarafından kullanılan Monolog olgusuna şu şekilde ulaşabilirsiniz:
+Monolog has a variety of additional handlers you may use for logging. If needed, you may access the underlying Monolog instance being used by Laravel:
 
 	$monolog = Log::getMonolog();
 
-Ayrıca, günlüğe geçirilen tüm mesajları yakalamak için bir olay kaydı da yapabilirsiniz:
+You may also register an event to catch all messages passed to the log:
 
-#### Bir günlük izleyici kaydı yapılması
+#### Registering A Log Event Listener
 
 	Log::listen(function($level, $message, $context)
 	{

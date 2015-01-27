@@ -1,290 +1,230 @@
-# Rotalar
+# HTTP Routing
 
-- [Temel Rotalama](#basic-routing)
-- [Rota Parametreleri](#route-parameters)
-- [Rota Filtreleri](#route-filters)
-- [İsimli Rotalar](#named-routes)
-- [Rota Grupları](#route-groups)
-- [Alt Alanadı (Subdomain) Rotalaması](#sub-domain-routing)
-- [Rotalarda Ön-ek](#route-prefixing)
-- [Rotalara Model Bağlama](#route-model-binding)
-- [404 Hatası Fırlatma](#throwing-404-errors)
-- [Denetçilere (Controller) Rotalama](#routing-to-controllers)
+- [Basic Routing](#basic-routing)
+- [CSRF Protection](#csrf-protection)
+- [Method Spoofing](#method-spoofing)
+- [Route Parameters](#route-parameters)
+- [Named Routes](#named-routes)
+- [Route Groups](#route-groups)
+- [Route Model Binding](#route-model-binding)
+- [Throwing 404 Errors](#throwing-404-errors)
 
 <a name="basic-routing"></a>
-## Temel Rotalama
+## Basic Routing
 
-Uygulamanızdaki rotaların çoğu `app/routes.php` dosyasında tanımlanır. En temel Laravel rotası "URL deseni" ve `closure (anonim fonksiyon)`'dan oluşur.
+You will define most of the routes for your application in the `app/Http/routes.php` file, which is loaded by the `App\Providers\RouteServiceProvider` class. The most basic Laravel routes simply accept a URI and a `Closure`:
 
-#### Temel GET Rotası
+#### Basic GET Route
 
 	Route::get('/', function()
 	{
-		return 'Merhaba Laravel!';
+		return 'Hello World';
 	});
 
-#### Temel POST Rotası
+#### Other Basic Routes Route
 
-	Route::post('bir/sey', function()
+	Route::post('foo/bar', function()
 	{
-		return 'Merhaba Laravel!';
+		return 'Hello World';
 	});
 
-#### Bir Rotanın Birden Çok HTTP Fiili İçin Kayda Geçirilmesi
-
-	Route::match(array('GET', 'POST'), '/', function()
+	Route::put('foo/bar', function()
 	{
-		return 'Merhaba Laravel!';
+		//
 	});
 
-#### Tüm HTTP Metodları (GET, POST gibi) İçin Rota Yazımı
-
-	Route::any('falan', function()
+	Route::delete('foo/bar', function()
 	{
-		return 'Merhaba Laravel!';
+		//
 	});
 
-#### Rotanın Zorunlu Olarak HTTPS Üzerinden Kullanılmasını Sağlamak
+#### Registering A Route For Multiple Verbs
 
-	Route::get('falan', array('https', function()
+	Route::match(['get', 'post'], '/', function()
 	{
-		return 'HTTPS üzerinde olmalı!';
-	}));
+		return 'Hello World';
+	});
 
-Çoğu zaman, rotalarınız için URL'ler üretmeniz gerekecek. Bunu `URL::to` metoduyla yapabilirsiniz:
+#### Registering A Route That Responds To Any HTTP Verb
 
-	$url = URL::to('falan');
+	Route::any('foo', function()
+	{
+		return 'Hello World';
+	});
+
+Often, you will need to generate URLs to your routes, you may do so using the `url` helper:
+
+	$url = url('foo');
+
+<a name="csrf-protection"></a>
+## CSRF Protection
+
+Laravel provides an easy method of protecting your application from [cross-site request forgeries](http://en.wikipedia.org/wiki/Cross-site_request_forgery). Cross-site request forgeries are a type of malicious exploit whereby unauthorized commands are performed on behalf of the authenticated user.
+
+Laravel automatically generates a CSRF "token" for each active user session being managed by the application. This token can be used to help verify that the authenticated user is the one actually making the requests to the application.
+
+#### Insert The CSRF Token Into A Form
+
+    <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+
+You do not need to manually verify the CSRF token on POST, PUT, or DELETE requests. The `VerifyCsrfToken` HTTP middleware will verify token in the request input matches the token stored in the session.
+
+In addition to looking for the CSRF token as a "POST" parameter, the middleware will also check for the `X-XSRF-TOKEN` request header.
+
+<a name="method-spoofing"></a>
+## Method Spoofing
+
+HTML forms do not support `PUT` or `DELETE` actions. So, when defining `PUT` or `DELETE` routes that are called from an HTML form, you will need to add a hidden `_method` field. The value sent with the `_method` field will be used as the HTTP request method. For example:
+
+	<form action="/foo/bar" method="POST">
+		<input type="hidden" name="_method" value="PUT">
+    	<input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+    </form>
 
 <a name="route-parameters"></a>
-## Rota Parametreleri
+## Route Parameters
 
-	Route::get('kullanici/{id}', function($id)
+Of course, you can capture segments of the request URI within your route:
+
+#### Basic Route Parameter
+
+	Route::get('user/{id}', function($id)
 	{
-		return 'Kullanıcı NO: '.$id;
+		return 'User '.$id;
 	});
 
-#### İsteğe Bağlı Rota Parametreleri
+#### Optional Route Parameters
 
-	Route::get('kullanici/{isim?}', function($isim = null)
+	Route::get('user/{name?}', function($name = null)
 	{
-		return $isim;
+		return $name;
 	});
 
-#### Öntanımlı Değerli İsteğe Bağlı Rota Parametreleri
+#### Optional Route Parameters With Default Value
 
-	Route::get('kullanici/{isim?}', function($isim = 'Ali')
+	Route::get('user/{name?}', function($name = 'John')
 	{
-		return $isim;
+		return $name;
 	});
 
-#### Rotalarda Düzenli İfade Kontrolü
+#### Regular Expression Parameter Constraints
 
-	Route::get('kullanici/{isim}', function($isim)
+	Route::get('user/{name}', function($name)
 	{
 		//
 	})
-	->where('isim', '[A-Za-z]+');
+	->where('name', '[A-Za-z]+');
 
-	Route::get('kullanici/{id}', function($id)
+	Route::get('user/{id}', function($id)
 	{
 		//
 	})
 	->where('id', '[0-9]+');
 
-#### Bir Where'ler Dizisi Geçilmesi
+#### Passing An Array Of Constraints
 
-Tabii ki kuralları bir dizi hâlinde tanımlayabilirsiniz:
-
-	Route::get('kullanici/{id}/{isim}', function($id, $isim)
+	Route::get('user/{id}/{name}', function($id, $name)
 	{
 		//
 	})
-	->where(array('id' => '[0-9]+', 'isim' => '[a-z]+'))
+	->where(['id' => '[0-9]+', 'name' => '[a-z]+'])
 
-#### Global Desenler Tanımlanması
+#### Defining Global Patterns
 
-Bir rota parametresinin her zaman için verilen bir düzenli ifadeyle sınırlandırılmasını istiyorsanız, `pattern` metodunu kullanabilirsiniz:
+If you would like a route parameter to always be constrained by a given regular expression, you may use the `pattern` method. You should define these patterns in the `before` method of your `RouteServiceProvider`:
 
-	Route::pattern('id', '[0-9]+');
+	$router->pattern('id', '[0-9]+');
 
-	Route::get('kullanici/{id}', function($id)
+Once the pattern has been defined, it is applied to all routes using that parameter:
+
+	Route::get('user/{id}', function($id)
 	{
-		// Sadece {id} sayısal ise çağrılır.
+		// Only called if {id} is numeric.
 	});
 
-#### Bir Rota Parametre Değerine Erişmek
+#### Accessing A Route Parameter Value
 
-Bir rotanın dışında bir rota parametre değerine erişmeniz gerekirse `Route::input` metodunu kullanabilirsiniz:
+If you need to access a route parameter value outside of a route, use the `input` method:
 
-	Route::filter('falan', function()
+	if ($route->input('id') == 1)
 	{
-		if (Route::input('id') == 1)
+		//
+	}
+
+You may also access the current route parameters via the `Illuminate\Http\Request` instance. The request instance for the current request may be accessed via the `Request` facade, or by type-hinting the `Illuminate\Http\Request` where dependencies are injected:
+
+	use Illuminate\Http\Request;
+
+	Route::get('user/{id}', function(Request $request, $id)
+	{
+		if ($request->route('id'))
 		{
 			//
 		}
 	});
 
-<a name="route-filters"></a>
-## Rota Filtreleri
-
-Rota filtreleri, sitenizin yetkilendirme gereken alanlarına erişimi kısıtlamak için uygun bir yoldur. Laravel frameworkte aralarında bir `auth` filtresi, bir `auth.basic` filtresi, bir `guest`filtresi ve bir `csrf` filtresinden oluşan birkaç filtre dahil edilmiştir. Bunlar `app/filters.php` dosyasında bulunmaktadır.
-
-#### Rota Filtresi Tanımlama
-
-	Route::filter('yas', function()
-	{
-		if (Input::get('yas') < 200)
-		{
-			return Redirect::to('anasayfa');
-		}
-	});
-
-Eğer filtreden bir yanıt (`Redirect::to` gibi) döndürülürse, bu cevap cevap olarak kabul edilecek ve rota çalıştırılmayacaktır. Rotada olabilecek `after` filtreleri de iptal edilecektir.
-
-#### Bir Rotaya Bir Filtre Bağlanması
-
-	Route::get('kullanici', array('before' => 'yas', function()
-	{
-		return '200 yaş üzerisin!';
-	}));
-
-#### Bir Controller Eylemine Bir Filtre Bağlanması
-
-	Route::get('kullanici', array('before' => 'yas', 'uses' => 'UserController@showProfile'));
-
-#### Rotaya Birden Çok Filtre Bağlanması
-
-	Route::get('kullanici', array('before' => 'auth|yas', function()
-	{
-		return '200 yaşın üzerisin ve giriş yetkin var!';
-	}));
-
-#### Birden Çok Filtrenin Dizi Yoluyla Bağlanması
-
-	Route::get('kullanici', array('before' => array('auth', 'yas'), function()
-	{
-		return '200 yaşın üzerisin ve giriş yetkin var!';
-	}));
-
-#### Filtre Parametrelerinin Belirtilmesi
-
-	Route::filter('yas', function($route, $request, $value)
-	{
-		//
-	});
-
-	Route::get('kullanici', array('before' => 'yas:200', function()
-	{
-		return 'Merhaba Laravel!';
-	}));
-
-After filtreleri filtreye üçüncü parametre olarak geçilen bir `$response` parametresi alırlar:
-
-	Route::filter('log', function($route, $request, $response)
-	{
-		//
-	});
-
-#### Desen Temelli Filtreler
-
-URL desenine göre de rotalara filtre ataması yapabilirsiniz.
-
-	Route::filter('admin', function()
-	{
-		//
-	});
-
-	Route::when('admin/*', 'admin');
-
-Yukarıdaki örnekte, `admin` filtresi `admin/` ile başlayan tüm rotalara uygulanacaktır. `*` karakteri tüm karakterleri yakalamak için kullanılır.
-
-Filtreleri HTTP metodlarına (GET, POST gibi) göre uygulayabilirsiniz.
-
-	Route::when('admin/*', 'admin', array('post'));
-
-#### Filtre Sınıfları
-
-Daha gelişmiş filtreler için Closure yerine sınıfları kullanmak isteyebilirsiniz. Filtre sınıfları uygulama [IoC Konteyneri](/docs/ioc)nde çözümlendikleri için, daha fazla test edilebilirlik için bu filtrelerde bağımlılık enjeksiyonu kullanmanız mümkün olabilecektir.
-
-#### Sınıf Temelli Filtrenin Kayda Geçirilmesi
-
-	Route::filter('falan', 'FalanFiltresi');
-
-Ön tanımlı olarak, `FalanFiltresi` sınıfındaki `filter` metodu çağrılacaktır:
-
-	class FalanFiltresi {
-
-		public function filter()
-		{
-			// Filtre işlemleri...
-		}
-
-	}
-
-Bu `filter` metodunu kullanmak istemiyorsanız, başka bir metod belirtebilirsiniz:
-
-	Route::filter('falan', 'FalanFiltresi');
-
 <a name="named-routes"></a>
-## İsimli Rotalar
+## Named Routes
 
-İsimli rotalar link veya yönlendirme oluştururken kolaylık sağlar. Bir rotayı şöyle isimlendirebilirsiniz:
+Named routes allow you to conveniently generate URLs or redirects for a specific route. You may specify a name for a route with the `as` array key:
 
-	Route::get('kullanici/profil', array('as' => 'profil', function()
+	Route::get('user/profile', ['as' => 'profile', function()
 	{
 		//
-	}));
+	}]);
 
-Denetçi metodları için de rota isimleri belirleyebilirsiniz:
+You may also specify route names for controller actions:
 
-	Route::get('kullanici/profil', array('as' => 'profil', 'uses' => 'KullaniciController@profilGoster'));
+	Route::get('user/profile', ['as' => 'profile', 'uses' => 'UserController@showProfile']);
 
-Şimdi, rota isimlerini link veya yönlendirme oluştururken kullanabilirsiniz:
+Now, you may use the route's name when generating URLs or redirects:
 
-	$url = URL::route('profil');
+	$url = route('profile');
 
-	$yonlendirme = Redirect::route('profil');
+	$redirect = redirect()->route('profile');
 
-Çalışan rotanın ismine `currentRouteName` metoduyla ulaşabilirsiniz:
+The `currentRouteName` method returns the name of the route handling the current request:
 
-	$isim = Route::currentRouteName();
+	$name = Route::currentRouteName();
 
 <a name="route-groups"></a>
-## Rota Grupları
+## Route Groups
 
-Bazen bir grup rotaya filtre atamanız gerekebilir. Her birine ayrı filtre atamaktansa, rota gruplarını kullanabilirsiniz:
+Sometimes you may need to apply filters to a group of routes. Instead of specifying the filter on each route, you may use a route group:
 
-	Route::group(array('before' => 'auth'), function()
+	Route::group(['before' => 'auth'], function()
 	{
 		Route::get('/', function()
 		{
-			// Yetki gerekir. ("auth" filtresi)
+			// Has Auth Filter
 		});
 
 		Route::get('user/profile', function()
 		{
-			// Yetki gerekir. ("auth" filtresi)
+			// Has Auth Filter
 		});
 	});
 
-Ayrıca, grup içindeki tüm controllerlerin verilen bir aduzayında olacağını belirtmek için `group` array'iniz içerisinde `namespace` parametresini kullanabilirsiniz:
+You may use the `namespace` parameter within your `group` array to specify the namespace for all controllers within the group:
 
-	Route::group(array('namespace' => 'Admin'), function()
+	Route::group(['namespace' => 'Admin'], function()
 	{
 		//
 	});
 
+> **Note:** By default, the `RouteServiceProvider` includes your `routes.php` file within a namespace group, allowing you to register controller routes without specifying the full namespace.
+
 <a name="sub-domain-routing"></a>
-## Alt Alanadı (Subdomain) Rotalaması
+### Sub-Domain Routing
 
-Laravel rotaları joker alt alanadlarını da işleyebilirler ve joker parmetreleri alanadına geçebilirsiniz.
+Laravel routes can also handle wildcard sub-domains, and will pass your wildcard parameters from the domain:
 
-#### Alt Alanadı Rotası Tanımlama
+#### Registering Sub-Domain Routes
 
-	Route::group(array('domain' => '{hesapadi}.uygulamam.com'), function()
+	Route::group(['domain' => '{account}.myapp.com'], function()
 	{
 
-		Route::get('kullanici/{id}', function($hesapadi, $id)
+		Route::get('user/{id}', function($account, $id)
 		{
 			//
 		});
@@ -292,14 +232,14 @@ Laravel rotaları joker alt alanadlarını da işleyebilirler ve joker parmetrel
 	});
 
 <a name="route-prefixing"></a>
-## Rotalarda Ön-ek
+### Route Prefixing
 
-Bir grubun nitelikler dizisinde `prefix` seçeneğini kullanarak gruptaki rotalara ön-ek ekleyebilirsiniz:
+A group of routes may be prefixed by using the `prefix` option in the attributes array of a group:
 
-	Route::group(array('prefix' => 'admin'), function()
+	Route::group(['prefix' => 'admin'], function()
 	{
 
-		Route::get('kullanici', function()
+		Route::get('user', function()
 		{
 			//
 		});
@@ -307,53 +247,55 @@ Bir grubun nitelikler dizisinde `prefix` seçeneğini kullanarak gruptaki rotala
 	});
 
 <a name="route-model-binding"></a>
-## Rotalara Model Bağlama
+## Route Model Binding
 
-Model bağlama model sınıflarının rotalarda kullanılması için kolaylık sağlar. Mesela, bir kullanıcının ID'sinin aktarılması yerine, ID ile eşleşen Kullanici modelini aktarabilirsiniz. İlk olarak, girilen parametreler için kullanılacak modelleri `Route::model` metoduyla belirleyin:
+Laravel model binding provides a convenient way to inject class instances into your routes. For example, instead of injecting a user's ID, you can inject the entire User class instance that matches the given ID.
 
-#### Parametrelere Model Bağlama
+First, use the router's `model` method to specify the class for a given parameter. You should define your model bindings in the `RouteServiceProvider::boot` method:
 
-	Route::model('kullanici', 'Kullanici');
+#### Binding A Parameter To A Model
 
-Daha sonra, `{kullanici}` parametresini içeren bir rota belirleyin:
+	public function boot(Router $router)
+	{
+		parent::boot($router);
 
-	Route::get('profil/{kullanici}', function(Kullanici $kullanici)
+		$router->model('user', 'App\User');
+	}
+
+Next, define a route that contains a `{user}` parameter:
+
+	Route::get('profile/{user}', function(App\User $user)
 	{
 		//
 	});
 
-`{kullanici}` parametresi ile `Kullanici` modelini eşleştirdiğimizden, bir `Kullanici` nesnesi rotaya aktarılacaktır. Yani, `profil/1` şeklindeki istek, ID'si 1 olan `Kullanici` nesnesini aktaracaktır.
+Since we have bound the `{user}` parameter to the `App\User` model, a `User` instance will be injected into the route. So, for example, a request to `profile/1` will inject the `User` instance which has an ID of 1.
 
-> **Not:**  Eğer model için veritabanında eşleşme yapılamazsa, 404 hatası fırlatılır.
+> **Note:** If a matching model instance is not found in the database, a 404 error will be thrown.
 
-Eğer eşleşmeme durumunda yapılacak işlemi kendiniz belirlemek istiyorsanız, `model` metoduna 3. argüman olarak bir Closure ekleyebilirsiniz:
+If you wish to specify your own "not found" behavior, pass a Closure as the third argument to the `model` method:
 
-	Route::model('kullanici', 'Kullanici', function()
+	Route::model('user', 'User', function()
 	{
 		throw new NotFoundHttpException;
 	});
 
-Bazen, rota parametreleri için kendi çüzümleyicinizi kullanmak isteyebilirsiniz. Bunun için `Route::bind` metodu kullanılır:
+If you wish to use your own resolution logic, you should use the `Router::bind` method. The Closure you pass to the `bind` method will receive the value of the URI segment, and should return an instance of the class you want to be injected into the route:
 
-	Route::bind('kullanici', function($deger, $route)
+	Route::bind('user', function($value)
 	{
-		return Kullanici::where('isim', $deger)->first();
+		return User::where('name', $value)->first();
 	});
 
 <a name="throwing-404-errors"></a>
-## 404 Hatası Fırlatma
+## Throwing 404 Errors
 
-Rotadan 404 hatasını fırlatmanın iki yolu vardır. İlk olarak, `App::abort` metodunu kullanabilirsiniz.
+There are two ways to manually trigger a 404 error from a route. First, you may use the `abort` helper:
 
-	App::abort(404);
+	abort(404);
 
-İkinci, `Symfony\Component\HttpKernel\Exception\NotFoundHttpException` nesnesi fırlatmaktır.
+The `abort` helper simply throws a `Symfony\Component\HttpFoundation\Exception\HttpException` with the specified status code.
 
-404 hatalarının yakalanması ve özel yanıtla oluşturulması hakkında daha fazla bilgiye dokümantasyonun [hatalar](/docs/errors#handling-404-errors) bölümünden ulaşabilirsiniz.
+Secondly, you may manually throw an instance of `Symfony\Component\HttpKernel\Exception\NotFoundHttpException`.
 
-<a name="routing-to-controllers"></a>
-## Denetçilere (Controller) Rotalama
-
-Laravel sadece Closure'lara değil, aynı zamanda denetçi sınıflarına rotalamaya da imkan verir ve hatta [kaynak denetçileri](/docs/controllers#resource-controllers) oluşturulması da mümkündür.
-
-Daha fazla bilgi için [Denetçiler](/docs/controllers) konusunu inceleyin.
+More information on handling 404 exceptions and using custom responses for these errors may be found in the [errors](/docs/master/errors#handling-404-errors) section of the documentation.

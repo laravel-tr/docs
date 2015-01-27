@@ -1,79 +1,50 @@
-# İstek Yaşam Döngüsü
+# Request Lifecycle
 
-- [Genel Bakış](#overview)
-- [İstek Yaşam Döngüsü](#request-lifecycle)
-- [Start Dosyaları](#start-files)
-- [Application Olayları (Events)](#application-events)
+- [Introduction](#introduction)
+- [Lifecycle Overview](#lifecycle-overview)
+- [Focus On Service Providers](#focus-on-service-providers)
 
-<a name="overview"></a>
-## Genel Bakış
+<a name="introduction"></a>
+## Introduction
 
-"Gerçek dünyada" bir alet kullanırken, aletin nasıl kullanıldığını bilirseniz kendinizi daha güvende hissedersiniz. Uygulama geliştirme farklı değildir. Geliştirme aletlerinizin nasıl fonksiyon gördüklerini bilirseniz bunları kullanırken kendinizi daha rahat ve güvende hissedersiniz. Bu dokümanın amacı Laravel frameworkünün nasıl "çalıştığının" iyi, yüksek düzeyli bir özetini vermektir. Tüm frameworkün daha iyi tanınmasıyla, her şey daha az "büyülü" hissedilecek ve uygulamanızı inşa ederken daha güvenli olacaksınız. İstek yaşam döngüsünün yüksek düzeyli bir özetine ek olarak "start" dosyalarını ve application olaylarını da anlatacağız.
+When using any tool in the "real world", you feel more confident if you understand how that tool works. Application development is no different. When you understand how your development tools function, you feel more comfortable and confident using them.
 
-Terimlerin hepsini hemencecik anlamadıysanız, inancınızı kaybetmeyin! Sadece ne olup bittiğini temel olarak kavrayama çalışın. Dokümantasyonun diğer kesimlerini inceledikçe bilginiz giderek büyüyecektir.
+The goal of this document is to give you a good, high-level overview of how the Laravel framework "works". By getting to know the overall framework better, everything feels less "magical" and you will be more confident building your applications.
 
-<a name="request-lifecycle"></a>
-## İstek Yaşam Döngüsü
+If you don't understand all of the terms right away, don't lose heart! Just try to get a basic grasp of what is going on, and your knowledge will grow as you explore other sections of the documentation.
 
-Uygulamanıza gelen tüm istekler `public/index.php` skripti aracılığı ile yönetilir. Apache kullanırken, Laravel'le gelen `.htaccess` dosyası tüm isteklerin `index.php`'ye geçirilmesi işini halletmektedir. Bu noktadan itibaren, Laravel istekleri işleme ve istemciye bir cevap döndürme sürecine başlar. Laravel bootstrap süreci hakkında genel bir fikir elde edilmesi yararlı olacaktır, bu nedenle şimdi onu anlatacağız!
+<a name="lifecycle-overview"></a>
+## Lifecycle Overview
 
-Laravel'in bootstrap sürecini öğrenirken kavranması gereken en önemli kavram **Servis Sağlayıcılarıdır**. Kendinizin `app/config/app.php` yapılandırma dosyasını açıp, buradaki `providers` dizisine bakarak servis sağlayıcılarının bir listesini görebilirsiniz. Bu sağlayıcılar Laravel için başlıca bootstrapping mekanizması olarak hizmet ederler. Fakat, servis sağlayıcıları konusuna daha fazla girmeden önce `index.php` dosyasına geri dönelim. Bir istek sizin `index.php` dosyasına girdikten sonra, `bootstrap/start.php` dosyası yüklenecektir. Bu dosya, aynı zamanda bir [IoC konteyneri](/docs/ioc) olarak hizmet eden yeni bir Laravel `Application` nesnesi oluşturur.
+#### First Things
 
-`Application` nesnesi oluşturulduktan sonra, birkaç proje path'i ayarlanacak ve [ortam tespiti](/docs/configuration#environment-configuration) yapılacaktır. Ondan sonra, dahili bir Laravel bootstrap skripti çağrılacaktır. Bu dosya Laravel kaynağının derinliklerinde yaşar ve yapılandırma dosyalarınıza dayalı olarak zaman dilimi (timezone), hata bildirimi ve benzeri birkaç ayarı daha ayarlar. Fakat, oldukça önemsiz yapılandırma seçeneklerinin ayarlanmasına ek olarak, aynı zamanda çok önemli bir şey daha yapar: uygulamanız için yapılandırılmış servis sağlayıcılarının hepsini kayda geçirir.
+The entry point for all requests to a Laravel application is the `public/index.php` file. All requests are directed to this file by your web server (Apache / Nginx) configuration. The `index.php` file doesn't contain much code. Rather, it is simply a starting point for loading the rest of the framework.
 
-Basit servis sağlayıcılarında sadece bir metod vardır: `register`. Bu `register` metodu, Application nesnesi tarafından Application'un kendi `register` metodu aracılığıyla bir servis sağlayıcısı kayda geçirildiği zaman çağrılır. Bu metod içerisinde, servis sağlayıcıları bir şeyleri [IoC konteynerinde](/docs/ioc) kayda geçirirler. Esasında, her servis sağlayıcı konteynere bir veya daha fazla [closure](http://us3.php.net/manual/en/functions.anonymous.php) (anonim fonksiyon) bağlar ki, bu closure'lar uygulamanız içinde bağlanmış hizmetlere erişmenize imkan verirler. Yani, örnek olarak `QueueServiceProvider` servis sağlayıcısı [Kuyruk (Queue)](/docs/queues) ile ilgili çeşitli sınıfları çözümleyen closure'leri kayda geçirmektedir. Pek tabii, servis sağlayıcıları sadece bir şeyleri IoC konteynerinde kayda geçirmekte değil, her türlü bootstrapping işi için kullanılabilirler. Bir servis sağlayıcı olay dinleyicilerini, view composer'lerini, Artisan komutlarını ve başkalarını kayda geçirebilirler.
+The `index.php` file loads the Composer generated autoloader definition, and then retrieves an instance of the Laravel application from `bootstrap/app.php` script. The first action taken by Laravel itself is to create an instance of the application / [service container](/docs/master/container).
 
-Servis sağlayıcılarının hepsi kayda geçirildikten sonra, `app/start` dosyalarınız yüklenecektir. Son olarak, `app/routes.php` dosyanız yüklenecektir. `routes.php` dosyanız yüklendikten sonra, Request nesnesi bir rotaya sevk edilebilmesi için "application"a gönderilir.
+#### HTTP / Console Kernels
 
-Özetleyecek olursak:
+Next, the incoming request is sent to either the HTTP kernel or the console kernel, depending on the type of request that is entering the application. These two kernels serve as the central location that all requests flow through. For now, let's just focus on the HTTP kernel, which is located in `app/Http/Kernel.php`.
 
-1. İstek `public/index.php` dosyasına girer.
-2. `bootstrap/start.php` dosyası "Application"ı oluşturur ve ortamı tespit eder.
-3. Dahili `framework/start.php` dosyası ayarları yapılandırır ve servis sağlayıcılarını yükler.
-4. Application `app/start` dosyaları yüklenir.
-5. Application `app/routes.php` dosyası yüklenir.
-6. Request nesnesi Application'a gönderilir, o da Response nesnesi döndürür.
-7. Response nesnesi istemciye geri gönderilir.
+The HTTP kernel extends the `Illuminate\Foundation\Http\Kernel` class, which defines an array of `bootstrappers` that will be run before the request is executed. These bootstrappers configure error handling, configure logging, detect the application environment, and perform other tasks that need to be done before the request is actually handled.
 
-Artık bir Laravel uygulamasına gelen bir isteğin nasıl işlendiği konusunda iyi bir fikre sahip olduğunuza göre, "start" dosyalarına daha yakından bakabiliriz!
+The HTTP kernel also defines a list of HTTP [middleware](/docs/master/middleware) that all requests must pass through before being handled by the application. These middleware handle reading and writing the HTTP session, determine if the application is in maintenance mode, verifying the CSRF token, and more.
 
-<a name="start-files"></a>
-## Start Dosyaları
+The method signature for the HTTP kernel's `handle` method is quite simple: receive a `Request` and return a `Response`. Think of the Kernel as being a big black box that represents your entire application. Feed it HTTP requests and it will return HTTP responses.
 
-Uygulamanızın start dosyaları `app/start` dizininde bulunmaktadır. Varsayılan olarak bunlardan üçü uygulamanızın içine dahil edilmiştir. Bunlar `global.php`, `local.php` ve `artisan.php`'dir. `artisan.php` hakkında daha fazla bilgiye sahip olmak için [Artisan komut satırı](/docs/commands#registering-commands) dökümanlarına bakınız.
+#### Service Providers
 
-Bunlardan `global.php` start dosyası [Günlüklerin](/docs/errors) kayda geçirilmesi ve `app/filters.php` dosyanızın dahil edilmesi gibi ön tanımlı birkaç temel öğe içerir. Ancak, bu dosyaya istediğiniz her şeyi ekleyebilirsiniz. Bu dosya ortam ne olursa olsun uygulamanıza gelen _her_ istekte otomatik olarak dahil edilecektir. Öte yandan `local.php` dosyası yalnızca uygulamanız `local` ortamda çalışırken çağrılır. Ortamlar hakkında daha fazla bilgi için [Yapılandırma](/docs/configuration) belgelerine bakınız.
+One of the most important Kernel bootstrapping actions is loading the service providers for your application. All of the service providers for the application are configured in the `config/app.php` configuration file's `providers` array. First, the `register` method will be called on all providers, then, once all providers have been registered, the `boot` method will be called.
 
-`local`'e ilaveten başka ortamlarınız da varsa, pek tabii bu ortamlar için de start dosyaları oluşturabilirsiniz. Uygulamanız o ortamda çalıştığı zaman bunlar otomatik olarak dahil edileceklerdir. Dolayısıyla, örneğin eğer `bootstrap/start.php` dosyanızda yapılandırılmış olan bir `development` ortamına sahipseniz, bir `app/start/development.php` dosyası oluşturabilirsiniz; herhangi bir istek uygulamaya bu ortamda girdiği zaman bu dosya dahil edilecektir.
+#### Dispatch Request
 
-### Start Dosyalarına Koyulacak Şeyler
+Once the application has been bootstrapped and all service providers have been registered, the `Request` will be handed off to the router for dispatching. The router will dispatch the request to a route or controller, as well as run any route specific middleware.
 
-Start dosyaları her türlü "bootstrapping" kodun koyulacağı basit bir yer olarak hizmet ederler. Örneğin, bir View composer'ı kayda geçirebilir, günlükleme tercihlerinizi yapılandırabilir, bazı PHP ayarlarını ve benzerlerini yapabilirsiniz. Bu tamamen size kalmış. Tabii ki, tüm önyükleme kodunuzun start dosyalarına atılması bir karışıklık ve dağınıklık oluşturabilir. Büyük uygulamalar için veya eğer start dosyalarınızın karışmaya başladığını hissederseniz, bootstrapping kodunuzun bir kısmını [servis sağlayıcılarına](/docs/ioc#service-providers) taşımayı düşünün.
+<a name="focus-on-service-providers"></a>
+## Focus On Service Providers
 
-<a name="application-events"></a>
-## Application Olayları (Events)
+Service providers are truly the key to bootstrapping a Laravel application. The application instance is created, the service providers are registered, and the request is handed to the bootstrapped application. It's really that simple!
 
-#### Uygulama Olaylarının Kayda Geçirilmesi
+Having a firm grasp of how a Laravel application is built and bootstrapped via service providers is very valuable. Of course, your application's default service providers are stored in the `app/Providers` directory.
 
-Bunlara ek olarak `before`, `after`, `close`, `finish` ve `shutdown` uygulama olaylarını kayda geçirmek suretiyle istek öncesinde ve sonrasında bazı işlemler de yapabilirsiniz:
-
-	App::before(function($request)
-	{
-		//İstek öncesi olayları
-	});
-
-	App::after(function($request, $response)
-	{
-		//İstek sonrası olayları
-	});
-
-Bu olay dinleyicileri, uygulamanıza yapılan her istek öncesinde `(before)` ve sonrasında `(after)` çalışacaktır. Bu olaylar cevapların global filtrelenmesi veya global modifikasyonu için yardımcı olabilirler. Bunları `start` dosyalarınızın birinde veya bir [servis sağlayıcısında](/docs/ioc#service-providers) kayda geçirebilirsiniz.
-
-Bir dinleyiciyi `matched` eventinde de kayda geçirebilirsiniz; bu, gelen bir istek bir rotayla eşleştirildiğinde, ancak rota daha henüz çalıştırılmadan önce ateşlenecektir:
-
-	Route::matched(function($route, $request)
-	{
-		//
-	});
-
-`finish` eventi bir cevap sizin uygulamanızdan istemciye geri gönderildikten sonra çağrılır. Burası uygulamanızın gerektirdiği bir son dakika işlemini yapmak için iyi bir yerdir. `shutdown` eventi ise tüm `finish` olay işleyicileri işlemlerini bitirdikten hemen sonra çağrılır ve skript sona ermeden önce herhangi bir iş yapmak için son fırsattır. Büyük ihtimalle, bu olaylardan birini kullanma ihtiyacınız olmayacaktır.
+By default, the `AppServiceProvider` is blank. This provider is a great place to add your application's own bootstrapping and service container bindings. Of course, for large applications, you may wish to create several service providers, each with a more granular type of bootstrapping.

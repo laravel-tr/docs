@@ -1,142 +1,94 @@
-# Sayfalama
+# Pagination
 
-- [Yapılandırma](#configuration)
-- [Kullanım](#usage)
-- [Sayfalama Linklerine Ekleme Yapmak](#appending-to-pagination-links)
-- [JSON'a Dönüştürme](#converting-to-json)
-- [Özel Sunumcular](#custom-presenters)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Appending To Pagination Links](#appending-to-pagination-links)
+- [Converting To JSON](#converting-to-json)
 
 <a name="configuration"></a>
-## Yapılandırma
+## Configuration
 
-Diğer frameworkler'de, sayfalama oldukça sıkıntılı olabilir. Laravel bu işi çocuk oyuncağı gibi yapar. `app/config/view.php` dosyasında bir tek yapılandırma seçeneği bulunmaktadır. Bu dosyadaki `pagination` seçeneği sayfalama bağlantıları (links) oluşturmak için kullanılması gereken görünümü (view) belirtir. Varsayılan olarak, Laravel iki görünüm içerir.
-
-`pagination::slider` görünümü mevcut sayfaya dayalı olarak akıllı bir bağlantı aralığı gösterirken, `pagination::simple` görünümü sadece "önceki" ve "sonraki" butonlarını gösterecektir. **Her iki görünüm de Twitter Bootstrap ile uyumludur**
+In other frameworks, pagination can be very painful. Laravel makes it a breeze. Laravel can generate an intelligent "range" of links based on the current page. The generated HTML is compatible with the Bootstrap CSS framework.
 
 <a name="usage"></a>
-## Kullanım
+## Usage
 
-Öğeleri sayfalamak için çeşitli yollar vardır. En basiti sorgu oluşturucusunda veya bir Eloquent modelinde `paginate` metodunu kullanmaktır.
+There are several ways to paginate items. The simplest is by using the `paginate` method on the query builder or an Eloquent model.
 
-#### Veritabanı Sonuçlarının Sayfalandırılması
+#### Paginating Database Results
 
-	$uyeler = DB::table('users')->paginate(15);
+	$users = DB::table('users')->paginate(15);
 
-> **Not:** Şu an için, bir `groupBy` cümlesi kullanan pagination işlemleri Laravel tarafından verimli bir biçimde çalıştırılamamaktadır. Eğer sayfalanmış bir sonuç kümesinde bir `groupBy` kullanmanız gerekiyorsa, veritabanını elle sorgulamanız ve `Paginator::make` kullanmanız önerilir.
+> **Note:** Currently, pagination operations that use a `groupBy` statement cannot be executed efficiently by Laravel. If you need to use a `groupBy` with a paginated result set, it is recommended that you query the database manually and use `Paginator::make`.
 
-#### Bir Eloquent Modelinin Sayfalandırılması
+#### Paginating An Eloquent Model
 
-[Eloquent](/docs/eloquent) modellerini de sayfalandırabilirsiniz:
+You may also paginate [Eloquent](/docs/master/eloquent) models:
 
-	$uyeler = User::paginate(15);
+	$allUsers = User::paginate(15);
 
-	$uyeler = User::where('votes', '>', 100)->paginate(15);
+	$someUsers = User::where('votes', '>', 100)->paginate(15);
 
-`paginate` metoduna geçilen argüman sayfa başına görüntülemek istediğiniz öğelerin sayısıdır. Bir kez sonuçları aldıktan sonra görünümde görüntüleyebilir ve `links` metodunu kullanarak sayfalama bağlantıları oluşturabilirsiniz:
+The argument passed to the `paginate` method is the number of items you wish to display per page. Once you have retrieved the results, you may display them on your view, and create the pagination links using the `render` method:
 
 	<div class="container">
-		<?php foreach ($uyeler as $uye): ?>
-			<?php echo $uye->isim; ?>
+		<?php foreach ($users as $user): ?>
+			<?php echo $user->name; ?>
 		<?php endforeach; ?>
 	</div>
 
-	<?php echo $uyeler->links(); ?>
+	<?php echo $users->render(); ?>
 
-Sayfalama sistemi oluşturmak işte bu kadar! Unutmayın, mevcut sayfa için frameworke bilgi vermedik. Laravel bunu sizin için otomatik olarak belirleyecektir.
+This is all it takes to create a pagination system! Note that we did not have to inform the framework of the current page. Laravel will determine this for you automatically.
 
-Sayfalama için kullanılacak özel bir view belirtmek isterseniz, `links` metoduna bir view geçebilirsiniz:
+You may also access additional pagination information via the following methods:
 
-	<?php echo $uyeler->links('view.ismi'); ?>
-
-Ayrıca aşağıdaki metodlar aracılığıyla diğer sayfalama bilgilerine erişebilirsiniz:
-
-- `getCurrentPage`
-- `getLastPage`
-- `getPerPage`
-- `getTotal`
-- `getFrom`
-- `getTo`
+- `currentPage`
+- `lastPage`
+- `perPage`
+- `total`
 - `count`
 
+#### "Simple Pagination"
 
-#### "Basit Sayfalandırma"
+If you are only showing "Next" and "Previous" links in your pagination view, you have the option of using the `simplePaginate` method to perform a more efficient query. This is useful for larger datasets when you do not require the display of exact page numbers on your view:
 
-Eğer sayfalandırma view'inizde sadece "Sonraki" ve "Önceki" linklerini gösteriyorsanız, daha etkin bir sorgulama gerçekleştirmek için `simplePaginate` metodunu kullanma seçeneğine sahipsiniz. Bu, view'inizde tam sayfa numaraları gösterilmesi gerekmediğinde, büyük veri setleri için kullanışlıdır:
+	$someUsers = User::where('votes', '>', 100)->simplePaginate(15);
 
-	$uyeler = User::where('votes', '>', 100)->simplePaginate(15);
+#### Creating A Paginator Manually
 
-#### Elle Bir Sayfalandırıcı Oluşturmak
+Sometimes you may wish to create a pagination instance manually, passing it an array of items. You may do so using by creating either an `Illuminate\Pagination\Paginator` or `Illuminate\Pagination\LengthAwarePaginator` instance, depending on your needs.
 
-Bazen bir sayfalama olgusunu kendiniz bir öğeler dizisi geçerek oluşturmak isteyebilirsiniz. Bunu `Paginator::make` metodunu kullanarak yapabilirsiniz:
+#### Customizing The Paginator URI
 
-	$sayfalandirici = Paginator::make($ogeler, $toplamOgeAdedi, $sayfaBasinaAdet);
+You may also customize the URI used by the paginator via the `setPath` method:
 
-#### Sayfalama URI'ını Özelleştirmek
+	$users = User::paginate();
 
-`setBaseUrl` metodu aracılığıyla, sayfalandırıcı tarafından URI'yi de özelleştirebilirsiniz:
+	$users->setPath('custom/url');
 
-	$uyeler = Uye::paginate();
-
-	$uyeler->setBaseUrl('ozel/url');
-
-Yukarıdaki örnek böyle bir URL oluşturacaktır: http://ornek.com/ozel/url?page=2
+The example above will create URLs like the following: http://example.com/custom/url?page=2
 
 <a name="appending-to-pagination-links"></a>
-## Sayfalama Linklerine Ekleme Yapmak
+## Appending To Pagination Links
 
-Sayfalandırıcı üzerinde `appends` metodunu kullanarak sayfalama linklerinize sorgu katarı (query string) ekleyebilirsiniz:
+You can add to the query string of pagination links using the `appends` method on the Paginator:
 
-	<?php echo $uyeler->appends(array('sira' => 'oylar'))->links(); ?>
+	<?php echo $users->appends(['sort' => 'votes'])->render(); ?>
 
-Bu kod, sayfalama linkine "&sira=oylar" ekleyecek ve şöyle bir URL üretecektir:
+This will generate URLs that look something like this:
 
-	http://ornek.com/birsey?page=2&sira=oylar
+	http://example.com/something?page=2&sort=votes
 
-Eğer sayfalandırıcının URL'sine bir "hash fragmanı" eklemek istiyorsanız, `fragment` metodunu kullanabilirsiniz:
+If you wish to append a "hash fragment" to the paginator's URLs, you may use the `fragment` method:
 
-	<?php echo $uyeler->fragment('falan')->links(); ?>
+	<?php echo $users->fragment('foo')->render(); ?>
 
-Bu metod bunun gibi gözüken URL'ler üretecektir:
+This method call will generate URLs that look something like this:
 
-	http://ornek.com/birsey?page=2#falan
+	http://example.com/something?page=2#foo
 
 <a name="converting-to-json"></a>
-## JSON'a Dönüştürme
+## Converting To JSON
 
-`Paginator` sınıfı `Illuminate\Support\Contracts\JsonableInterface` sözleşmesini implemente eder ve `toJson` metoduna sahiptir. Bir `Paginator` olgusunu bir rotadan döndürerek de onu JSON'a çevirebilirsiniz. Bu olgunun JSON'lanmış biçimi `total`, `current_page`, `last_page`, `from` ve `to` gibi bazı "meta" bilgilerini de içerecektir. Olgunun verileri JSON dizisindeki `data` anahtarı aracılığı ile erişebilir olacaktır.
-
-<a name="custom-presenters"></a>
-## Özel Sunumcular
-
-Laravelle geldiği haliyle ön tanımlı sayfalama sunumcusu Bootstrap uyumludur; ancak siz bunu kendi seçeceğiniz bir sunumcu ile özelleştirebilirsiniz.
-
-### Soyut Sunumcunun Genişletilmesi
-
-`Illuminate\Pagination\Presenter` sınıfını genişletin ve onun soyut (abstract) metodlarını implemente edin. Zurb Foundation için örnek bir sunumcu bunun gibi gözükebilir:
-
-    class ZurbPresenter extends Illuminate\Pagination\Presenter {
-
-        public function getActivePageWrapper($text)
-        {
-            return '<li class="current"><a href="">'.$text.'</a></li>';
-        }
-
-        public function getDisabledTextWrapper($text)
-        {
-            return '<li class="unavailable"><a href="">'.$text.'</a></li>';
-        }
-
-        public function getPageLinkWrapper($url, $page, $rel = null)
-        {
-            return '<li><a href="'.$url.'">'.$page.'</a></li>';
-        }
-
-    }
-
-### Özel Sunumcunun Kullanılması
-
-Önce `app/views` dizininizde sizin özel sunumcunuz olarak hizmet edecek bir view oluşturun. Ondan sonra, `app/config/view.php` yapılandırma dosyasındaki `pagination` seçeneğini yeni view'in adıyla değiştirin. Son olarak, özel sunumcu view'inizde aşağıdaki kodu koyacaksınız:
-
-    <ul class="pagination">
-        <?php echo with(new ZurbPresenter($paginator))->render(); ?>
-    </ul>
+The `Paginator` class implements the `Illuminate\Contracts\Support\JsonableInterface` contract and exposes the `toJson` method. You may also convert a `Paginator` instance to JSON by returning it from a route. The JSON'd form of the instance will include some "meta" information such as `total`, `current_page`, and `last_page`. The instance's data will be available via the `data` key in the JSON array.

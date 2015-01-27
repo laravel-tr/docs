@@ -1,25 +1,25 @@
-# Temel Veritabanı Kullanımı
+# Basic Database Usage
 
-- [Yapılandırma](#configuration)
-- [Okuma / Yazma Bağlantıları](#read-write-connections)
-- [Sorguları Çalıştırma](#running-queries)
-- [Veritabanı İşlemleri](#database-transactions)
-- [Bağlantılara Erişme](#accessing-connections)
-- [Sorgu Günlükleme](#query-logging)
+- [Configuration](#configuration)
+- [Read / Write Connections](#read-write-connections)
+- [Running Queries](#running-queries)
+- [Database Transactions](#database-transactions)
+- [Accessing Connections](#accessing-connections)
+- [Query Logging](#query-logging)
 
 <a name="configuration"></a>
-## Yapılandırma
+## Configuration
 
-Laravel, veritabanı bağlantısını ve sorguları çalıştırmayı fazlasıyla kolay kılar. Veritabanı yapılandırma ayarları `app/config/database.php` dosyasında bulunmaktadır. Bu dosyada hem tüm veritabanı bağlantılarını tanımlayabilir, hem de hangi bağlantının varsayılan olarak kullanılacağını seçebilirsiniz. Bu dosyada, desteklenen veritabanı sistemlerinin tümü için örnekler verilmiştir.
+Laravel makes connecting with databases and running queries extremely simple. The database configuration file is `config/database.php`. In this file you may define all of your database connections, as well as specify which connection should be used by default. Examples for all of the supported database systems are provided in this file.
 
-Laravel tarafından desteklenen veritabanı sistemleri: MySQL, Postgres, SQLite, ve SQL Server.
+Currently Laravel supports four database systems: MySQL, Postgres, SQLite, and SQL Server.
 
 <a name="read-write-connections"></a>
-## Okuma / Yazma Bağlantıları
+## Read / Write Connections
 
-Bazen SELECT sorguları için bir bağlantı ve diğer sorgular için başka bir bağlantı kullanmak isteyebilirsiniz. Laravel bunu inanılmaz bir şekilde kolaylaştırır ve ister düz sorgu, ister sorgu oluşturucu (query builder) veya ister Eloquent ORM kullansanız bile hepsi için doğru bağlantıyı kullanır.
+Sometimes you may wish to use one database connection for SELECT statements, and another for INSERT, UPDATE, and DELETE statements. Laravel makes this a breeze, and the proper connections will always be used whether you are using raw queries, the query builder, or the Eloquent ORM.
 
-Okuma / yazma bağlantılarının nasıl yapılandırıldığını görmek için bu örneği inceleyebilirsiniz:
+To see how read / write connections should be configured, let's look at this example:
 
 	'mysql' => array(
 		'read' => array(
@@ -37,40 +37,40 @@ Okuma / yazma bağlantılarının nasıl yapılandırıldığını görmek için
 		'prefix'    => '',
 	),
 
-Yapılandırma dizisine eklenen iki anahtara dikkat edin: `read` ve `write`. İkisi de sadece `host` anahtarını barındıran bir dizi. `read` ve `write` bağlantılarının geri kalan tüm veritabanı seçenekleri ise ana `mysql` dizisinden alınıp birleştirilecektir. Yani `read` ve `write` dizilerine sadece ana dizideki değerlerden değiştirmek istediğimiz kalemleri girmemiz gereklidir. Bu durumda `read` bağlantısı olarak  `192.168.1.1` kullanılırken, `write` bağlantısı olarak `192.168.1.2` kullanılacaktır. Ana `mysql` dizisindeki username, password, prefix, character set ve diğer tüm seçenekler her iki bağlantı için paylaşılacaktır.
+Note that two keys have been added to the configuration array: `read` and `write`. Both of these keys have array values containing a single key: `host`. The rest of the database options for the `read` and `write` connections will be merged from the main `mysql` array. So, we only need to place items in the `read` and `write` arrays if we wish to override the values in the main array. So, in this case, `192.168.1.1` will be used as the "read" connection, while `192.168.1.2` will be used as the "write" connection. The database credentials, prefix, character set, and all other options in the main `mysql` array will be shared across both connections.
 
 <a name="running-queries"></a>
-## Sorguları Çalıştırma
+## Running Queries
 
-Veritabanı bağlantılarını bir kere yapılandırdıktan sonra `DB` sınıfını kullanarak sorguları çalıştırabilirsiniz.
+Once you have configured your database connection, you may run queries using the `DB` facade.
 
-#### Kayıt Çekme (Select)
+#### Running A Select Query
 
-	$sonuclar = DB::select('select * from uyeler where id = ?', array(1));
+	$results = DB::select('select * from users where id = ?', [1]);
 
-`select` metodu sonuçları her zaman `dizi` tipinde döndürür.
+The `select` method will always return an `array` of results.
 
-#### Yeni Kayıt Ekleme (Insert)
+#### Running An Insert Statement
 
-	DB::insert('insert into uyeler (id, isim) values (?, ?)', array(1, 'Emre'));
+	DB::insert('insert into users (id, name) values (?, ?)', [1, 'Dayle']);
 
-#### Kayıt Güncelleme (Update)
+#### Running An Update Statement
 
-	DB::update('update uyeler set oy = 100 where isim = ?', array('Hakan'));
+	DB::update('update users set votes = 100 where name = ?', ['John']);
 
-#### Kayıt Silme (Delete)
+#### Running A Delete Statement
 
-	DB::delete('delete from uyeler');
+	DB::delete('delete from users');
 
-> **Not:** `update` ve `delete` sorguları, bu işlemlerden etkilenen satır sayısını döndürür.
+> **Note:** The `update` and `delete` statements return the number of rows affected by the operation.
 
-#### Genel Bir Sorgu Çalıştırma
+#### Running A General Statement
 
-	DB::statement('drop table uyeler');
+	DB::statement('drop table users');
 
-#### Sorgu Olaylarını Dinleme
+#### Listening For Query Events
 
-`DB::listen` metodunu kullanarak sorgu olaylarını dinleyebilirsiniz:
+You may listen for query events using the `DB::listen` method:
 
 	DB::listen(function($sql, $bindings, $time)
 	{
@@ -78,57 +78,57 @@ Veritabanı bağlantılarını bir kere yapılandırdıktan sonra `DB` sınıfı
 	});
 
 <a name="database-transactions"></a>
-## Veritabanı İşlemleri
+## Database Transactions
 
-Bir veritabanı işleminde, birden fazla işlemi birden gerçekleştirmek için, 'transaction' metodunu kullanabilirsiniz:
+To run a set of operations within a database transaction, you may use the `transaction` method:
 
 	DB::transaction(function()
 	{
-		DB::table('uyeler')->update(array('votes' => 1));
+		DB::table('users')->update(['votes' => 1]);
 
 		DB::table('posts')->delete();
 	});
 
-> **Not:** `transaction` metoduna girilen anonim fonksiyonunda oluşan herhangi bir istisna, transaction işleminin otomatik olarak geri sarılmasına (rollback edilmesine) sebep olur.
+> **Note:** Any exception thrown within the `transaction` closure will cause the transaction to be rolled back automatically.
 
-Transaction'ı elle başlatmanız gerekirse:
+Sometimes you may need to begin a transaction yourself:
 
 	DB::beginTransaction();
 
-Transaction'ı geri sarmanız gerekirse:
+You can rollback a transaction via the `rollback` method:
 
 	DB::rollback();
 
-Transaction'ı tamamlamak için:
+Lastly, you can commit a transaction via the `commit` method:
 
 	DB::commit();
 
 <a name="accessing-connections"></a>
-## Bağlantılara Erişme
+## Accessing Connections
 
-Birden fazla bağlantı kullandığınız durumlarda, bu bağlantılara `DB::connection` metodu aracılığı ile ulaşabilirsiniz.
+When using multiple connections, you may access them via the `DB::connection` method:
 
-	$uyeler = DB::connection('foo')->select(...);
+	$users = DB::connection('foo')->select(...);
 
-Ayrıca temel PDO örneğine de ulaşabilirsiniz:
+You may also access the raw, underlying PDO instance:
 
 	$pdo = DB::connection()->getPdo();
 
-Bazen veritabanına tekrar bağlanmaya ihtiyacınız olabilir.
+Sometimes you may need to reconnect to a given database:
 
 	DB::reconnect('foo');
 
-Veritabanıyla, PDO nesnesinin `max_connections` limiti aşıldığı için bağlantıyı koparmanız gerekirse `disconnect` metodunu kullanabilirsiniz:
+If you need to disconnect from the given database due to exceeding the underlying PDO instance's `max_connections` limit, use the `disconnect` method:
 
 	DB::disconnect('foo');
 
 <a name="query-logging"></a>
-## Sorgu Günlükleme
+## Query Logging
 
-Varsayılan olarak, Laravel güncel istek için çalıştırılabilecek tüm sorgular için bellekte bir günlük tutar. Bununla birlikte, bu bazı durumlarda, örneğin çok sayıda satır eklerken, uygulamanın aşırı bellek kullanmasına neden olabilir. Günlüğü devre dışı bırakmak için `disableQueryLog` metodunu kullanabilirsiniz.
+By default, Laravel keeps a log in memory of all queries that have been run for the current request. However, in some cases, such as when inserting a large number of rows, this can cause the application to use excess memory. To disable the log, you may use the `disableQueryLog` method:
 
 	DB::connection()->disableQueryLog();
 
-Çalıştırılan sorguların listesini bir dizi olarak almak için `getQueryLog` metodunu kullanabilirsiniz:
+To get an array of the executed queries, you may use the `getQueryLog` method:
 
-	$queries = DB::getQueryLog();
+       $queries = DB::getQueryLog();

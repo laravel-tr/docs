@@ -1,48 +1,23 @@
-# Şablonlar
+# Templates
 
-- [Denetçi (Controller) Düzenleri](#controller-layouts)
-- [Blade Şablonları](#blade-templating)
-- [Diğer Blade Kontrol Yapıları](#other-blade-control-structures)
-- [Blade'in Genişletilmesi](#extending-blade)
-
-<a name="controller-layouts"></a>
-## Denetçi (Controller) Düzenleri
-
-Laravel'de şablon kullanma yöntemlerinden birisi denetçi düzenleri üzerinden gerçekleştirilir. İlgili denetçideki `layout` özelliğinin belirlenmesiyle, belirlemiş olduğunuz görünüm oluşturulacak ve eylemlerden dönmüş cevap olarak kabul edilecektir.
-
-#### Bir Denetçide Bir Düzen Tanımlanması
-
-	class UyeController extends BaseController {
-
-		/**
-		 * Cevaplar için kullanılacak olan düzen.
-		 */
-		protected $layout = 'layouts.master';
-
-		/**
-		 * Uye profilini göster.
-		 */
-		public function showProfil()
-		{
-			$this->layout->content = View::make('uye.profil');
-		}
-
-	}
+- [Blade Templating](#blade-templating)
+- [Other Blade Control Structures](#other-blade-control-structures)
+- [Extending Blade](#extending-blade)
 
 <a name="blade-templating"></a>
-## Blade Şablonları
+## Blade Templating
 
-Blade Laravel'le gelen basit ama güçlü bir şablon motorudur. Denetçi düzenlerinden farklı olarak, Blade _şablon kalıtımı_ ve _kesimler_ (sections) ile yürütülür. Tüm Blade şablonlarının uzantısı `.blade.php` olmalıdır.
+Blade is a simple, yet powerful templating engine provided with Laravel. Unlike controller layouts, Blade is driven by _template inheritance_ and _sections_. All Blade templates should use the `.blade.php` extension.
 
-#### Bir Blade Düzeninin Tanımlanması
+#### Defining A Blade Layout
 
-	<!-- app/views/layouts/master.blade.php'de bulunmaktadır-->
+	<!-- Stored in resources/views/layouts/master.blade.php -->
 
 	<html>
 		<body>
 			@section('sidebar')
 				This is the master sidebar.
-			@show
+			@stop
 
 			<div class="container">
 				@yield('content')
@@ -50,133 +25,129 @@ Blade Laravel'le gelen basit ama güçlü bir şablon motorudur. Denetçi düzen
 		</body>
 	</html>
 
-#### Bir Blade Düzeninin Kullanılması
+#### Using A Blade Layout
 
 	@extends('layouts.master')
 
 	@section('sidebar')
 		@parent
 
-		<p>Burası master sidebar'a eklenmiştir.</p>
+		<p>This is appended to the master sidebar.</p>
 	@stop
 
 	@section('content')
-		<p>Burası kendi content bölümümdür.</p>
+		<p>This is my body content.</p>
 	@stop
 
-Bir Blade düzenini genişleten (`extend`) görünümlerin, düzenden gelen kesimleri değiştirmekten başka bir şey yapmadığını unutmayın. İlgili düzenin içeriği bir kesimde `@parent` direktifi kullanılarak çocuk görünüme katılabilir, böylece bir kenar çubuğu veya altbilgi gibi bir düzen kesimine eklemeler yapabilirsiniz.
+Note that views which `extend` a Blade layout simply override sections from the layout. Content of the layout can be included in a child view using the `@parent` directive in a section, allowing you to append to the contents of a layout section such as a sidebar or footer.
 
-Kimi zaman, örneğin bir kesimin tanımlanmış olup olmadığından emin olmadığınız durumlarda, `@yield` direktifine ön tanımlı bir değer geçmek isteyebilirsiniz. Bu ön tanımlı değer ikinci parametre olarak geçilebilir.
+Sometimes, such as when you are not sure if a section has been defined, you may wish to pass a default value to the `@yield` directive. You may pass the default value as the second argument:
 
-	@yield('section', 'Ön Tanımlı İçerik')
+	@yield('section', 'Default Content')
 
 <a name="other-blade-control-structures"></a>
-## Diğer Blade Kontrol Yapıları
+## Other Blade Control Structures
 
-#### Veri Yazdırılması
+#### Echoing Data
 
-	Merhaba {{{ $isim }}}.
+	Hello, {{ $name }}.
 
-	Şu anki UNIX zaman damgası {{{ time() }}}'dır.
+	The current UNIX timestamp is {{ time() }}.
 
-#### Verinin Varlığını Yokladıktan Sonra Yazdırılması
+#### Echoing Data After Checking For Existence
 
-Bazen bir değişkeni echo yapmak isteyebilir ama değişkenin ayarlanmış olup olmadığından emin olmayabilirsiniz. Temel olarak bunu yapmak istersiniz:
+Sometimes you may wish to echo a variable, but you aren't sure if the variable has been set. Basically, you want to do this:
 
-	{{{ isset($isim) ? $isim : 'Default' }}}
+	{{ isset($name) ? $name : 'Default' }}
 
-Bununla birlikte, bir ternary cümlesi yazmak yerine, Blade size aşağıdaki kullanışlı kısayolu kullanma imkanu verir:
+However, instead of writing a ternary statement, Blade allows you to use the following convenient short-cut:
 
-	{{{ $isim or 'Default' }}}
+	{{ $name or 'Default' }}
 
-#### Küme Parantezi İle Ham Metin Görüntülemek
+#### Displaying Raw Text With Curly Braces
 
-Küme parantezleri ile sarmalanmış bir metni görüntülemek isterseniz, küme parantezi önüne `@` sembolü ilave ederek Blade davranışını devredışı bırakabilirsiniz.
+If you need to display a string that is wrapped in curly braces, you may escape the Blade behavior by prefixing your text with an `@` symbol:
 
-	@{{ Bu metin Blade tarafından işleme alınmayacaktır }}
+	@{{ This will not be processed by Blade }}
 
-Tabii ki, kullanıcılardan gelen tüm veriler escape edilmeli ya da arındırılmalıdır. Çıktıyı escape etmek için, üçlü küme parantezi sözdizimini kullanabilirsiniz:
+If you don't want the data to be escaped, you may use the following syntax:
 
-	Merhaba {{{ $isim }}}.
+	Hello, {!! $name !!}.
 
-Eğer verinin escape edilmesini istemiyorsanız, ikili küme parantezi kullanabilirsiniz:
+> **Note:** Be very careful when echoing content that is supplied by users of your application. Always use the triple curly brace syntax to escape any HTML entities in the content.
 
-	Merhaba, {{ $isim }}.
-
-> **Not:** Uygulamanızın kullanıcılarından gelen verileri yazdıracağınız zaman çok dikkatli olun. İçerikte olabilecek HTML antitelerini escape etmek amacıyla her zaman için üçlü küme parantezi sözdizimi kullanın.
-
-#### If Cümleleri
+#### If Statements
 
 	@if (count($records) === 1)
-		Tek kayıt var!
+		I have one record!
 	@elseif (count($records) > 1)
-		Birden çok kayıt var!
+		I have multiple records!
 	@else
-		Hiç kayıt yok!
+		I don't have any records!
 	@endif
 
 	@unless (Auth::check())
-		Giriş yapmadınız.
+		You are not signed in.
 	@endunless
 
-#### Döngüler
+#### Loops
 
 	@for ($i = 0; $i < 10; $i++)
-		Şu anki değer {{ $i }}'dir.
+		The current value is {{ $i }}
 	@endfor
 
-	@foreach ($uyeler as $uye)
-		<p>Bu, üye {{ $uye->id }}'dir.</p>
+	@foreach ($users as $user)
+		<p>This is user {{ $user->id }}</p>
 	@endforeach
 
 	@forelse($users as $user)
 	  	<li>{{ $user->name }}</li>
 	@empty
-	  	<p>Bir üye yok</p>
+	  	<p>No users</p>
 	@endforelse
 
 	@while (true)
-		<p>Sonsuz döngüdeyim.</p>
+		<p>I'm looping forever.</p>
 	@endwhile
 
-#### Alt Görünümlerin Dahil Edilmesi
+#### Including Sub-Views
 
-	@include('view.ismi')
+	@include('view.name')
 
-Dahil edilen görünüme bir veri dizisi de geçebilirsiniz:
+You may also pass an array of data to the included view:
 
-	@include('view.ismi', array('birsey'=>'veri'))
+	@include('view.name', ['some' => 'data'])
 
-#### Kesimlerin Üzerine Yazmak
+#### Overwriting Sections
 
-Bir section'u, öncekini geçersiz kılarak tümden üzerine yazmak için `overwrite` cümlesini kullanabilirsiniz:
+To overwrite a section entirely, you may use the `overwrite` statement:
 
 	@extends('list.item.container')
 
 	@section('list.item.content')
-	    <p>Bu {{ $item->type }} tipinde bir öğedir</p>
+		<p>This is an item of type {{ $item->type }}</p>
 	@overwrite
 
-#### Dil Satırlarının Gösterilmesi
+#### Displaying Language Lines
 
 	@lang('language.line')
 
 	@choice('language.line', 1)
 
-#### Yorumlar
+#### Comments
 
-	{{-- Bu yorum, gösterilen HTML içerisinde olmayacaktır --}}
+	{{-- This comment will not be in the rendered HTML --}}
 
 <a name="extending-blade"></a>
-## Blade'in Genişletilmesi
+## Extending Blade
 
-Blade sizin kendi özel kontrol yapılarınızı tanımlamanıza dahi imkan verir. Bir Blade dosyası derlendiği zaman, her bir özel genişletme, görünüm içerikleriyle çağrılarak basit manipülasyonlardan daha karmaşık düzenli ifadelere kadar her türlü şeyi yapmanıza izin verir.
+Blade even allows you to define your own custom control structures. When a Blade file is compiled, each custom extension is called with the view contents, allowing you to do anything from simple `str_replace` manipulations to more complex regular expressions.
 
-Blade derleyicisi sizin kendi özel direktiflerinizi inşa etmeniz için gerekli ifadeleri üreten `createMatcher` ve `createPlainMatcher` yardımcı metodlarıyla birlikte gelir.
+The Blade compiler comes with the helper methods `createMatcher` and `createPlainMatcher`, which generate the expression you need to build your own custom directives.
 
-Bunlardan `createPlainMatcher` metodu bir parametre almayan `@endif` ve `@stop` gibi direktifler için kullanılır, `createMatcher` ise parametreli direktifler için kullanılır.
+The `createPlainMatcher` method is used for directives with no arguments like `@endif` and `@stop`, while `createMatcher` is used for directives with arguments.
 
-Aşağıdaki örnek, basitçe `$var` üzerinde `->format()` metodunu çağıran bir `@datetime($var)` direktifi oluşturur:
+The following example creates a `@datetime($var)` directive which simply calls `->format()` on `$var`:
 
 	Blade::extend(function($view, $compiler)
 	{

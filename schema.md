@@ -1,218 +1,237 @@
-# Şema Oluşturucusu
+# Schema Builder
 
-- [Giriş](#introduction)
-- [Tabloların Oluşturulması ve Yok Edilmesi](#creating-and-dropping-tables)
-- [Sütunların Eklenmesi](#adding-columns)
-- [Sütun İsimlerinin Değiştirilmesi](#renaming-columns)
-- [Sütunların Yok Edilmesi](#dropping-columns)
-- [Mevcutluk Yoklanması](#checking-existence)
-- [İndeks Eklenmesi](#adding-indexes)
-- [Yabancı Anahtar (Foreign Key)](#foreign-keys)
-- [İndekslerin Yok Edilmesi](#dropping-indexes)
-- [Zaman Damgaları ve Belirsiz Silmelerin Yok Edilmesi](#dropping-timestamps)
-- [Depolama Motorları](#storage-engines)
+- [Introduction](#introduction)
+- [Creating & Dropping Tables](#creating-and-dropping-tables)
+- [Adding Columns](#adding-columns)
+- [Changing Columns](#changing-columns)
+- [Renaming Columns](#renaming-columns)
+- [Dropping Columns](#dropping-columns)
+- [Checking Existence](#checking-existence)
+- [Adding Indexes](#adding-indexes)
+- [Foreign Keys](#foreign-keys)
+- [Dropping Indexes](#dropping-indexes)
+- [Dropping Timestamps & Soft Deletes](#dropping-timestamps)
+- [Storage Engines](#storage-engines)
 
 <a name="introduction"></a>
-## Giriş
+## Introduction
 
-Laravel'in `Schema` sınıfı tablolara müdahale etmekte veritabanı bilinmesine gerek kalmaz bir yol sağlar. Laravel'in desteklediği tüm veritabanlarıyla sağlıklı çalışır ve bu sistemlerin tümünde aynı olan bir API'ye sahiptir.
+The Laravel `Schema` class provides a database agnostic way of manipulating tables. It works well with all of the databases supported by Laravel, and has a unified API across all of these systems.
 
 <a name="creating-and-dropping-tables"></a>
-## Tabloların Oluşturulması ve Yok Edilmesi
+## Creating & Dropping Tables
 
-Yeni bir veritabanı tablosu oluşturmak için `Schema::create` metodu kullanılır:
+To create a new database table, the `Schema::create` method is used:
 
-	Schema::create('uyeler', function($table)
+	Schema::create('users', function($table)
 	{
 		$table->increments('id');
 	});
 
-Bu `create` metoduna geçilen ilk parametre tablonun adıdır ve ikincisi bu yeni tabloyu tanımlamakta kullanılabilecek bir proje (`Blueprint`) nesnesi alacak bir anonim fonksiyondur (`Closure`) .
+The first argument passed to the `create` method is the name of the table, and the second is a `Closure` which will receive a `Blueprint` object which may be used to define the new table.
 
-Mevcut bir veritabanı tablosunun adını değiştirmek için `rename` metodu kullanılabilir:
+To rename an existing database table, the `rename` method may be used:
 
-	Schema::rename($eskisinden, $yeniye);
+	Schema::rename($from, $to);
 
-Şema operasyonunun gerçekleştirileceği bağlantıyı belirlemek için `Schema::connection` metodunu kullanınız:
+To specify which connection the schema operation should take place on, use the `Schema::connection` method:
 
-	Schema::connection('falan')->create('uyeler', function($table)
+	Schema::connection('foo')->create('users', function($table)
 	{
 		$table->increments('id');
 	});
 
-Bir tabloyu yok etmek için, `Schema::drop` metodunu kullanabilirsiniz:
+To drop a table, you may use the `Schema::drop` method:
 
-	Schema::drop('uyeler');
+	Schema::drop('users');
 
-	Schema::dropIfExists('uyeler');
+	Schema::dropIfExists('users');
 
 <a name="adding-columns"></a>
-## Sütunların Eklenmesi
+## Adding Columns
 
-Mevcut bir tabloda sütun ekleme için `Schema::table` metodunu kullanıyoruz:
+To update an existing table, we will use the `Schema::table` method:
 
-	Schema::table('uyeler', function($table)
+	Schema::table('users', function($table)
 	{
 		$table->string('email');
 	});
 
-Tablo oluşturma zamanında ise tablo oluşturucusunda bulunan çeşitli sütun tiplerini kullanabilirsiniz:
+The table builder contains a variety of column types that you may use when building your tables:
 
-Komut         | Açıklama
+Command  | Description
 ------------- | -------------
-`$table->bigIncrements('id');`  |  "big integer" eşdeğeri.
-`$table->bigInteger('puan');`  |  BIGINT eşdeğeri sütun
-`$table->binary('veri');`  |  BLOB eşdeğeri sütun
-`$table->boolean('teyit');`  |  BOOLEAN eşdeğeri sütun
-`$table->char('isim', 4);`  |  bir uzunluğu olan CHAR eşdeğeri
-`$table->date('created_at');`  |  DATE eşdeğeri sütun
-`$table->dateTime('created_at');`  |  DATETIME eşdeğeri sütun
-`$table->decimal('miktar', 5, 2);`  |  basamak ve ondalık basamak sayısı belirlenmiş DECIMAL eşdeğeri sütun
-`$table->double('column', 15, 8);`  |  DOUBLE eşdeğeri sütun, toplamda 15 ve ondalık noktasından sonra 8 basamak 
-`$table->enum('tercihler', array('falan', 'filan'));` | ENUM eşdeğeri sütun
-`$table->float('miktar');`  |  FLOAT eşdeğeri sütun
-`$table->increments('id');`  |  Giderek artan ID alanı ekler (birincil anahtar).
-`$table->integer('puan');`  |  INTEGER eşdeğeri sütun
-`$table->longText('description');`  |  LONGTEXT eşdeğeri
-`$table->mediumInteger('numbers');`  |  MEDIUMINT eşdeğeri
-`$table->mediumText('description');`  |  MEDIUMTEXT eşdeğeri
-`$table->morphs('taggable');`  |  INTEGER `taggable_id` ve STRING `taggable_type` alanlarını ekler
-`$table->nullableTimestamps();`  |  NULLlara izin vermek dışında `timestamps()` ile aynı
-`$table->smallInteger('puan');`  |  SMALLINT eşdeğeri sütun
-`$table->tinyInteger('numbers');`  |  TINYINT eşdeğeri
-`$table->softDeletes();`  |  Belirsiz silmeler için **deleted\_at** sütunu ekler
-`$table->string('email');`  |  VARCHAR eşdeğeri sütun
-`$table->string('isim', 100);`  |  belli uzunlukta VARCHAR eşdeğeri sütun
-`$table->text('izahat');`  |  TEXT eşdeğeri sütun
-`$table->time('ikindi');`  |  TIME eşdeğeri sütun
-`$table->timestamp('eklenme_vakti');`  |  TIMESTAMP eşdeğeri sütun
-`$table->timestamps();`  |  **created\_at** ve **updated\_at** sütunlarını ekler
-`$table->rememberToken();`  |  VARCHAR(100) NULL olarak `remember_token` ekler
-`->nullable()`  |  İlgili sütunun NULL değerleri olabilir demektir
-`->default($deger)`  |  Bir sütun için ön tanımlı bir değer tanımlar
-`->unsigned()`  |  INTEGER'i UNSIGNED olarak ayarlar
+`$table->bigIncrements('id');`  |  Incrementing ID using a "big integer" equivalent.
+`$table->bigInteger('votes');`  |  BIGINT equivalent to the table
+`$table->binary('data');`  |  BLOB equivalent to the table
+`$table->boolean('confirmed');`  |  BOOLEAN equivalent to the table
+`$table->char('name', 4);`  |  CHAR equivalent with a length
+`$table->date('created_at');`  |  DATE equivalent to the table
+`$table->dateTime('created_at');`  |  DATETIME equivalent to the table
+`$table->decimal('amount', 5, 2);`  |  DECIMAL equivalent with a precision and scale
+`$table->double('column', 15, 8);`  |  DOUBLE equivalent with precision, 15 digits in total and 8 after the decimal point
+`$table->enum('choices', array('foo', 'bar'));` | ENUM equivalent to the table
+`$table->float('amount');`  |  FLOAT equivalent to the table
+`$table->increments('id');`  |  Incrementing ID to the table (primary key).
+`$table->integer('votes');`  |  INTEGER equivalent to the table
+`$table->json('options');`  |  JSON equivalent to the table
+`$table->longText('description');`  |  LONGTEXT equivalent to the table
+`$table->mediumInteger('numbers');`  |  MEDIUMINT equivalent to the table
+`$table->mediumText('description');`  |  MEDIUMTEXT equivalent to the table
+`$table->morphs('taggable');`  |  Adds INTEGER `taggable_id` and STRING `taggable_type`
+`$table->nullableTimestamps();`  |  Same as `timestamps()`, except allows NULLs
+`$table->smallInteger('votes');`  |  SMALLINT equivalent to the table
+`$table->tinyInteger('numbers');`  |  TINYINT equivalent to the table
+`$table->softDeletes();`  |  Adds **deleted\_at** column for soft deletes
+`$table->string('email');`  |  VARCHAR equivalent column
+`$table->string('name', 100);`  |  VARCHAR equivalent with a length
+`$table->text('description');`  |  TEXT equivalent to the table
+`$table->time('sunrise');`  |  TIME equivalent to the table
+`$table->timestamp('added_on');`  |  TIMESTAMP equivalent to the table
+`$table->timestamps();`  |  Adds **created\_at** and **updated\_at** columns
+`$table->rememberToken();`  |  Adds `remember_token` as VARCHAR(100) NULL
+`->nullable()`  |  Designate that the column allows NULL values
+`->default($value)`  |  Declare a default value for a column
+`->unsigned()`  |  Set INTEGER to UNSIGNED
 
-#### MySQL Veritabanında After Kullanımı
+#### Using After On MySQL
 
-Şayet MySQL veritabanı kullanıyorsanız, sütunların sıralamasını belirlemek için `after` metodunu kullanabilirsiniz:
+If you are using the MySQL database, you may use the `after` method to specify the order of columns:
 
-	$table->string('isim')->after('email');
+	$table->string('name')->after('email');
+
+<a name="changing-columns"></a>
+## Changing Columns
+
+Sometimes you may need to modify an existing column. For example, you may wish to increase the size of a string column. The `change` method makes it easy! For example, let's increase the size of the `name` column from 25 to 50:
+
+	Schema::table('users', function($table)
+	{
+		$table->string('name', 50)->change();
+	});
+
+We could also modify a column to be nullable:
+
+	Schema::table('users', function($table)
+	{
+		$table->string('name', 50)->nullable()->change();
+	});
 
 <a name="renaming-columns"></a>
-## Sütun İsimlerinin Değiştirilmesi
+## Renaming Columns
 
-Bir sütun ismini değiştirmek için Şema Oluşturucusunda `renameColumn` metodunu kullanabilirsiniz:
+To rename a column, you may use the `renameColumn` method on the Schema builder. Before renaming a column, be sure to add the `doctrine/dbal` dependency to your `composer.json` file.
 
-	Schema::table('uyeler', function($table)
+	Schema::table('users', function($table)
 	{
-		$table->renameColumn('eski', 'yeni');
+		$table->renameColumn('from', 'to');
 	});
 
-> **Not:** `enum` sütun tipleri için isim değiştirme desteklenmemektedir.
+> **Note:** Renaming `enum` column types is not supported.
 
 <a name="dropping-columns"></a>
-## Sütunların Yok Edilmesi
+## Dropping Columns
 
-Bir sütunu yok etmek için, Şema Oluşturucusunda `dropColumn` metodunu kullanabilirsiniz. Bir sütunu yok etmeden önce `composer.json` dosyanıza `doctrine/dbal` bağımlılığı eklediğinizden emin olun.
- 
-#### Bir Veritabanı Tablosundan Bir Sütunun Yok Edilmesi
+To drop a column, you may use the `dropColumn` method on the Schema builder. Before dropping a column, be sure to add the `doctrine/dbal` dependency to your `composer.json` file.
 
-	Schema::table('uyeler', function($table)
+#### Dropping A Column From A Database Table
+
+	Schema::table('users', function($table)
 	{
-		$table->dropColumn('puan');
+		$table->dropColumn('votes');
 	});
 
-#### Bir Veritabanı Tablosundan Birden Çok Sütunun Yok Edilmesi
+#### Dropping Multiple Columns From A Database Table
 
-	Schema::table('uyeler', function($table)
+	Schema::table('users', function($table)
 	{
-		$table->dropColumn(array('puan', 'avatar', 'ikametgah'));
+		$table->dropColumn(array('votes', 'avatar', 'location'));
 	});
 
 <a name="checking-existence"></a>
-## Mevcutluk Yoklanması
+## Checking Existence
 
-#### Tablonun Var Olduğunun Yoklanması
+#### Checking For Existence Of Table
 
-`hasTable` ve `hasColumn` metodlarını kullanarak bir tablo ya da sütunun var olup olmadığını kolayca yoklayabilirsiniz:
+You may easily check for the existence of a table or column using the `hasTable` and `hasColumn` methods:
 
-	if (Schema::hasTable('uyeler'))
+	if (Schema::hasTable('users'))
 	{
 		//
 	}
 
-#### Sütunların Var Olduğunun Yoklanması
+#### Checking For Existence Of Columns
 
-	if (Schema::hasColumn('uyeler', 'email'))
+	if (Schema::hasColumn('users', 'email'))
 	{
 		//
 	}
 
 <a name="adding-indexes"></a>
-## İndeks Eklenmesi
+## Adding Indexes
 
-Şema oluşturucusu çeşitli indeks tiplerini desteklemektedir. Bunları iki şekilde ekleyebilirsiniz. Birinci yol bir sütun tanımı sırasında tanımlamak, ikinci yol ise ayrıca eklemektir:
+The schema builder supports several types of indexes. There are two ways to add them. First, you may fluently define them on a column definition, or you may add them separately:
 
 	$table->string('email')->unique();
 
-Ya da, ayrı satırlarda indeks ekleme yolunu seçebilirsiniz. Aşağıda, kullanılabilecek tüm indeks tiplerinin bir listesi verilmiştir:
+Or, you may choose to add the indexes on separate lines. Below is a list of all available index types:
 
-Komut         | Açıklama
+Command  | Description
 ------------- | -------------
-`$table->primary('id');`  |  Bir birincil anahtar eklenmesi
-`$table->primary(array('ilk', 'son'));`  |  Bileşik keylerin eklenmesi
-`$table->unique('email');`  |  Benzersiz bir indeks eklenmesi
-`$table->index('il');`  |  Basit bir indeks eklenmesi
+`$table->primary('id');`  |  Adding a primary key
+`$table->primary(array('first', 'last'));`  |  Adding composite keys
+`$table->unique('email');`  |  Adding a unique index
+`$table->index('state');`  |  Adding a basic index
 
 <a name="foreign-keys"></a>
-## Yabancı Anahtar (Foreign Key)
+## Foreign Keys
 
-Laravel, tablolarınıza yabancı key sınırlaması eklemeniz için de destek verir:
+Laravel also provides support for adding foreign key constraints to your tables:
 
-	$table->integer('uye_id')->unsigned();
-	$table->foreign('uye_id')->references('id')->on('uyeler');
+	$table->integer('user_id')->unsigned();
+	$table->foreign('user_id')->references('id')->on('users');
 
-Bu örnekte, `uye_id` sütununun `uyeler` tablosundaki `id` sütununu referans aldığını beyan ediyoruz. İlk olarak foreign key sütununu oluşturmayı unutmayın!
+In this example, we are stating that the `user_id` column references the `id` column on the `users` table. Make sure to create the foreign key column first!
 
-Ayrıca, güncelleme ve silme ("on delete" ve "on update") eylemi sınırlamaları için seçenekler de belirleyebilirsiniz:
+You may also specify options for the "on delete" and "on update" actions of the constraint:
 
-	$table->foreign('uye_id')
-          ->references('id')->on('uyeler')
+	$table->foreign('user_id')
+          ->references('id')->on('users')
           ->onDelete('cascade');
 
-Bir yabancı keyi yok etmek için, `dropForeign` metodunu kullanabilirsiniz. Yabancı key için de diğer indeksler için kullanılan isimlendirme geleneği kullanılır:
+To drop a foreign key, you may use the `dropForeign` method. A similar naming convention is used for foreign keys as is used for other indexes:
 
-	$table->dropForeign('makaleler_uye_id_foreign');
+	$table->dropForeign('posts_user_id_foreign');
 
-> **Not:** Otomatik artan bir tam sayıya başvuran bir foreign key oluşturulurken, foreign key sütununu her zaman için `unsigned` yapmayı unutmayın.
+> **Note:** When creating a foreign key that references an incrementing integer, remember to always make the foreign key column `unsigned`.
 
 <a name="dropping-indexes"></a>
-## İndekslerin Yok Edilmesi
+## Dropping Indexes
 
-Bir indeksi yok etmek için indeksin adını belirtmelisiniz. Laravel, ön tanımlı olarak indekslere makul bir isim tahsis eder. Tablo adını, indekslenen alan adlarını ve indeks tipini art arda ekler. İşte bazı örnekler:
+To drop an index you must specify the index's name. Laravel assigns a reasonable name to the indexes by default. Simply concatenate the table name, the names of the column in the index, and the index type. Here are some examples:
 
-Komut         | Açıklama
+Command  | Description
 ------------- | -------------
-`$table->dropPrimary('uyeler_id_primary');`  |  "uyeler" tablosundan primer key'in yok edilmesi
-`$table->dropUnique('uyeler_email_unique');`  |  "uyeler" tablosundan benzersiz bir indeksin yok edilmesi
-`$table->dropIndex('geo_il_index');`  |  "geo" tablosundan basit bir indeksin yok edilmesi
+`$table->dropPrimary('users_id_primary');`  |  Dropping a primary key from the "users" table
+`$table->dropUnique('users_email_unique');`  |  Dropping a unique index from the "users" table
+`$table->dropIndex('geo_state_index');`  |  Dropping a basic index from the "geo" table
 
 <a name="dropping-timestamps"></a>
-## Zaman Damgaları ve Belirsiz Silmelerin Yok Edilmesi
+## Dropping Timestamps & SoftDeletes
 
-`timestamps`, `nullableTimestamps` veya `softDeletes` sütun türlerinin yok edilmesi için aşağıdaki metodları kullanabilirsiniz:
+To drop the `timestamps`, `nullableTimestamps` or `softDeletes` column types, you may use the following methods:
 
-Komut         | Açıklama
+Command  | Description
 ------------- | -------------
-`$table->dropTimestamps();`  |  Tablodan **created\_at** ve **updated\_at** sütunlarının düşürülmesi
-`$table->dropSoftDeletes();`  |  Tablodan **deleted\_at** sütununun düşürülmesi
+`$table->dropTimestamps();`  |  Dropping the **created\_at** and **updated\_at** columns from the table
+`$table->dropSoftDeletes();`  |  Dropping **deleted\_at** column from the table
 
 <a name="storage-engines"></a>
-## Depolama Motorları
+## Storage Engines
 
-Bir tablo için depolama motoru ayarlamak için, şema oluşturucusunda `engine` özelliğini ayarlayınız:
+To set the storage engine for a table, set the `engine` property on the schema builder:
 
-    Schema::create('uyeler', function($table)
+    Schema::create('users', function($table)
     {
         $table->engine = 'InnoDB';
 

@@ -1,50 +1,50 @@
 # Laravel Cashier
 
-- [Giriş](#introduction)
-- [Yapılandırma](#configuration)
-- [Bir Plana Abone Olunması](#subscribing-to-a-plan)
-- [Kredi Kartsız](#no-card-up-front)
-- [Aboneliklerin Takas Edilmesi](#swapping-subscriptions)
-- [Abonelik Miktarı](#subscription-quantity)
-- [Bir Aboneliğin İptal Edilmesi](#cancelling-a-subscription)
-- [Bir Aboneliğe Geri Dönülmesi](#resuming-a-subscription)
-- [Abonelik Durumunun Yoklanması](#checking-subscription-status)
-- [Başarısız Ödemelerin Halledilmesi](#handling-failed-payments)
-- [Diğer Stripe Webhook'larının İşlenmesi](#handling-other-stripe-webhooks)
-- [Faturalar](#invoices)
+- [Introduction](#introduction)
+- [Configuration](#configuration)
+- [Subscribing To A Plan](#subscribing-to-a-plan)
+- [No Card Up Front](#no-card-up-front)
+- [Swapping Subscriptions](#swapping-subscriptions)
+- [Subscription Quantity](#subscription-quantity)
+- [Cancelling A Subscription](#cancelling-a-subscription)
+- [Resuming A Subscription](#resuming-a-subscription)
+- [Checking Subscription Status](#checking-subscription-status)
+- [Handling Failed Payments](#handling-failed-payments)
+- [Handling Other Stripe Webhooks](#handling-other-stripe-webhooks)
+- [Invoices](#invoices)
 
 <a name="introduction"></a>
-## Giriş
+## Introduction
 
-Laravel Cashier [Stripe'in](https://stripe.com) abonelik faturalama hizmetleri için anlamlı, akıcı bir arayüz sağlar. Sizin yazmaktan ürktüğünüz klişe abonelik faturalama kodunun hemen tümünü halleder. Cashier, temel abonelik yönetimine ek olarak kuponları, abonelik takasını, abonelik "miktarlarını", ödemesiz dönemlerin iptal edilmesini halledebilir ve hatta fatura PDF'leri üretebilir.
+Laravel Cashier provides an expressive, fluent interface to [Stripe's](https://stripe.com) subscription billing services. It handles almost all of the boilerplate subscription billing code you are dreading writing. In addition to basic subscription management, Cashier can handle coupons, swapping subscription, subscription "quantities", cancellation grace periods, and even generate invoice PDFs.
 
 <a name="configuration"></a>
-## Yapılandırma
+## Configuration
 
 #### Composer
 
-Öncelikle, `composer.json` dosyanıza Cashier paketini ekleyin:
+First, add the Cashier package to your `composer.json` file:
 
-	"laravel/cashier": "~2.0"
+	"laravel/cashier": "~3.0"
 
 #### Service Provider
 
-Daha sonra, `app` yapılandırma dosyanızda `Laravel\Cashier\CashierServiceProvider`i kayda geçirin.
+Next, register the `Laravel\Cashier\CashierServiceProvider` in your `app` configuration file.
 
 #### Migration
 
-Cashier kullanabilmemiz için, veritabanımıza birkaç sütun eklememiz gerekiyor. Endişe etmeyin, gerekli sütunları ekleyecek bir migrasyon oluşturmak için `cashier:table` Artisan komutunu kullanabilirsiniz. Örneğin, bu alanı users tablosuna eklemek için `php artisan cashier:table users` kullanın. Bu migrasyonu oluşturduktan sonra basitçe `migrate` komutunu çalıştırın.
+Before using Cashier, we'll need to add several columns to your database. Don't worry, you can use the `cashier:table` Artisan command to create a migration to add the necessary column. For example, to add the column to the users table use `php artisan cashier:table users`. Once the migration has been created, simply run the `migrate` command.
 
-#### Model Ayarı
+#### Model Setup
 
-Ondan sonra da model tanımlamanıza BillableTrait ve uygun tarih değiştiricilerini ekleyin:
+Next, add the `Billable` trait and appropriate date mutators to your model definition:
 
-	use Laravel\Cashier\BillableTrait;
-	use Laravel\Cashier\BillableInterface;
+	use Laravel\Cashier\Billable;
+	use Laravel\Cashier\Contracts\Billable as BillableContract;
 
-	class User extends Eloquent implements BillableInterface {
+	class User extends Eloquent implements BillableContract {
 
-		use BillableTrait;
+		use Billable;
 
 		protected $dates = ['trial_ends_at', 'subscription_ends_at'];
 
@@ -52,149 +52,151 @@ Ondan sonra da model tanımlamanıza BillableTrait ve uygun tarih değiştiricil
 
 #### Stripe Key
 
-Son olarak, bootstrap dosyalarınızın birinde Stripe anahtarınızı ayarlayın:
+Finally, set your Stripe key in one of your bootstrap files or service providers, such as the `AppServiceProvider`:
 
 	User::setStripeKey('stripe-key');
 
 <a name="subscribing-to-a-plan"></a>
-## Bir Plana Abone Olunması
+## Subscribing To A Plan
 
-Bir model olgusuna sahip olduktan sonra o kullanıcıyı verilen bir Stripe planına kolaylıkla abone edebilirsiniz:
+Once you have a model instance, you can easily subscribe that user to a given Stripe plan:
 
 	$user = User::find(1);
 
 	$user->subscription('monthly')->create($creditCardToken);
 
-Bir abonelik oluştururken bir kupon uygulamak isterseniz, `withCoupon` metodunu kullanabilirsiniz:
+If you would like to apply a coupon when creating the subscription, you may use the `withCoupon` method:
 
 	$user->subscription('monthly')
 	     ->withCoupon('code')
 	     ->create($creditCardToken);
 
-Bu `subscription` metodu ilgili Stripe aboneliğini otomatik olarak oluşturacaktır, bunun yanında veritabanınızı Stripe müşteri ID'si ve ilgili diğer faturalama bilgisiyle güncelleyecektir. Eğer planınızda Stripe'de yapılandırılmış olan bir trial (deneme) varsa, kullanıcı kaydında deneme bitiş tarihi (trial end date) de otomatik olarak ayarlanacaktır.
+The `subscription` method will automatically create the Stripe subscription, as well as update your database with Stripe customer ID and other relevant billing information. If your plan has a trial configured in Stripe, the trial end date will also automatically be set on the user record.
 
-Eğer planınız Stripe'de yapılandırılmış **olmayan** bir deneme süresine sahipse, deneme bitiş tarihini abonelikten sonra elle ayarlamak zorundasınız:
+If your plan has a trial period that is **not** configured in Stripe, you must set the trial end date manually after subscribing:
 
 	$user->trial_ends_at = Carbon::now()->addDays(14);
 
 	$user->save();
 
-### Ek Kullanıcı Ayrıntılarının Belirtilmesi
+### Specifying Additional User Details
 
-Ek müşteri ayrıntılarını geçmek isterseniz, onları `create` metoduna ikinci parametre olarak geçmek suretiyle bunu yapabilirsiniz:
+If you would like to specify additional customer details, you may do so by passing them as second argument to the `create` method:
 
 	$user->subscription('monthly')->create($creditCardToken, [
 		'email' => $email, 'description' => 'Our First Customer'
 	]);
 
-Stripe tarafından desteklenen ek alanlar hakkında daha fazlasını öğrenmek için, Stripe'ın [müşteri oluşturma dokümantasyonuna](https://stripe.com/docs/api#create_customer) bakınız.
+To learn more about the additional fields supported by Stripe, check out Stripe's [documentation on customer creation](https://stripe.com/docs/api#create_customer).
 
 <a name="no-card-up-front"></a>
-## Kredi Kartsız
+## No Card Up Front
 
-Eğer uygulamanız kredi kartı olmaksızın bedava bir deneme teklif ediyorsa, modelinizde `cardUpFront` özelliğini `false` olarak ayarlayın:
+If your application offers a free-trial with no credit-card up front, set the `cardUpFront` property on your model to `false`:
 
 	protected $cardUpFront = false;
 
-Hesap oluşturulmasında, modelde deneme bitiş tarihi ayarladığınızdan emin olun:
+On account creation, be sure to set the trial end date on the model:
 
 	$user->trial_ends_at = Carbon::now()->addDays(14);
 
 	$user->save();
 
 <a name="swapping-subscriptions"></a>
-## Aboneliklerin Takas Edilmesi
+## Swapping Subscriptions
 
-Bir kullanıcıyı yeni bir aboneliğe takas etmek için, `swap` metodunu kullanın:
+To swap a user to a new subscription, use the `swap` method:
 
 	$user->subscription('premium')->swap();
 
-Eğer kullanıcı deneme (trial) durumundaysa, deneme normal şekilde sürdürülecektir. Ayrıca abonelik için eğer bir "miktar (quantity)" mevcutsa, miktar da sürdürülecektir.
+If the user is on trial, the trial will be maintained as normal. Also, if a "quantity" exists for the subscription, that quantity will also be maintained.
 
 <a name="subscription-quantity"></a>
-## Abonelik Miktarı
+## Subscription Quantity
 
-Bazen abonelikler "miktar" ile etkilenir. Örneğin, uygulamanız bir hesap üzerinde kullanıcı başına ayda $10 ücretlendirme yapabilir. Abonelik miktarını kolayca artırmak ve azaltmak için `increment` ve `decrement` metodlarını kullanın:
+Sometimes subscriptions are affected by "quantity". For example, your application might charge $10 per month per user on an account. To easily increment or decrement your subscription quantity, use the `increment` and `decrement` methods:
 
 	$user = User::find(1);
 
 	$user->subscription()->increment();
 
-	// Aboneliğin mevcut miktarına beş ekle...
+	// Add five to the subscription's current quantity...
 	$user->subscription()->increment(5);
 
-	$user->subscription()->decrement();
+	$user->subscription->decrement();
 
-	// Aboneliğin mevcut miktarından beş çıkar...
+	// Subtract five to the subscription's current quantity...
 	$user->subscription()->decrement(5);
 
 <a name="cancelling-a-subscription"></a>
-## Bir Aboneliğin İptal Edilmesi
+## Cancelling A Subscription
 
-Bir aboneliğin iptal edilmesi parkta bir yürüyüştür:
+Cancelling a subscription is a walk in the park:
 
 	$user->subscription()->cancel();
 
-Bir abonelik iptal edildiği zaman, Cashier veritabanınızdaki `subscription_ends_at` sütununu otomatik olarak ayarlayacaktır. Bu sütun, `subscribed` metodunun ne zaman `false` döndürmeye başlaması gerektiğini bilmek için kullanılır. Örneğin, eğer bir müşteri 1 Martta bir aboneliği iptal ederse ama aboneliğin sona ermesi 5 Marta kadar planlanmamışsa, `subscribed` metodu 5 Marta kadar `true` döndürmeye devam edecektir.
+When a subscription is cancelled, Cashier will automatically set the `subscription_ends_at` column on your database. This column is used to know when the `subscribed` method should begin returning `false`. For example, if a customer cancels a subscription on March 1st, but the subscription was not scheduled to end until March 5th, the `subscribed` method will continue to return `true` until March 5th.
 
 <a name="resuming-a-subscription"></a>
-## Bir Aboneliğe Geri Dönülmesi
+## Resuming A Subscription
 
-Eğer bir kullanıcı aboneliğini iptal etmiş ve bu aboneliğe kaldığı yerden devam etmesini istiyorsanız, `resume` metodunu kullanın:
+If a user has cancelled their subscription and you wish to resume it, use the `resume` method:
 
 	$user->subscription('monthly')->resume($creditCardToken);
 
-Eğer kullanıcı bir aboneliği iptal eder ve daha sonra bu abonelik tam olarak sona ermeden geri dönerse, onlara hemen fatura edilmeyecektir. Abonelikleri sadece tekrar etkinleştirilecektir ve orijinal faturalama döngüsüne göre fatura edilecektir.
+If the user cancels a subscription and then resumes that subscription before the subscription has fully expired, they will not be billed immediately. Their subscription will simply be re-activated, and they will be billed on the original billing cycle.
 
 <a name="checking-subscription-status"></a>
-## Abonelik Durumunun Yoklanması
+## Checking Subscription Status
 
-Bir kullanıcının uygulamanıza abone olduğunu doğrulamak için, `subscribed` komutunu kullanın:
+To verify that a user is subscribed to your application, use the `subscribed` command:
 
 	if ($user->subscribed())
 	{
 		//
 	}
 
-Bu `subscribed` metodu bir rota filtresi için harika bir adaydır:
+The `subscribed` method makes a great candidate for a [route middleware](/docs/master/middleware):
 
-	Route::filter('subscribed', function()
+	public function handle($request, Closure $next)
 	{
-		if (Auth::user() && ! Auth::user()->subscribed())
+		if ($request->user() && ! $request->user()->subscribed())
 		{
-			return Redirect::to('billing');
+			return redirect('billing');
 		}
-	});
 
-Ayrıca, `onTrial` metodunu kullanmak suretiyle kullanıcının hala deneme süresinde olup olmadığını (uygunsa) da tayin edebilirsiniz:
+		return $next($request);
+	}
+
+You may also determine if the user is still within their trial period (if applicable) using the `onTrial` method:
 
 	if ($user->onTrial())
 	{
 		//
 	}
 
-Kullanıcının daha önce aktif bir abone olduğunu ama aboneliğini iptal etmiş olduğunu tayin etmek için `cancelled` metodunu kullanabilirsiniz:
+To determine if the user was once an active subscriber, but has cancelled their subscription, you may use the `cancelled` method:
 
 	if ($user->cancelled())
 	{
 		//
 	}
 
-Ayrıca, bir kullanıcının aboneliğini iptal etmiş ama hala aboneliği tam sona erinceye kadar "yetkisiz kullanım süresinde (grace period)" olup olmadıklarını da belirleyebilirsiniz. Örneğin, bir kullanıcı 10 Martta sona ereceği planlanmış bir aboneliği 5 Martta iptal ederse, bu kullanıcı 10 Marta kadar "yetkisiz kullanım süresindedir". `Subscribed` metodunun bu zaman süresinde hala `true` döndürdüğüne dikkat ediniz.
+You may also determine if a user has cancelled their subscription, but are still on their "grace period" until the subscription fully expires. For example, if a user cancels a subscription on March 5th that was scheduled to end on March 10th, the user is on their "grace period" until March 10th. Note that the `subscribed` method still returns `true` during this time.
 
 	if ($user->onGracePeriod())
 	{
 		//
 	}
 
-Bir kullanıcının uygulamanızdaki bir plana hiç abone olup olmadığını tayin etmek için `everSubscribed` metodu kullanılabilir:
+The `everSubscribed` method may be used to determine if the user has ever subscribed to a plan in your application:
 
 	if ($user->everSubscribed())
 	{
 		//
 	}
 
-Bir kullanıcının verilen bir plana abone olup olmadığını ID'sine dayalı olarak tayin etmek için `onPlan` metodu kullanılabilir:
+The `onPlan` method may be used to determine if the user is subscribed to a given plan based on its ID:
 
 	if ($user->onPlan('monthly'))
 	{
@@ -202,38 +204,38 @@ Bir kullanıcının verilen bir plana abone olup olmadığını ID'sine dayalı 
 	}
 
 <a name="handling-failed-payments"></a>
-## Başarısız Ödemelerin Halledilmesi
+## Handling Failed Payments
 
-Şayet bir müşterinin kredi kartı süresi dolarsa ne olur? Endişeye gerek yok - Cashier sizin için müşterinin üyeliğini kolaylıkla iptal edebileceğiniz bir Webhook controller içermektedir. Sadece bir rotada bu controlleri belirtin:
+What if a customer's credit card expires? No worries - Cashier includes a Webhook controller that can easily cancel the customer's subscription for you. Just point a route to the controller:
 
 	Route::post('stripe/webhook', 'Laravel\Cashier\WebhookController@handleWebhook');
 
-Hepsi bu kadar! Gerçekleşmemiş ödemeler bu controller tarafından yakalanacak ve halledilecektir. Bu controller üç başarısız ödeme girişiminden sonra ilgili müşterinin aboneliğini iptal edecektir. Bu örnekteki `stripe/webhook` URI sadece örnek içindir. Kendi Stripe ayarlarınızda bu URI'ı yapılandırmanız gerekir.
+That's it! Failed payments will be captured and handled by the controller. The controller will cancel the customer's subscription after three failed payment attempts. The `stripe/webhook` URI in this example is just for example. You will need to configure the URI in your Stripe settings.
 
 <a name="handling-other-stripe-webhooks"></a>
-## Diğer Stripe Webhook'larının İşlenmesi
+## Handling Other Stripe Webhooks
 
-İşlemek istediğiniz başka Stripe webhook olaylarına sahipseniz, Webhook controller'i basitçe genişletin. Metod isminiz Cashier'in beklenen geleneğine uygun olmalıdır, burası için özel olarak, metod ismi işlemek istediğiniz Stripe webhook'un ismi ve önüne `handle` getirilmiş hali olmalıdır. Örneğin, eğer `invoice.payment_succeeded` webhook'unu işlemek istiyorsanız controllerinize bir `handleInvoicePaymentSucceeded` metodu eklemelisiniz.
+If you have additional Stripe webhook events you would like to handle, simply extend the Webhook controller. Your method names should correspond to Cashier's expected convention, specifically, methods should be prefixed with `handle` and the name of the Stripe webhook you wish to handle. For example, if you wish to handle the `invoice.payment_succeeded` webhook, you should add a `handleInvoicePaymentSucceeded` method to the controller.
 
 	class WebhookController extends Laravel\Cashier\WebhookController {
 
 		public function handleInvoicePaymentSucceeded($payload)
 		{
-			// Olayı işle...
+			// Handle The Event
 		}
 
 	}
 
-> **Not:** Webhook controller veritabanınızdaki abonelik bilgilerini güncellemeye ek olarak Stripe API aracılığıyla aboneliği de iptal edecektir.
+> **Note:** In addition to updating the subscription information in your database, the Webhook controller will also cancel the subscription via the Stripe API.
 
 <a name="invoices"></a>
-## Faturalar
+## Invoices
 
-`invoices` metodunu kullanarak bir kullanıcının faturalarından oluşan bir diziyi kolaylıkla elde edebilirsiniz:
+You can easily retrieve an array of a user's invoices using the `invoices` method:
 
 	$invoices = $user->invoices();
 
-Müşterinin faturalarını listelerken, ilgili fatura bilgisini göstermek için şu helper metodlarını kullanabilirsiniz:
+When listing the invoices for the customer, you may use these helper methods to display the relevant invoice information:
 
 	{{ $invoice->id }}
 
@@ -241,9 +243,9 @@ Müşterinin faturalarını listelerken, ilgili fatura bilgisini göstermek içi
 
 	{{ $invoice->dollars() }}
 
-Bir faturanın indirilebilir bir PDF'sini üretmek için `downloadInvoice` metodunu kullanın. Evet, bu gerçekten bu kadar kolaydır:
+Use the `downloadInvoice` method to generate a PDF download of the invoice. Yes, it's really this easy:
 
 	return $user->downloadInvoice($invoice->id, [
-		'vendor'  => 'Şirketiniz',
-		'product' => 'Ürününüz',
+		'vendor'  => 'Your Company',
+		'product' => 'Your Product',
 	]);

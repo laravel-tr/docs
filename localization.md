@@ -1,108 +1,109 @@
-# Yerelleştirme
+# Localization
 
-- [Giriş](#introduction)
-- [Dil Dosyaları](#language-files)
-- [Temel Kullanım](#basic-usage)
-- [Çoğullaştırma](#pluralization)
-- [Geçerlilik Denetimi Yerelleştirmesi](#validation)
-- [Paket Dil Dosyalarının Ezilmesi](#overriding-package-language-files)
+- [Introduction](#introduction)
+- [Language Files](#language-files)
+- [Basic Usage](#basic-usage)
+- [Pluralization](#pluralization)
+- [Validation Localization](#validation)
+- [Overriding Package Language Files](#overriding-package-language-files)
 
 <a name="introduction"></a>
-## Giriş
+## Introduction
 
-Laravel'in `Lang` sınıfı farklı dillerdeki yazılara ulaşabileceğiniz bir hizmet verir, bu sayede uygulamanızda rahatlıkla çoklu dil desteği verebilirsiniz.
+The Laravel `Lang` facade provides a convenient way of retrieving strings in various languages, allowing you to easily support multiple languages within your application.
 
 <a name="language-files"></a>
-## Dil Dosyaları
+## Language Files
 
-Diller için kayıtlar `app/lang` dizininin içerisindeki dosyalarda tutulur. Bu dizin içerisinde desteklenen her dil için bir klasör oluşturulmalıdır.
+Language strings are stored in files within the `resources/lang` directory. Within this directory there should be a subdirectory for each language supported by the application.
 
-	/app
+	/resources
 		/lang
 			/en
-				mesajlar.php
-			/tr
-				mesajlar.php
+				messages.php
+			/es
+				messages.php
 
-#### Örnek Dil Dosyası
+#### Example Language File
 
-Dil dosyaları basitçe anahtarlı bir şekilde kayıtları barındıran bir dizi döndürür. Örneğin:
+Language files simply return an array of keyed strings. For example:
 
 	<?php
 
 	return array(
-		'hosgeldiniz' => 'Uygulamamıza hoş geldiniz!'
+		'welcome' => 'Welcome to our application'
 	);
 
-#### Varsayılan Dili Çalışma Esnasında Değiştirmek
+#### Changing The Default Language At Runtime
 
-Uygulamanız için varsayılan dil `app/config/app.php` ayar dosyasında tutulmaktadır. Bunun dışında, aktif dili `App::setLocale` metoduyla çalışma esnasında da değiştirebilirsiniz.
+The default language for your application is stored in the `config/app.php` configuration file. You may change the active language at any time using the `App::setLocale` method:
 
-	App::setLocale('tr');
+	App::setLocale('es');
 
-#### Yedek Dil Ayarı
+#### Setting The Fallback Language
 
-Etkin dil verilen bir dil satırını içermediğinde kullanılacak olan bir "yedek dil" de yapılandırabilirsiniz. Varsayılan dile benzer şekilde, yedek dil de `app/config/app.php` yapılandırma dosyasında yapılandırılır:
+You may also configure a "fallback language", which will be used when the active language does not contain a given language line. Like the default language, the fallback language is also configured in the `config/app.php` configuration file:
 
 	'fallback_locale' => 'en',
 
 <a name="basic-usage"></a>
-## Temel Kullanım
+## Basic Usage
 
-#### Bir Dil Dosyasından Satırları Almak
+#### Retrieving Lines From A Language File
 
-	echo Lang::get('mesajlar.hosgeldin');
+	echo Lang::get('messages.welcome');
 
-`get` metoduna verilen parametrenin ilk kısmı dil dosyasının adını, ikinci kısım ise alınmak istenen satırın anahtarını içerir.
+The first segment of the string passed to the `get` method is the name of the language file, and the second is the name of the line that should be retrieved.
 
-> **Not**: Eğer istenen dil satırı bulunmuyorsa, `get` metodu anahtarı döndürecektir.
+> **Note:** If a language line does not exist, the key will be returned by the `get` method.
 
-`Lang::get()` ile aynı parametreleri kullanan ve bunun kısaltması olan `trans()` yardımcı metodunu kullanabilirsiniz:
+You may also use the `trans` helper function, which is an alias for the `Lang::get` method.
 
-	echo trans('mesajlar.hosgeldin');
+	echo trans('messages.welcome');
 
-#### Satırlarda Değişiklik Yapmak
+#### Making Replacements In Lines
 
-Ayrıca dil satırlarınızda yer tutucular tanımlayabilirsiniz:
+You may also define place-holders in your language lines:
 
-	'hosgeldin' => 'Hoşgeldin, :isim',
+	'welcome' => 'Welcome, :name',
 
-Daha sonra, `Lang::get` metoduna ikinci bir parametreyle yapılacak değişiklikleri belirtin:
+Then, pass a second argument of replacements to the `Lang::get` method:
 
-	echo Lang::get('mesajlar.hosgeldin', array('isim' => 'Ekrem'));
+	echo Lang::get('messages.welcome', array('name' => 'Dayle'));
 
-#### Bir Dil Dosyasının İstenen Satıra Sahip Olup Olmadığını Kontrol Etmek
+#### Determine If A Language File Contains A Line
 
-	if (Lang::has('mesajlar.hosgeldin'))
+	if (Lang::has('messages.welcome'))
 	{
 		//
 	}
 
 <a name="pluralization"></a>
-## Çoğullaştırma
+## Pluralization
 
-Çoğullaştırma karmaşık bir problemdir, çünkü her dilin farklı ve karmaşık çoğullaştırma kuralları vardır. Dil dosyalarınızda bunu kolaylıkla yönetebilirsiniz. `dik çubuk` karakteri ile, bir çevirinin tekil ve çoğul hallerini birbirinden ayırabilirsiniz:
+Pluralization is a complex problem, as different languages have a variety of complex rules for pluralization. You may easily manage this in your language files. By using a "pipe" character, you may separate the singular and plural forms of a string:
 
-	'elmalar' => 'Bir elma var|Bir sürü elma var',
+	'apples' => 'There is one apple|There are many apples',
 
-Daha sonra `Lang::choise` metoduyla satırı alabilirsiniz:
+You may then use the `Lang::choice` method to retrieve the line:
 
-	echo Lang::choice('mesajlar.elmalar', 10);
+	echo Lang::choice('messages.apples', 10);
 
-Ayrıca dili belirtmek için bir locale parametresi de verebilirsiniz. Örneğin, eğer Rusca (ru) dili kullanmak istiyorsanız:
+You may also supply a locale argument to specify the language. For example, if you want to use the Russian (ru) language:
 
 	echo Lang::choice('товар|товара|товаров', $count, array(), 'ru');
 
-Laravel'in tercümecisi gücünü Symfony'nin tercüme bileşeninden aldığı için, daha belirgin çoğullaştırma kuralları da belirleyebilirsiniz:
+Since the Laravel translator is powered by the Symfony Translation component, you may also create more explicit pluralization rules easily:
 
-	'elmalar' => '{0} Hiç elma yok|[1,19] Bir kaç elma var|[20,Inf] Çok fazla elma var',
+	'apples' => '{0} There are none|[1,19] There are some|[20,Inf] There are many',
+
 
 <a name="validation"></a>
-## Geçerlilik Denetimi Yerelleştirmesi
+## Validation
 
-Geçerlilik Denetimi hatalarının ve mesajlarının yerelleştirmesi için dokümantasyonun <a href="/docs/validation#localization">Geçerlilik Denetimi</a> bölümüne bakınız.
+For localization for validation errors and messages, take a look at the <a href="/docs/master/validation#localization">documentation on Validation</a>.
 
 <a name="overriding-package-language-files"></a>
-## Paket Dil Dosyalarının Ezilmesi
+## Overriding Package Language Files
 
-Birçok paket kendi dil satırlarıyla gelir. Bu satırları değiştirmek için paketin çekirdek dosyalarıyla oynamak yerine, `app/lang/packages/{locale}/{package}` dizinine dosyalar koymak suretiyle onları ezebilirsiniz. Dolayısıyla, örneğin, eğer `skyrim/hearthfire` adındaki bir paket için `messages.php`'yi Türkçe dil satırlarıyla ezmeniz gerekiyorsa koyacağınız dil dosyası şudur: `app/lang/packages/tr/hearthfire/messages.php`. Bu dosyada sadece ezmek istediğiniz dil satırlarını tanımlayacaksınız. Ezmediğiniz dil satırları paketin dil dosyalarından yüklenmeye devam edecektir.
+Many packages ship with their own language lines. Instead of hacking the package's core files to tweak these lines, you may override them by placing files in the `resources/lang/packages/{locale}/{package}` directory. So, for example, if you need to override the English language lines in `messages.php` for a package named `skyrim/hearthfire`, you would place a language file at: `resources/lang/packages/en/hearthfire/messages.php`. In this file you would define only the language lines you wish to override. Any language lines you don't override will still be loaded from the package's language files.

@@ -1,89 +1,93 @@
-# Oturum
+# Session
 
-- [Yapılandırma](#configuration)
-- [Oturum Kullanımı](#session-usage)
-- [Flaş Verisi](#flash-data)
-- [Veritabanı Oturumları](#database-sessions)
-- [Oturum Sürücüleri](#session-drivers)
+- [Configuration](#configuration)
+- [Session Usage](#session-usage)
+- [Flash Data](#flash-data)
+- [Database Sessions](#database-sessions)
+- [Session Drivers](#session-drivers)
 
 <a name="configuration"></a>
-## Yapılandırma
+## Configuration
 
-HTTP odaklı uygulamalar durum bilgisi taşımadıkları için, oturumlar istekler arasında kullanıcı hakkında bilgi saklamak için bir yol sağlar. Laravel temiz, tek bir API aracılığıyla kullanılabilen çeşitli oturum back-endleri ile birlikte gelir. İçerisinde [Memcached](http://memcached.org), [Redis](http://redis.io) ve veritabanları gibi popüler back-end desteği yer almaktadır.
+Since HTTP driven applications are stateless, sessions provide a way to store information about the user across requests. Laravel ships with a variety of session back-ends available for use through a clean, unified API. Support for popular back-ends such as [Memcached](http://memcached.org), [Redis](http://redis.io), and databases is included out of the box.
 
-Oturum yapılandırma ayarları `app/config/session.php` dosyasında bulunmaktadır. Bu belgede size sunulan iyi belgelenmiş seçenekleri gözden geçirmeyi unutmayın. Ön tanımlı olarak, Laravel `file` oturum sürücüsünü kullanmak üzere yapılandırılmıştır ve bu yapılandırma uygulamaların çoğunda iyi çalışacaktır.
+The session configuration is stored in `config/session.php`. Be sure to review the well documented options available to you in this file. By default, Laravel is configured to use the `file` session driver, which will work well for the majority of applications.
 
-#### Ayrılmış (Rezerve) Anahtarlar
+Before using Redis sessions with Laravel, you will need to install the `predis/predis` package (~1.0) via Composer.
 
-Laravel framework dahili olarak `flash` session anahtarını kullanır, bu nedenle siz oturuma bu isimle bir öğe eklememelisiniz.
+> **Note:** If you need all stored session data to be encrypted, set the `encrypt` configuration option to `true`.
+
+#### Reserved Keys
+
+The Laravel framework uses the `flash` session key internally, so you should not add an item to the session by that name.
 
 <a name="session-usage"></a>
-## Oturum Kullanımı
+## Session Usage
 
-#### Oturumda Bir Öğe Saklamak
+#### Storing An Item In The Session
 
-	Session::put('anahtar', 'deger');
+	Session::put('key', 'value');
 
-#### Dizi Oturum Değerine Bir Değer Eklemek
+#### Push A Value Onto An Array Session Value
 
-	Session::push('uyeler.takimlar', 'gelistiriciler');
+	Session::push('user.teams', 'developers');
 
-#### Oturumdaki Bir Öğeyi Öğrenmek
+#### Retrieving An Item From The Session
 
-	$deger = Session::get('anahtar');
+	$value = Session::get('key');
 
-#### Bir Öğe Almak Veya Varsayılan Bir Değer Döndürmek
+#### Retrieving An Item Or Returning A Default Value
 
-	$deger = Session::get('anahtar', 'default');
+	$value = Session::get('key', 'default');
 
-	$deger = Session::get('anahtar', function() { return 'default'; });
+	$value = Session::get('key', function() { return 'default'; });
 
-#### Bir Öğenin Elde Edilmesi ve Oturumdan Çıkartılması
+#### Retrieving An Item And Forgetting It
 
-	$value = Session::pull('anahtar', 'default');
+	$value = Session::pull('key', 'default');
 
-#### Oturumdaki Tüm Verileri Almak
+#### Retrieving All Data From The Session
 
-	$veri = Session::all();
+	$data = Session::all();
 
-#### Oturumda Bir Öğenin Olup Olmadığını Tespit Etmek
+#### Determining If An Item Exists In The Session
 
-	if (Session::has('uyeler'))
+	if (Session::has('users'))
 	{
 		//
 	}
 
-#### Oturumdan Bir Öğeyi Çıkartmak
+#### Removing An Item From The Session
 
-	Session::forget('anahtar');
+	Session::forget('key');
 
-#### Oturumdaki Tüm Öğeleri Çıkartmak
+#### Removing All Items From The Session
 
 	Session::flush();
 
-#### Tekrar Oturum ID Üretmek
+#### Regenerating The Session ID
 
 	Session::regenerate();
 
 <a name="flash-data"></a>
-## Flaş Verisi
+## Flash Data
 
-Bazen oturumda sadece sonraki istek için öğeler saklamak isteyebilirsiniz. Bunu `Session::flash` metodunu kullanarak gerçekleştirebilirsiniz:
+Sometimes you may wish to store items in the session only for the next request. You may do so using the `Session::flash` method:
 
-	Session::flash('anahtar', 'deger');
+	Session::flash('key', 'value');
 
-#### Mevcut Flaş Verinin Bir Başka İstek İçin Yeniden Flaşlanması
+#### Reflashing The Current Flash Data For Another Request
 
 	Session::reflash();
 
-#### Flaş Verinin Sadece Bir Alt Kümesinin Yeniden Flaşlanması####
+#### Reflashing Only A Subset Of Flash Data
 
-	Session::keep(array('uyeadi', 'email'));
+	Session::keep(array('username', 'email'));
 
 <a name="database-sessions"></a>
-## Veritabanı Oturumları
+## Database Sessions
 
-`database` oturum sürücüsü kullanıyorken, oturum öğelerini taşıyan bir tablo kurulumu gerekecek. Aşağıda, bu tablo için örnek bir `Şema` deklarasyonu gösterilmektedir:
+When using the `database` session driver, you will need to setup a table to contain the session items. Below is an example `Schema` declaration for the table:
 
 	Schema::create('sessions', function($table)
 	{
@@ -92,7 +96,7 @@ Bazen oturumda sadece sonraki istek için öğeler saklamak isteyebilirsiniz. Bu
 		$table->integer('last_activity');
 	});
 
-Tabii ki, bu migrasyonu üretmek için `session:table` Artisan komutunu kullanabilirsiniz!
+Of course, you may use the `session:table` Artisan command to generate this migration for you!
 
 	php artisan session:table
 
@@ -101,14 +105,14 @@ Tabii ki, bu migrasyonu üretmek için `session:table` Artisan komutunu kullanab
 	php artisan migrate
 
 <a name="session-drivers"></a>
-## Oturum Sürücüleri
+## Session Drivers
 
-Oturum "driver'ı" her istek için oturum verisinin nerede saklanacağını tanımlamaktadır. Laravel çeşitli harika sürücülerle birlikte gelmektedir.
+The session "driver" defines where session data will be stored for each request. Laravel ships with several great drivers out of the box:
 
-- `file` - oturumlar `app/storage/sessions` klasöründe saklanacaktır.
-- `cookie` - oturumlar güvenli, kriptolanmış çerezlerde saklanacaktır.
-- `database` - oturumlar kendi uygulamanızın kullandığı bir veritabanında saklanacaktır.
-- `memcached` / `redis` - oturumlar bu hızlı, önbellekleme tabanlı depolardan birisinde saklanacaktır.
-- `array` - oturumlar basit bir PHP dizisinde saklanacak ve istekler arasında sebat etmeyecektir.
+- `file` - sessions will be stored in `app/storage/sessions`.
+- `cookie` - sessions will be stored in secure, encrypted cookies.
+- `database` - sessions will be stored in a database used by your application.
+- `memcached` / `redis` - sessions will be stored in one of these fast, cached based stores.
+- `array` - sessions will be stored in a simple PHP array and will not be persisted across requests.
 
-> **Not:** Array sürücüsü tipik olarak unit testler çalıştırmak için kullanılır, bu yüzden oturum verileri sürdürülmeyecektir.
+> **Note:** The array driver is typically used for running [unit tests](/docs/master/testing), so no session data will be persisted.

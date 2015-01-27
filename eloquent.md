@@ -1,367 +1,372 @@
 # Eloquent ORM
 
-- [Giriş](#introduction)
-- [Temel Kullanım](#basic-usage)
-- [Toplu Atama](#mass-assignment)
-- [Ekleme, Güncelleme, Silme](#insert-update-delete)
-- [Belirsiz Silme](#soft-deleting)
-- [Zaman Damgaları](#timestamps)
-- [Sorgu Kapsamları](#query-scopes)
-- [Küresel Kapsamlar](#global-scopes)
-- [İlişkiler](#relationships)
-- [İlişkilerin Sorgulanması](#querying-relations)
-- [Ateşli (Eager) Yüklemeler](#eager-loading)
-- [İlişkili Modelleri Ekleme](#inserting-related-models)
-- [Ebeveyn Zaman Damgalarına Dokunma](#touching-parent-timestamps)
-- [Pivot Tablolarla Çalışmak](#working-with-pivot-tables)
-- [Koleksiyonlar](#collections)
-- [Erişimciler & Değiştiriciler (Accessors & Mutators)](#accessors-and-mutators)
-- [Tarih Değiştiricileri](#date-mutators)
-- [Model Olayları](#model-events)
-- [Model Gözlemcileri](#model-observers)
-- [Diziye / JSON'a Çevirme](#converting-to-arrays-or-json)
+- [Introduction](#introduction)
+- [Basic Usage](#basic-usage)
+- [Mass Assignment](#mass-assignment)
+- [Insert, Update, Delete](#insert-update-delete)
+- [Soft Deleting](#soft-deleting)
+- [Timestamps](#timestamps)
+- [Query Scopes](#query-scopes)
+- [Global Scopes](#global-scopes)
+- [Relationships](#relationships)
+- [Querying Relations](#querying-relations)
+- [Eager Loading](#eager-loading)
+- [Inserting Related Models](#inserting-related-models)
+- [Touching Parent Timestamps](#touching-parent-timestamps)
+- [Working With Pivot Tables](#working-with-pivot-tables)
+- [Collections](#collections)
+- [Accessors & Mutators](#accessors-and-mutators)
+- [Date Mutators](#date-mutators)
+- [Attribute Casting](#attribute-casting)
+- [Model Events](#model-events)
+- [Model Observers](#model-observers)
+- [Converting To Arrays / JSON](#converting-to-arrays-or-json)
 
 <a name="introduction"></a>
-## Giriş
+## Introduction
 
-Laravel ile gelen Eloquent ORM, veritabanınızla çalışırken kullanacağınız güzel ve sade bir ActiveRecord uygulaması sağlamaktadır. Her veritabanı tablosu, bu tabloyla etkileşim için kullanılacak kendine has bir "Model" sahibidir.
+The Eloquent ORM included with Laravel provides a beautiful, simple ActiveRecord implementation for working with your database. Each database table has a corresponding "Model" which is used to interact with that table.
 
-Başlamadan önce, `app/config/database.php`'de bir veritabanı bağlantısı yapılandırmış olduğunuzdan emin olun.
+Before getting started, be sure to configure a database connection in `config/database.php`.
 
 <a name="basic-usage"></a>
-## Temel Kullanım
+## Basic Usage
 
-Öncelikle bir Eloquent modeli oluşturunuz. Modeller tipik olarak `app/models` klasöründe yer alır, fakat siz modellerinizi `composer.json` dosyanıza göre otomatik yükleme yapabileceğiniz başka bir yere de koyabilirsiniz.
+To get started, create an Eloquent model. Models typically live in the `app` directory, but you are free to place them anywhere that can be auto-loaded according to your `composer.json` file.
 
-#### Bir Eloquent Modelinin Tanımlanması
+#### Defining An Eloquent Model
 
-	class Uye extends Eloquent {}
+	class User extends Eloquent {}
 
-Dikkat ederseniz Eloquent'e `Uye` modelimiz için hangi tabloyu kullanacağımızı söylemedik. Eğer açıkça başka bir isim belirtilmezse tablo isimi olarak sınıf adının ingilizde çoğulunun küçük harf hali kullanılacaktır. Dolayısıyla bizim örneğimizde Eloquent, `Uye` modelinin  `uyes` tablosundaki kayıtları tutacağını varsayacaktır. Tablo ismini açıkça belirtmek için modelinizde bir `table` özelliği tanımlayınız:
+Note that we did not tell Eloquent which table to use for our `User` model. The lower-case, plural name of the class will be used as the table name unless another name is explicitly specified. So, in this case, Eloquent will assume the `User` model stores records in the `users` table. You may specify a custom table by defining a `table` property on your model:
 
-	class Uye extends Eloquent {
+	class User extends Eloquent {
 
-		protected $table = 'uyeler';
+		protected $table = 'my_users';
 
 	}
 
-> **Not:** Eloquent'in başka bir ön kabulü de her tablonun `id` adında bir primer key sütunu olduğudur. Bu kuralı aşmak için de bir `primaryKey` özelliği tanımlamanız gerekecek. Benzer şekilde, modeliniz kullanılacağı zaman kullanılacak veritabanı bağlantısının adını değiştirmek için bir `connection` özelliği tanımlayabilirsiniz.
+> **Note:** Eloquent will also assume that each table has a primary key column named `id`. You may define a `primaryKey` property to override this convention. Likewise, you may define a `connection` property to override the name of the database connection that should be used when utilizing the model.
 
-Bir model tanımladıktan sonra artık tablonuzda kayıt oluşturmaya ve ondan kayıt getirmeye başlayabilirsiniz. Tablolarınıza ön tanımlı olarak `updated_at` ve `created_at` sütunları koymanız gerektiğine dikkat ediniz. Şayet bu sütunların otomatik olarak tutulmasını istemiyorsanız, modelinizdeki `$timestamps` özelliğini `false` olarak ayarlayınız.
+Once a model is defined, you are ready to start retrieving and creating records in your table. Note that you will need to place `updated_at` and `created_at` columns on your table by default. If you do not wish to have these columns automatically maintained, set the `$timestamps` property on your model to `false`.
 
-#### Tüm Modellerin Alınması
+#### Retrieving All Models
 
-	$uyeler = Uye::all();
+	$users = User::all();
 
-#### Birincil Anahtara Göre Bir Kaydın Alınması
+#### Retrieving A Record By Primary Key
 
-	$uye = Uye::find(1);
+	$user = User::find(1);
 
-	var_dump($uye->isim);
+	var_dump($user->name);
 
-> **Not:** [Sorgu Oluşturucusu](/docs/queries)'nda bulunan tüm metodlar Eloquent modellerini sorgularken de kullanılabilir.
+> **Note:** All methods available on the [query builder](/docs/queries) are also available when querying Eloquent models.
 
-#### Birincil Anahtara Göre Bir Model Alınması ya da Ortaya Bir İstisna Çıkartılması
+#### Retrieving A Model By Primary Key Or Throw An Exception
 
-Bazı durumlarda bir model bulunamadığında bir istisna çıkartmak, böylece bir `App::error` işleyicisi kullanarak istisnayı yakalayabilmek ve bir 404 sayfası göstermek isteyebilirsiniz.
+Sometimes you may wish to throw an exception if a model is not found, allowing you to catch the exceptions using an `App::error` handler and display a 404 page.
 
-	$model = Uye::findOrFail(1);
+	$model = User::findOrFail(1);
 
-	$model = Uye::where('oylar', '>', 100)->firstOrFail();
+	$model = User::where('votes', '>', 100)->firstOrFail();
 
-Bu hata işleyicinin kaydını yapmak için `ModelNotFoundException`'i dinlemek gerekir.
+To register the error handler, listen for the `ModelNotFoundException`
 
 	use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 	App::error(function(ModelNotFoundException $e)
 	{
-		return Response::make('Bulunamadı', 404);
+		return Response::make('Not Found', 404);
 	});
 
-#### Eloquent Modelleri Kullanarak Sorgu Yapma
+#### Querying Using Eloquent Models
 
-	$uyeler = Uye::where('puan', '>', 100)->take(10)->get();
+	$users = User::where('votes', '>', 100)->take(10)->get();
 
-	foreach ($uyeler as $uye)
+	foreach ($users as $user)
 	{
-		var_dump($uye->isim);
+		var_dump($user->name);
 	}
 
-#### Eloquent Küme Metodları
+#### Eloquent Aggregates
 
-Tabi ki, sorgu oluşturucusunun kümeleme fonksiyonlarını da kullanabilirsiniz.
+Of course, you may also use the query builder aggregate functions.
 
-	$adet = Uye::where('puan', '>', 100)->count();
+	$count = User::where('votes', '>', 100)->count();
 
-Gereken sorguyu fluent arayüzüyle üretemediğiniz zaman `whereRaw` kullanabilirsiniz:
+If you are unable to generate the query you need via the fluent interface, feel free to use `whereRaw`:
 
-	$uyeler = Uye::whereRaw('yas > ? and puan = 100', array(25))->get();
+	$users = User::whereRaw('age > ? and votes = 100', array(25))->get();
 
-#### Sonuçları Öbeklere Bölme
+#### Chunking Results
 
-Eğer bir sürü (binlerce) Eloquent kaydını işlemeniz gerekiyorsa, `chunk` komutunun kullanılması tüm bunları RAM'inizi yemeden yapmanıza imkan verecektir:
+If you need to process a lot (thousands) of Eloquent records, using the `chunk` command will allow you to do without eating all of your RAM:
 
-	Uye::chunk(200, function($uyeler)
+	User::chunk(200, function($users)
 	{
-		foreach ($uyeler as $uye)
+		foreach ($users as $user)
 		{
 			//
 		}
 	});
 
-Metoda geçilen birinci parametre "öbek" başına almak istediğiniz kayıt sayısıdır. Veritabanından çekilen her bir öbek için ikinci parametre olarak geçilen Closure çağrılacaktır.
+The first argument passed to the method is the number of records you wish to receive per "chunk". The Closure passed as the second argument will be called for each chunk that is pulled from the database.
 
-#### Query Bağlantısının Belirtilmesi
+#### Specifying The Query Connection
 
-Bir Eloquent sorgusu çalıştırırken hangi bağlantının kullanılacağını da belirleyebilirsiniz. `On` metodunu kullanmanız yeterlidir:
+You may also specify which database connection should be used when running an Eloquent query. Simply use the `on` method:
 
-	$uyeler = Uye::on('bağlantı-adı')->find(1);
+	$user = User::on('connection-name')->find(1);
+
+If you are using [read / write connections](/docs/master/database#read-write-connections), you may force the query to use the "write" connection with the following method:
+
+	$user = User::onWriteConnection()->find(1);
 
 <a name="mass-assignment"></a>
-## Toplu Atama
+## Mass Assignment
 
-Yeni bir model oluşturulurken model oluşturucuya niteliklerden oluşan bir dizi geçersiniz. Bu nitelikler bu durumda modele "toplu atama" aracılığıyla atanır. Bu gayet uygun bir yaklaşımdır, fakat bir kullanıcı girdisi bir modele körleme geçirildiği takdirde **ciddi** bir güvenlik sorunu olabilecektir. Kullanıcı girdisi bir modele körlemesine geçirilirse, bu kullanıcı modelin niteliklerinin **birisini (any)** ve **hepsini (all)** değiştirebilecektir. Bu sebepler yüzünden, tüm Eloquent modelleri ön tanımlı olarak toplu atamaya karşı koyar.
+When creating a new model, you pass an array of attributes to the model constructor. These attributes are then assigned to the model via mass-assignment. This is convenient; however, can be a **serious** security concern when blindly passing user input into a model. If user input is blindly passed into a model, the user is free to modify **any** and **all** of the model's attributes. For this reason, all Eloquent models protect against mass-assignment by default.
 
-Başlamak için modelinizde `fillable` veya `guarded` özelliğini ayarlayınız.
+To get started, set the `fillable` or `guarded` properties on your model.
 
-#### Bir Modelde Fillable Niteliklerin Tanımlanması
+#### Defining Fillable Attributes On A Model
 
-Bunlardan `fillable` özelliği hangi niteliklerin toplu atanacaklarını belirler. Bu işlem sınıf ya da olgu düzeyinde ayarlanabilir.
+The `fillable` property specifies which attributes should be mass-assignable. This can be set at the class or instance level.
 
-	class Uye extends Eloquent {
+	class User extends Eloquent {
 
-		protected $fillable = array('ismi', 'soy_ismi', 'email');
-
-	}
-
-Bu örnekte, sadece belirttiğimiz üç nitelik toplu atanabilecektir.
-
-#### Bir Modelde Guarded Niteliklerin Tanımlanması
-
-`fillable`'in tersi `guarded`'dır ve bir "beyaz-liste" yerine bir "kara-liste" olarak iş görür:
-
-	class Uye extends Eloquent {
-
-		protected $guarded = array('id', 'parola');
+		protected $fillable = array('first_name', 'last_name', 'email');
 
 	}
 
-> **Not:** `guarded` kullanıyorken de, yine bir `save` veya `update` metoduna `Input::get()` veya kullanıcının kontrolündeki herhangi bir ham diziyi hiçbir zaman için geçmemelisiniz, çünkü öyle yaptığınızda guarded olmayan herhangi bir sütun güncellenebilir.
+In this example, only the three listed attributes will be mass-assignable.
 
-#### Toplu Atamanın Tüm Nitelikler İçin Engellenmesi
+#### Defining Guarded Attributes On A Model
 
-Yukardaki örneğe göre `id` ve `parola` nitelikleri toplu atana **mayacaktır**. Diğer tüm nitelikler toplu atanabilecektir. Toplu atamayı niteliklerin **hepsi** için bloke etmeyi de seçebilirsiniz:
+The inverse of `fillable` is `guarded`, and serves as a "black-list" instead of a "white-list":
+
+	class User extends Eloquent {
+
+		protected $guarded = array('id', 'password');
+
+	}
+
+> **Note:** When using `guarded`, you should still never pass `Input::get()` or any raw array of user controlled input into a `save` or `update` method, as any column that is not guarded may be updated.
+
+#### Blocking All Attributes From Mass Assignment
+
+In the example above, the `id` and `password` attributes may **not** be mass assigned. All other attributes will be mass assignable. You may also block **all** attributes from mass assignment using the guard property:
 
 	protected $guarded = array('*');
 
 <a name="insert-update-delete"></a>
-## Ekleme, Güncelleme, Silme
+## Insert, Update, Delete
 
-Veritabanında bir modelden yeni bir kayıt oluşturmak için, yeni bir model olgusu oluşturun ve `save` metodunu çağırın.
+To create a new record in the database from a model, simply create a new model instance and call the `save` method.
 
-#### Yeni Bir Modelin Kaydedilmesi
+#### Saving A New Model
 
-	$uye = new Uye;
+	$user = new User;
 
-	$uye->isim = 'Can';
+	$user->name = 'John';
 
-	$uye->save();
+	$user->save();
 
-> **Not:** Tipik olarak, Eloquent modellerinizde otomatik artan anahtarlar olacaktır. Ama siz kendi keylerinizi belirlemek isterseniz, modelinizdeki `incrementing` özelliğini `false` olarak ayarlayın.
+> **Note:** Typically, your Eloquent models will have auto-incrementing keys. However, if you wish to specify your own keys, set the `incrementing` property on your model to `false`.
 
-Yeni bir modeli tek satırda kaydetmek için `create` metodunu kullanabilirsiniz. Eklenen model olgusu bu metoddan döndürülecektir. Ancak, tüm Elequent modelleri toplu atamaya karşı korunumlu oldukları için, bunu yapmadan önce modelinizde bir `fillable` veya `guarded` özelliği belirlemeniz gerekecektir.
+You may also use the `create` method to save a new model in a single line. The inserted model instance will be returned to you from the method. However, before doing so, you will need to specify either a `fillable` or `guarded` attribute on the model, as all Eloquent models protect against mass-assignment.
 
-Otomatik artan IDler kullanan yeni bir modelin kaydedilmesi (olgu oluşturup, değer atanıp, "save" kullanılması) veya oluşturulması (üç işlemin hepsini birden yapan "create" metodunun kullanılması) sonrasında, nesnenin `id` niteliğine erişerek bu ID'i öğrenebilirsiniz:
+After saving or creating a new model that uses auto-incrementing IDs, you may retrieve the ID by accessing the object's `id` attribute:
 
 	$insertedId = $user->id;
 
-#### Modeldeki Korunumlu Niteliklerin Ayarlanması
+#### Setting The Guarded Attributes On The Model
 
-	class Uye extends Eloquent {
+	class User extends Eloquent {
 
-		protected $guarded = array('id', 'hesap_no');
+		protected $guarded = array('id', 'account_id');
 
 	}
 
-#### Model Create Metodunun Kullanımı
+#### Using The Model Create Method
 
-	// Veritabanında yeni bir üye oluştur...
-	$uye = Uye::create(array('isim' => 'Can'));
+	// Create a new user in the database...
+	$user = User::create(array('name' => 'John'));
 
-	// Bazı alanlarına göre üyeyi getir ya da öyle bir üye yoksa oluştur...
+	// Retrieve the user by the attributes, or create it if it doesn't exist...
 	$user = User::firstOrCreate(array('name' => 'John'));
 
-	// Bazı alanlarına göre üyeyi getir ya da yeni bir üye olgusu başlat...
+	// Retrieve the user by the attributes, or instantiate a new instance...
 	$user = User::firstOrNew(array('name' => 'John'));
 
-#### Getirilen Bir Modelin Güncellenmesi
+#### Updating A Retrieved Model
 
-Bir modeli güncellemek için onu getirir, bir niteliğini değiştirir, sonra da `save` metodunu kullanabilirsiniz:
+To update a model, you may retrieve it, change an attribute, and use the `save` method:
 
-	$uye = Uye::find(1);
+	$user = User::find(1);
 
-	$uye->email = 'can@filan.com';
+	$user->email = 'john@foo.com';
 
-	$uye->save();
+	$user->save();
 
-#### Bir Model ve İlişkilerinin Kaydedilmesi
+#### Saving A Model And Relationships
 
-Bazen sadece bir modeli değil, onun bütün ilişkilerini de kaydetmek isteyebilirsiniz. Bunu yapmak için `push` metodunu kullanın:
+Sometimes you may wish to save not only a model, but also all of its relationships. To do so, you may use the `push` method:
 
-	$uye->push();
+	$user->push();
 
-Ayrıca, bir modeller kümesinde güncelleme sorguları da çalıştırabilirsiniz:
+You may also run updates as queries against a set of models:
 
-	$satirSayisi = Uye::where('puan', '>', 100)->update(array('durum' => 2));
+	$affectedRows = User::where('votes', '>', 100)->update(array('status' => 2));
 
-> **Not:** Eloquent sorgu oluşturucu aracılığıyla bir modeller kümesi güncellendiği zaman herhangi bir model olayı ateşlenmez.
+> **Note:** No model events are fired when updating a set of models via the Eloquent query builder.
 
-#### Mevcut Bir Modelin Silinmesi
+#### Deleting An Existing Model
 
-Bir modeli silmek için olgu üzerinde `delete` metodunu çağırın:
+To delete a model, simply call the `delete` method on the instance:
 
-	$uye = Uye::find(1);
+	$user = User::find(1);
 
-	$uye->delete();
+	$user->delete();
 
-#### Mevcut Bir Modelin Key Aracılığıyla Silinmesi
+#### Deleting An Existing Model By Key
 
-	Uye::destroy(1);
+	User::destroy(1);
 
-	Uye::destroy(array(1, 2, 3));
+	User::destroy(array(1, 2, 3));
 
-	Uye::destroy(1, 2, 3);
+	User::destroy(1, 2, 3);
 
-Elbette, bir modeller kümesinde bir silme sorgusu da çalıştırabilirsiniz:
+Of course, you may also run a delete query on a set of models:
 
-	$satirSayisi = Uye::where('puan', '>', 100)->delete();
+	$affectedRows = User::where('votes', '>', 100)->delete();
 
-#### Bir Modelin Sadece Zaman Damgalarının Güncellenmesi
+#### Updating Only The Model's Timestamps
 
-Eğer bir modelde sadece zaman damgalarını güncellemek istiyorsanız, `touch` metodunu kullanabilirsiniz:
+If you wish to simply update the timestamps on a model, you may use the `touch` method:
 
-	$uye->touch();
+	$user->touch();
 
 <a name="soft-deleting"></a>
-## Belirsiz Silme
+## Soft Deleting
 
-Bir model belirsiz silindiğinde, aslında veritabanınızdan çıkartılmaz. Onun yerinde kayıttaki bir `deleted_at` zaman damgası ayarlanır. Bir model için belirsiz silmeler yapılabilmesi için modelinize 'SoftDeletingTrait' uygulamanız gerekir:
+When soft deleting a model, it is not actually removed from your database. Instead, a `deleted_at` timestamp is set on the record. To enable soft deletes for a model, apply the `SoftDeletes` to the model:
 
-	use Illuminate\Database\Eloquent\SoftDeletingTrait;
+	use Illuminate\Database\Eloquent\SoftDeletes;
 
-	class Uye extends Eloquent {
+	class User extends Eloquent {
 
-		use SoftDeletingTrait;
+		use SoftDeletes;
 
 		protected $dates = ['deleted_at'];
 
 	}
 
-Tablonuza bir `deleted_at` sütunu eklemek için ise, bir migrasyondan `softDeletes` metodunu kullanabilirsiniz:
+To add a `deleted_at` column to your table, you may use the `softDeletes` method from a migration:
 
 	$table->softDeletes();
 
-Şimdi, artık modelinizde `delete` metodunu çağırdığınız zaman, bu `deleted_at` sütunu güncel zaman damgasına ayarlanacaktır. Belirsiz silme kullanılan bir model sorgulandığında, "silinmiş olan" modeller sorgu sonuçlarına dahil edilmeyecektir. 
+Now, when you call the `delete` method on the model, the `deleted_at` column will be set to the current timestamp. When querying a model that uses soft deletes, the "deleted" models will not be included in query results.
 
-#### Belirsiz Silinmiş Modelleri Sonuçlara Girmeye Zorlama
+#### Forcing Soft Deleted Models Into Results
 
-Bir sonuç kümesinde belirsiz silinmiş modellerin gözükmesini zorlamak için sorgunuzda `withTrashed` metodunu kullanınız:
+To force soft deleted models to appear in a result set, use the `withTrashed` method on the query:
 
-	$uyeler = Uye::withTrashed()->where('hesap_no', 1)->get();
+	$users = User::withTrashed()->where('account_id', 1)->get();
 
-Bu `withTrashed` metodu tanımlanmış bir ilişki üzerinde kullanılabilir:
+The `withTrashed` method may be used on a defined relationship:
 
 	$user->posts()->withTrashed()->get();
 
-Sonuç kümenizde **sadece** belirsiz silinmiş modellerin olmasını istiyorsanız, `onlyTrashed` metodunu kullanabilirsiniz:
+If you wish to **only** receive soft deleted models in your results, you may use the `onlyTrashed` method:
 
-	$uyeler = Uye::onlyTrashed()->where('hesap_no', 1)->get();
+	$users = User::onlyTrashed()->where('account_id', 1)->get();
 
-Belirsiz silinmiş bir modeli tekrar etkin hale getirmek için, `restore` metodunu kullanın:
+To restore a soft deleted model into an active state, use the `restore` method:
 
-	$uye->restore();
+	$user->restore();
 
-`restore` metodunu bir sorguda da kullanabilirsiniz:
+You may also use the `restore` method on a query:
 
-	Uye::withTrashed()->where('hesap_no', 1)->restore();
+	User::withTrashed()->where('account_id', 1)->restore();
 
-`restore` metodu ilişkilerde de kullanılabilir:
+Like with `withTrashed`, the `restore` method may also be used on relationships:
 
-	$uye->postalar()->restore();
+	$user->posts()->restore();
 
-Bir modeli veritabanından gerçekten çıkartmak istediğinizde, `forceDelete` metodunu kullanabilirsiniz:
+If you wish to truly remove a model from the database, you may use the `forceDelete` method:
 
-	$uye->forceDelete();
+	$user->forceDelete();
 
-`forceDelete` metodu ilişkilerde de çalışır:
+The `forceDelete` method also works on relationships:
 
-	$uye->postalar()->forceDelete();
+	$user->posts()->forceDelete();
 
-Belli bir model olgusunun belirsiz silme özelliğine sahip olup olmadığını öğrenmek için, `trashed` metodunu kullanabilirsiniz:
+To determine if a given model instance has been soft deleted, you may use the `trashed` method:
 
-	if ($uye->trashed())
+	if ($user->trashed())
 	{
 		//
 	}
 
 <a name="timestamps"></a>
-## Zaman Damgaları
+## Timestamps
 
-Ön tanımlı olarak, veritabanı tablonuzdaki `created_at` ve `updated_at` sütunlarının idamesini otomatik olarak Eloquent yapacaktır. Size tek düşen `datetime` tipindeki bu iki alanı tablonuza eklemektir, geri kalan işleri Eloquent üstlenecektir. Şayet siz bu sütunların idamesini Eloquent'in yapmasını istemiyorsanız, modelinize şu özelliği eklemeniz gerekir:
+By default, Eloquent will maintain the `created_at` and `updated_at` columns on your database table automatically. Simply add these `timestamp` columns to your table and Eloquent will take care of the rest. If you do not wish for Eloquent to maintain these columns, add the following property to your model:
 
-#### Otomatik Zaman Damgalarının Devre Dışı Bırakılması
+#### Disabling Auto Timestamps
 
-	class Uye extends Eloquent {
+	class User extends Eloquent {
 
-		protected $table = 'uyeler';
+		protected $table = 'users';
 
 		public $timestamps = false;
 
 	}
 
-#### Özel Bir Zaman Damgası Biçiminin Şart Koşulması
+#### Providing A Custom Timestamp Format
 
-Zaman damgalarınızın biçimini özelleştirmek isterseniz, modelinizdeki `freshTimestamp` metodunu ezebilirsiniz (override):
+If you wish to customize the format of your timestamps, you may override the `getDateFormat` method in your model:
 
-	class Uye extends Eloquent {
+	class User extends Eloquent {
 
-		public function freshTimestamp()
+		protected function getDateFormat()
 		{
-			return time();
+			return 'U';
 		}
 
 	}
 
 <a name="query-scopes"></a>
-## Sorgu Kapsamları
+## Query Scopes
 
-#### Bir Sorgu Kapsamının Tanımlanması
+#### Defining A Query Scope
 
-Kapsamlar size sorgu mantığınızı modellerinizde tekrar tekrar kullanma imkanı verir. Bir kapsam tanımlamak için bir model metodunun başına `scope` getirmeniz yeterlidir:
+Scopes allow you to easily re-use query logic in your models. To define a scope, simply prefix a model method with `scope`:
 
-	class Uye extends Eloquent {
+	class User extends Eloquent {
 
 		public function scopePopular($query)
 		{
-			return $query->where('puan', '>', 100);
+			return $query->where('votes', '>', 100);
 		}
 
-		public function scopeKadin($query)
+		public function scopeWomen($query)
 		{
 			return $query->whereGender('W');
 		}
 
 	}
 
-#### Bir Sorgu Kapsamının Kullanılması
+#### Utilizing A Query Scope
 
-	$uyeler = Uye::popular()->kadin()->orderBy('created_at')->get();
+	$users = User::popular()->women()->orderBy('created_at')->get();
 
-#### Dinamik Kapsamlar
+#### Dynamic Scopes
 
-Bazen parametreler kabul eden kapsam tanımlamak isteyebilirsiniz. Yapmanız gereken kapsam metoduna parametrelerinizi eklemek:
+Sometimes You may wish to define a scope that accepts parameters. Just add your parameters to your scope function:
 
-	class Uye extends Eloquent {
+	class User extends Eloquent {
 
 		public function scopeOfType($query, $type)
 		{
@@ -370,37 +375,37 @@ Bazen parametreler kabul eden kapsam tanımlamak isteyebilirsiniz. Yapmanız ger
 
 	}
 
-Parametreyi kapsamın çağrısına geçin:
+Then pass the parameter into the scope call:
 
-	$uyeler = Uye::ofType('moderator')->get();
+	$users = User::ofType('member')->get();
 
 <a name="global-scopes"></a>
-## Küresel Kapsamlar
+## Global Scopes
 
-Bazen, bir model üzerinde yapılan tüm sorgular için uygulanan bir scope tanımlamak isteyebilirsiniz. Aslında, Eloquent'in kendi "belirsiz silme" özelliği bu şekilde çalışmaktadır. Global scope'lar PHP trait'leri ve bir `Illuminate\Database\Eloquent\ScopeInterface` implementasyonu birlikte kullanılarak tanımlanırlar.
+Sometimes you may wish to define a scope that applies to all queries performed on a model. In essence, this is how Eloquent's own "soft delete" feature works. Global scopes are defined using a combination of PHP traits and an implementation of `Illuminate\Database\Eloquent\ScopeInterface`.
 
-İlk olarak, bir trait tanımlayalım. Bu örnek için Laravel'le birlikte gelen `SoftDeletingTrait` kullanacağız:
+First, let's define a trait. For this example, we'll use the `SoftDeletes` that ships with Laravel:
 
-	trait SoftDeletingTrait {
+	trait SoftDeletes {
 
 		/**
 		 * Boot the soft deleting trait for a model.
 		 *
 		 * @return void
 		 */
-		public static function bootSoftDeletingTrait()
+		public static function bootSoftDeletes()
 		{
 			static::addGlobalScope(new SoftDeletingScope);
 		}
 
 	}
 
-Eğer bir Eloquent modeli bir  `bootTraitIsmi` isimlendirme kuralına uyan bir metoda sahip olan bir trait kullanırsa, bu Elequent modeli boot edildiği zaman o trait metodu çağrılacaktır. Bu size küresel bir kapsamı kayda geçirme ya da istediğiniz başka bir şey yapma fırsatı vermektedir. Bir scope `ScopeInterface` interface'ini implemente etmelidir, bu interface iki metoda sahiptir: `apply` ve `remove`.
+If an Eloquent model uses a trait that has a method matching the `bootNameOfTrait` naming convention, that trait method will be called when the Eloquent model is booted, giving you an opportunity to register a global scope, or do anything else you want. A scope must implement `ScopeInterface`, which specifies two methods: `apply` and `remove`.
 
-Bunlardan `apply` metodu bir `Illuminate\Database\Eloquent\Builder` sorgu oluşturucu nesnesi alır ve bu kapsama eklemek istediğiniz ilave `where` cümlelerinin eklenmesinden sorumludur. `remove` metodu da bir `Builder` nesnesi alır ve `apply` tarafından gerçekleştirilen eylemlerin geri döndürülmesinden sorumludur. Başka bir deyişle, `remove` metodu eklenmiş olan `where` cümlesini (veya herhangi bir başka cümleyi) çıkarmalıdır. Dolayısıyla, bizim `SoftDeletingScope` için, bu metodlar buna benzer gözükecektir:
+The `apply` method receives an `Illuminate\Database\Eloquent\Builder` query builder object, and is responsible for adding any additional `where` clauses that the scope wishes to add. The `remove` method also receives a `Builder` object and is responsible for reversing the action taken by `apply`. In other words, `remove` should remove the `where` clause (or any other clause) that was added. So, for our `SoftDeletingScope`, the methods look something like this:
 
 	/**
-	 * Verilen bir Eloquent sorgu oluşturucusuna scope uygula.
+	 * Apply the scope to a given Eloquent query builder.
 	 *
 	 * @param  \Illuminate\Database\Eloquent\Builder  $builder
 	 * @return void
@@ -413,7 +418,7 @@ Bunlardan `apply` metodu bir `Illuminate\Database\Eloquent\Builder` sorgu oluşt
 	}
 
 	/**
-	 * Verilen Eloquent sorgu oluşturucusundan scope'u kaldır.
+	 * Remove the scope from the given Eloquent query builder.
 	 *
 	 * @param  \Illuminate\Database\Eloquent\Builder  $builder
 	 * @return void
@@ -426,9 +431,9 @@ Bunlardan `apply` metodu bir `Illuminate\Database\Eloquent\Builder` sorgu oluşt
 
 		foreach ((array) $query->wheres as $key => $where)
 		{
-			// Eğer where cümlesi bir belirsiz silme date sınırlaması ise, onu sorgudan
-			// kaldıracağız ve wheres'deki key'leri resetleyeceğiz. Bu, bu geliştiriciye,
-			// tembel yüklenen bir ilişki sonuç kümesinde silinmiş modeli dahil etme imkanı verir.
+			// If the where clause is a soft delete date constraint, we will remove it from
+			// the query and reset the keys on the wheres. This allows this developer to
+			// include deleted model in a relationship result set that is lazy loaded.
 			if ($this->isSoftDeleteConstraint($where, $column))
 			{
 				unset($query->wheres[$key]);
@@ -439,284 +444,284 @@ Bunlardan `apply` metodu bir `Illuminate\Database\Eloquent\Builder` sorgu oluşt
 	}
 
 <a name="relationships"></a>
-## İlişkiler
+## Relationships
 
-Pek tabii, veritabanı tablolarınız büyük ihtimalle bir diğeriyle ilişkilidir. Örneğin bir blog yazısında çok sayıda yorum olabilir veya bir sipariş onu ısmarlayan kullanıcı ile ilişkili olacaktır. Eloquent bu ilişkileri kolayca yönetmenizi ve rahat çalışmanızı sağlar. Laravel birçok ilişki tipini desteklemektedir:
+Of course, your database tables are probably related to one another. For example, a blog post may have many comments, or an order could be related to the user who placed it. Eloquent makes managing and working with these relationships easy. Laravel supports many types of relationships:
 
-- [Birden Bire](#one-to-one)
-- [Birden Birçoğa](#one-to-many)
-- [Birçoktan Birçoğa](#many-to-many)
-- [Aracılığıyla Birçoğa Sahip (Has Many Through)](#has-many-through)
-- [Çokbiçimli İlişkiler](#polymorphic-relations)
-- [Birçoktan Birçoğa Çokbiçimli İlişkiler](#many-to-many-polymorphic-relations)
+- [One To One](#one-to-one)
+- [One To Many](#one-to-many)
+- [Many To Many](#many-to-many)
+- [Has Many Through](#has-many-through)
+- [Polymorphic Relations](#polymorphic-relations)
+- [Many To Many Polymorphic Relations](#many-to-many-polymorphic-relations)
 
 <a name="one-to-one"></a>
-### Birden Bire
+### One To One
 
-#### Birden Bire Tarzı İlişki Tanımlama
+#### Defining A One To One Relation
 
-Birden bire şeklindeki bir ilişki çok basit bir ilişkidir. Örneğin, bir `Uye` modelinin bir `Telefon`'u olabilir. Eloquent'de bu ilişkiyi şöyle tanımlayabiliriz:
+A one-to-one relationship is a very basic relation. For example, a `User` model might have one `Phone`. We can define this relation in Eloquent:
 
-	class Uye extends Eloquent {
+	class User extends Eloquent {
 
-		public function tel()
+		public function phone()
 		{
-			return $this->hasOne('Telefon');
+			return $this->hasOne('Phone');
 		}
 
 	}
 
-`hasOne` metoduna geçirilen ilk parametre ilişkili modelin adıdır. İlişki tanımlandıktan sonra onu Eloquent'in [dinamik özellikler](#dynamic-properties)'ini kullanarak elde edebiliriz:
+The first argument passed to the `hasOne` method is the name of the related model. Once the relationship is defined, we may retrieve it using Eloquent's [dynamic properties](#dynamic-properties):
 
-	$tel = Uye::find(1)->tel;
+	$phone = User::find(1)->phone;
 
-Bu cümlenin gerçekleştirdiği SQL şunlardır (tablo isimleri model tanımında özel olarak belirtilmedi ise tablo ismi olarak model isminin küçük harfli çoğul halinin kullanıldığını hatırlayınız):
+The SQL performed by this statement will be as follows:
 
-	select * from uyes where id = 1
+	select * from users where id = 1
 
-	select * from telefons where uye_id = 1
+	select * from phones where user_id = 1
 
-Eloquent'in ilişkideki yabancı key'in ne olduğuna model adına göre karar verdiğine dikkat ediniz. Şimdiki örnekte `Telefon` modelinin `uye_id` adlı bir yabancı key kullandığı varsayılmaktadır. Siz bu ön kuralı değiştirmek istiyorsanız `hasOne` metoduna ikinci bir parametre geçebilirsiniz. Dahası, ilişki için hangi local alanın kullanılması gerektiğini belirtmek için üçüncü bir parametre geçebilirsiniz:
+Take note that Eloquent assumes the foreign key of the relationship based on the model name. In this case, `Phone` model is assumed to use a `user_id` foreign key. If you wish to override this convention, you may pass a second argument to the `hasOne` method. Furthermore, you may pass a third argument to the method to specify which local column that should be used for the association:
 
-	return $this->hasOne('Telefon', 'foreign_key');
+	return $this->hasOne('Phone', 'foreign_key');
 
-	return $this->hasOne('Telefon', 'foreign_key', 'local_key');
+	return $this->hasOne('Phone', 'foreign_key', 'local_key');
 
-#### Bir İlişkinin Tersinin Tanımlanması
+#### Defining The Inverse Of A Relation
 
-`Telefon` modeli üzerinde ilişkinin tersini tanımlamak için, `belongsTo` metodunu kullanınız:
+To define the inverse of the relationship on the `Phone` model, we use the `belongsTo` method:
 
-	class Telefon extends Eloquent {
+	class Phone extends Eloquent {
 
-		public function uye()
+		public function user()
 		{
-			return $this->belongsTo('Uye');
+			return $this->belongsTo('User');
 		}
 
 	}
 
-Yukarıdaki örnekte, Eloquent, `telefons` tablosunda bir `user_id` alanı arayacaktır. Eğer farklı bir yabancı anahtar sütunu tanımlamak isterseniz, onu `belongsTo` metoduna ikinci parametre olarak geçebilirsiniz:
+In the example above, Eloquent will look for a `user_id` column on the `phones` table. If you would like to define a different foreign key column, you may pass it as the second argument to the `belongsTo` method:
 
-	class Telefon extends Eloquent {
+	class Phone extends Eloquent {
 
-		public function uye()
+		public function user()
 		{
-			return $this->belongsTo('Uye', 'local_key');
+			return $this->belongsTo('User', 'local_key');
 		}
 
 	}
 
-Ek olarak, ebeveyn tabloda ilişkilendirilen sütunun adını belirten üçüncü bir parametre geçebilirsiniz:
+Additionally, you pass a third parameter which specifies the name of the associated column on the parent table:
 
-	class Telefon extends Eloquent {
+	class Phone extends Eloquent {
 
-		public function uye()
+		public function user()
 		{
-			return $this->belongsTo('Uye', 'local_key', 'parent_key');
+			return $this->belongsTo('User', 'local_key', 'parent_key');
 		}
 
 	}
 
 <a name="one-to-many"></a>
-### Birden Birçoğa
+### One To Many
 
-Birden birçoğa ilişki örneği olarak birçok yorum yapılmış bir blog yazısı verilebilir. Bu ilişkiyi de şöyle modelleyebiliriz:
+An example of a one-to-many relation is a blog post that "has many" comments. We can model this relation like so:
 
-	class Makale extends Eloquent {
+	class Post extends Eloquent {
 
-		public function yorumlar()
+		public function comments()
 		{
-			return $this->hasMany('Yorum');
+			return $this->hasMany('Comment');
 		}
 
 	}
 
-Şimdi artık bir makalenin yorumlarına [dinamik özellik](#dynamic-properties) aracılığıyla ulaşabiliriz:
+Now we can access the post's comments through the [dynamic property](#dynamic-properties):
 
-	$yorumlar = Makale::find(1)->yorumlar;
+	$comments = Post::find(1)->comments;
 
-Hangi yorumların alınacağını daha da kısıtlamak için `yorumlar` metodunu çağırabilir ve şartlar koşmayı sürdürebilirsiniz:
+If you need to add further constraints to which comments are retrieved, you may call the `comments` method and continue chaining conditions:
 
-	$yorumlar = Makale::find(1)->yorumlar()->where('baslik', '=', 'bu')->first();
+	$comments = Post::find(1)->comments()->where('title', '=', 'foo')->first();
 
-Tıpkı hasOne'de olduğu gibi konvansiyonel yabancı key varsayımını `hasMany` metoduna ikinci bir parametre geçerek değiştirebilirsiniz. Ve, aynı şekilde local sütun da belirtilebilir:
+Again, you may override the conventional foreign key by passing a second argument to the `hasMany` method. And, like the `hasOne` relation, the local column may also be specified:
 
-	return $this->hasMany('Yorum', 'foreign_key');
+	return $this->hasMany('Comment', 'foreign_key');
 
-	return $this->hasMany('Yorum', 'foreign_key', 'local_key');
+	return $this->hasMany('Comment', 'foreign_key', 'local_key');
 
-#### Bir İlişkinin Tersinin Tanımlanması
+#### Defining The Inverse Of A Relation
 
-İlişkinin tersini `Yorum` modelinde tanımlamak için, `belongsTo` metodu kullanılmaktadır:
+To define the inverse of the relationship on the `Comment` model, we use the `belongsTo` method:
 
-	class Yorum extends Eloquent {
+	class Comment extends Eloquent {
 
-		public function makale()
+		public function post()
 		{
-			return $this->belongsTo('Makale');
+			return $this->belongsTo('Post');
 		}
 
 	}
 
 <a name="many-to-many"></a>
-### Birçoktan Birçoğa
+### Many To Many
 
-Birçoktan birçoğa ilişkiler daha karmaşık bir ilişki tipidir. Bu tarz bir ilişki örneği bir üyenin birçok rolü olması, aynı zamanda bu rollerin başka kullanıcılar tarafından da paylaşılmasıdır. Örneğin birçok üye "Müdür" rolünde olabilir. Bu ilişki için üç veritabanı tablosu gereklidir: `uyeler`, `roller` ve `rol_uye`. Bu `rol_uye` tablosu ilişkili model isimlerinin alfabetik sıralamasına göre adlandırılır ve `uye_id` ve `rol_id` sütunlarına sahip olmalıdır (model isimlerine alttire ve id eklenmiş iki alan).
+Many-to-many relations are a more complicated relationship type. An example of such a relationship is a user with many roles, where the roles are also shared by other users. For example, many users may have the role of "Admin". Three database tables are needed for this relationship: `users`, `roles`, and `role_user`. The `role_user` table is derived from the alphabetical order of the related model names, and should have `user_id` and `role_id` columns.
 
-Birçoktan birçoğa ilişkileri `belongsToMany` metodunu kullanarak tanımlayabiliyoruz:
+We can define a many-to-many relation using the `belongsToMany` method:
 
-	class Uye extends Eloquent {
+	class User extends Eloquent {
 
-		public function roller()
+		public function roles()
 		{
-			return $this->belongsToMany('Rol');
+			return $this->belongsToMany('Role');
 		}
 
 	}
 
-Artık rolleri `Uye` modeli aracılığıyla getirebiliriz:
+Now, we can retrieve the roles through the `User` model:
 
-	$roller = Uye::find(1)->roller;
+	$roles = User::find(1)->roles;
 
-Pivot tablo ismi olarak ön kabullü tablo ismi yerine başka bir isim kullanmak isterseniz, bunu `belongsToMany` metoduna ikinci bir parametre geçerek gerçekleştirebilirsiniz:
+If you would like to use an unconventional table name for your pivot table, you may pass it as the second argument to the `belongsToMany` method:
 
-	return $this->belongsToMany('Rol', 'uye_rolleri');
+	return $this->belongsToMany('Role', 'user_roles');
 
-İlişkili keyler için konvansiyonel yaklaşımı da değiştirebilirsiniz:
+You may also override the conventional associated keys:
 
-	return $this->belongsToMany('Rol', 'uye_rolleri', 'uye_id', 'foo_id');
+	return $this->belongsToMany('Role', 'user_roles', 'user_id', 'foo_id');
 
-Ve tabii ki ilişkinin tersini `Rol` modelinde de tanımlayabilirsiniz:
+Of course, you may also define the inverse of the relationship on the `Role` model:
 
-	class Rol extends Eloquent {
+	class Role extends Eloquent {
 
-		public function uyeler()
+		public function users()
 		{
-			return $this->belongsToMany('Uye');
+			return $this->belongsToMany('User');
 		}
 
 	}
 
 <a name="has-many-through"></a>
-### Aracılığıyla Birçoğa Sahip (Has Many Through)
+### Has Many Through
 
-Bu "has many through" ilişkisi, aradaki bir ilişki aracılığıyla uzak ilişkilere erişim için uygun bir kestirme yol sağlar. Örneğin, bir `Memleket` modeli bir `Uye` modeli aracılığıyla bir çok `Post` sahibi olabilir. Bu ilişkinin tabloları şunun gibi gözükecektir:
+The "has many through" relation provides a convenient short-cut for accessing distant relations via an intermediate relation. For example, a `Country` model might have many `Post` through a `User` model. The tables for this relationship would look like this:
 
-	memlekets
+	countries
 		id - integer
-		isim - string
+		name - string
 
-	uyes
+	users
 		id - integer
-		memleket_id - integer
-		isim - string
+		country_id - integer
+		name - string
 
 	posts
 		id - integer
-		uye_id - integer
-		baslik - string
+		user_id - integer
+		title - string
 
-Bu `posts` tablosunda bir `memleket_id` sütunu olmamasına rağmen, `hasManyThrough` ilişkisi bir memleketin post'larına `$memleket->posts` aracılığıyla erişebilmemize imkan verecektir. Önce bu ilişkiyi tanımlayalım:
+Even though the `posts` table does not contain a `country_id` column, the `hasManyThrough` relation will allow us to access a country's posts via `$country->posts`. Let's define the relationship:
 
-	class Memleket extends Eloquent {
+	class Country extends Eloquent {
 
 		public function posts()
 		{
-			return $this->hasManyThrough('Post', 'Uye');
+			return $this->hasManyThrough('Post', 'User');
 		}
 
 	}
 
-Eğer ilişkinin keylerini elle belirtmek isterseniz, metoda üçüncü ve dördüncü parametreler geçebilirsiniz:
+If you would like to manually specify the keys of the relationship, you may pass them as the third and fourth arguments to the method:
 
-	class Memleket extends Eloquent {
+	class Country extends Eloquent {
 
 		public function posts()
 		{
-			return $this->hasManyThrough('Post', 'Uye', 'memleket_id', 'uye_id');
+			return $this->hasManyThrough('Post', 'User', 'country_id', 'user_id');
 		}
 
 	}
 
 <a name="polymorphic-relations"></a>
-### Çokbiçimli İlişkiler
+### Polymorphic Relations
 
-Çokbiçimli (Polimorfik) İlişkiler bir modelin tek bir ilişkilendirme ile birden çok modele ait olmasına imkan verir. Örneğin, kendisi ya bir personel modeline ya da bir siparis modeline ait olan bir foto modeliniz olduğunu düşünün. Bu ilişkiyi şu şekilde tanımlayacağız:
+Polymorphic relations allow a model to belong to more than one other model, on a single association. For example, you might have a photo model that belongs to either a staff model or an order model. We would define this relation like so:
 
-	class Foto extends Eloquent {
+	class Photo extends Eloquent {
 
-		public function resim()
+		public function imageable()
 		{
 			return $this->morphTo();
 		}
 
 	}
 
-	class Personel extends Eloquent {
+	class Staff extends Eloquent {
 
-		public function fotolar()
+		public function photos()
 		{
-			return $this->morphMany('Foto', 'resim');
+			return $this->morphMany('Photo', 'imageable');
 		}
 
 	}
 
-	class Siparis extends Eloquent {
+	class Order extends Eloquent {
 
-		public function fotolar()
+		public function photos()
 		{
-			return $this->morphMany('Foto', 'resim');
+			return $this->morphMany('Photo', 'imageable');
 		}
 
 	}
 
-#### Çokbiçimli Bir İlişkinin Getirilmesi
+#### Retrieving A Polymorphic Relation
 
-Artık bir personel ya da siparişe ait fotoları elde edebiliriz:
+Now, we can retrieve the photos for either a staff member or an order:
 
-	$personel = Personel::find(1);
+	$staff = Staff::find(1);
 
-	foreach ($personel->fotolar as $foto)
+	foreach ($staff->photos as $photo)
 	{
 		//
 	}
 
-#### Çokbiçimli Bir İlişkinin Sahibinin Getirilmesi
+#### Retrieving The Owner Of A Polymorphic Relation
 
-Ancak, "çokbiçimli" ilişkinin gerçek farkını bir personel veya siparişe `Foto` modelinden erişebilmekle görürsünüz:
+However, the true "polymorphic" magic is when you access the staff or order from the `Photo` model:
 
-	$foto = Foto::find(1);
+	$photo = Photo::find(1);
 
-	$resim = $foto->resim;
+	$imageable = $photo->imageable;
 
-`Foto` modelindeki `resim` ilişkisi, fotonun sahibi olan modele bağlı olarak ya bir `Personel` ya da bir `Siparis` olgusu döndürecektir.
+The `imageable` relation on the `Photo` model will return either a `Staff` or `Order` instance, depending on which type of model owns the photo.
 
-#### Çokbiçimli İlişki Tablo Yapısı
+#### Polymorphic Relation Table Structure
 
-Bunun nasıl çalıştığını anlamanıza yardımcı olmak için bir polimorfik ilişkinin veritabanı yapısını keşfedelim:
+To help understand how this works, let's explore the database structure for a polymorphic relation:
 
-	personel
+	staff
 		id - integer
-		isim - string
+		name - string
 
-	siparisler
+	orders
 		id - integer
-		fiyat - integer
+		price - integer
 
-	fotolar
+	photos
 		id - integer
-		dosyayolu - string
-		resim_id - integer
-		resim_type - string
+		path - string
+		imageable_id - integer
+		imageable_type - string
 
-Buradaki anahtar alanların `fotolar` tablosundaki `resim_id` and `resim_type` olduğuna dikkat ediniz. Buradaki ID, fotonun sahibi olan personel veya siparişin ID'ini, TYPE ise sahip olan modelin sınıf adını tutacaktır. Böylece ORM, `resim` ilişkisiyle erişildiğinde döndürülecek sahip modelin hangisi olduğunu tespit edebilecektir.
+The key fields to notice here are the `imageable_id` and `imageable_type` on the `photos` table. The ID will contain the ID value of, in this example, the owning staff or order, while the type will contain the class name of the owning model. This is what allows the ORM to determine which type of owning model to return when accessing the `imageable` relation.
 
 <a name="many-to-many-polymorphic-relations"></a>
-### Birçoktan Birçoğa Çokbiçimli İlişkiler
+### Many To Many Polymorphic Relations
 
-#### Çokbiçimli Birçoktan Birçoğa İlişkilerin Tablo Yapısı
+#### Polymorphic Many To Many Relation Table Structure
 
-Geleneksel çokbiçimli ilişkilere ek olarak, birçoktan birçoğa çokbiçimli ilişkiler de belirleyebilirsiniz. Örneğin, bir blog `Post` ve `Video` modeli bir `Tag` modeline polimorfik bir ilişki paylaşabilirler. Önce, tablo yapısını inceleyelim:
+In addition to traditional polymorphic relations, you may also specify many-to-many polymorphic relations. For example, a blog `Post` and `Video` model could share a polymorphic relation to a `Tag` model. First, let's examine the table structure:
 
 	posts
 		id - integer
@@ -735,7 +740,7 @@ Geleneksel çokbiçimli ilişkilere ek olarak, birçoktan birçoğa çokbiçimli
 		taggable_id - integer
 		taggable_type - string
 
-Sonra da, model üzerinde ilişkileri kurmaya geçelim. `Post` ve `Video` modellerinin her ikisi de bir `tags` metodu aracılığıyla bir `morphToMany` ilişkisine sahip olacaktır:
+Next, we're ready to setup the relationships on the model. The `Post` and `Video` model will both have a `morphToMany` relationship via a `tags` method:
 
 	class Post extends Eloquent {
 
@@ -746,7 +751,7 @@ Sonra da, model üzerinde ilişkileri kurmaya geçelim. `Post` ve `Video` modell
 
 	}
 
-`Tag` modeli ise ilişkilerinin her biri için bir metod tanımlayabilir:
+The `Tag` model may define a method for each of its relationships:
 
 	class Tag extends Eloquent {
 
@@ -763,278 +768,282 @@ Sonra da, model üzerinde ilişkileri kurmaya geçelim. `Post` ve `Video` modell
 	}
 
 <a name="querying-relations"></a>
-## İlişkilerin Sorgulanması
+## Querying Relations
 
-#### Seçerken İlişkilerin Yoklanması
+#### Querying Relations When Selecting
 
-Bir modelin kayıtlarına erişirken, sonuçları bir ilişki varlığına göre sınırlamak isteyebilirsiniz. Diyelim ki, en az bir yorum yapılmış tüm blog makalelerini çekmek istediniz. Bunu yapmak için `has` metodunu kullanabilirsiniz:
+When accessing the records for a model, you may wish to limit your results based on the existence of a relationship. For example, you wish to pull all blog posts that have at least one comment. To do so, you may use the `has` method:
 
-	$makaleler = Makale::has('yorumlar')->get();
+	$posts = Post::has('comments')->get();
 
-Ayrıca, bir işlemci ve bir sayı da belirleyebilirsiniz, örneğin üç ve daha çok yorum almış makaleleri getirmek için:
+You may also specify an operator and a count:
 
-	$makaleler = Makale::has('yorumlar', '>=', 3)->get();
+	$posts = Post::has('comments', '>=', 3)->get();
 
-Hatta daha fazla güce ihtiyacınız varsa, `has` sorgularınıza "where" şartları koymak için `whereHas` ve `orWhereHas` metodlarını kullanabilirsiniz:
+Nested `has` statements may also be constructed using "dot" notation:
 
-	$makaleler = Makale::whereHas('yorumlar', function($q)
+	$posts = Post::has('comments.votes')->get();
+
+If you need even more power, you may use the `whereHas` and `orWhereHas` methods to put "where" conditions on your `has` queries:
+
+	$posts = Post::whereHas('comments', function($q)
 	{
-		$q->where('content', 'like', 'filan%');
+		$q->where('content', 'like', 'foo%');
 
 	})->get();
 
 <a name="dynamic-properties"></a>
-### Dinamik Özellikler
+### Dynamic Properties
 
-Eloquent, ilişkilerinize dinamik özellikler yoluyla erişme imkanı verir. Eloquent ilişkiyi sizin için otomatik olarak yükleyecektir. Hatta, `get` (birden birçoğa ilişkiler için) metodunun mu yoksa `first` (birden bire ilişkiler için) metodunun mu çağırılacağını bilecek kadar akılllıdır. İlişkiyle aynı isimli dinamik bir özellik aracılığı ile erişilebilir olacaktır. Örneğin, şu `$telefon` modelinde:
+Eloquent allows you to access your relations via dynamic properties. Eloquent will automatically load the relationship for you, and is even smart enough to know whether to call the `get` (for one-to-many relationships) or `first` (for one-to-one relationships) method.  It will then be accessible via a dynamic property by the same name as the relation. For example, with the following model `$phone`:
 
-	class Telefon extends Eloquent {
+	class Phone extends Eloquent {
 
-		public function uye()
+		public function user()
 		{
-			return $this->belongsTo('Uye');
+			return $this->belongsTo('User');
 		}
 
 	}
 
-	$telefon= Telefon::find(1);
+	$phone = Phone::find(1);
 
-Bu üyenin email'ini şu şekilde göstermek yerine:
+Instead of echoing the user's email like this:
 
-	echo $telefon->uye()->first()->email;
+	echo $phone->user()->first()->email;
 
-Buradaki gibi basit bir hale kısaltılabilir:
+It may be shortened to simply:
 
-	echo $telefon->uye->email;
+	echo $phone->user->email;
 
-> **Not:** Çoklu sonuç döndüren ilişkiler bir `Illuminate\Database\Eloquent\Collection` sınıf olgusu döndürecektir.
+> **Note:** Relationships that return many results will return an instance of the `Illuminate\Database\Eloquent\Collection` class.
 
 <a name="eager-loading"></a>
-## Ateşli (Eager) Yüklemeler
+## Eager Loading
 
-Ateşli yükleme N + 1 sorgu problemini gidermek içindir. Örnek olarak, `Yazar` ile ilişkilendirilmiş bir `Kitap` modelini düşünün. İlişki de şöyle tanımlanmış olsun:
+Eager loading exists to alleviate the N + 1 query problem. For example, consider a `Book` model that is related to `Author`. The relationship is defined like so:
 
-	class Kitap extends Eloquent {
+	class Book extends Eloquent {
 
-		public function yazar()
+		public function author()
 		{
-			return $this->belongsTo('Yazar');
+			return $this->belongsTo('Author');
 		}
 
 	}
 
-Şimdi, şu kodu ele alalım:
+Now, consider the following code:
 
-	foreach (Kitap::all() as $kitap)
+	foreach (Book::all() as $book)
 	{
-		echo $kitap->yazar->isim;
+		echo $book->author->name;
 	}
 
-Bu döngü tablodaki kitapların hepsini almak için 1 sorgu çalıştıracak, sonra da yazarını elde etmek için her bir kitabı sorgulayacaktır. Yani, eğer 25 kitabımız varsa bu döngü 26 sorgu çalıştıracaktır.
+This loop will execute 1 query to retrieve all of the books on the table, then another query for each book to retrieve the author. So, if we have 25 books, this loop would run 26 queries.
 
-Neyseki, sorgu sayısını büyük ölçüde azaltan ateşli yükleme kullanabiliriz. Ateşli yüklenecek ilişkiler `with` metodu aracılığıyla belirlenebilmektedir:
+Thankfully, we can use eager loading to drastically reduce the number of queries. The relationships that should be eager loaded may be specified via the `with` method:
 
-	foreach (Kitap::with('yazar')->get() as $kitap)
+	foreach (Book::with('author')->get() as $book)
 	{
-		echo $kitap->yazar->isim;
+		echo $book->author->name;
 	}
 
-Yukardaki döngüde sadece iki sorgu çalıştırılacaktır (model tanımında tablo isimleri açıkça belirtilmediyse ingilizce küçük harf çoğul kabulünü hatırlayınız):
+In the loop above, only two queries will be executed:
 
-	select * from kitaps
+	select * from books
 
-	select * from yazars where id in (1, 2, 3, 4, 5, ...)
+	select * from authors where id in (1, 2, 3, 4, 5, ...)
 
-Ateşli yüklemenin akıllıca kullanımı uygulamanızın performansını önemli ölçüde artırabilir.
+Wise use of eager loading can drastically increase the performance of your application.
 
-Tabii ki, bir defada birden çok ilişkiyi ateşli yükleyebilirsiniz:
+Of course, you may eager load multiple relationships at one time:
 
-	$kitaplar = Kitap::with('yazar', 'kitabevi')->get();
+	$books = Book::with('author', 'publisher')->get();
 
-Hatta içi içe ilişkileri de ateşleyebilirsiniz:
+You may even eager load nested relationships:
 
-	$kitaplar = Kitap::with('yazar.kisiler')->get();
+	$books = Book::with('author.contacts')->get();
 
-Yukarıdaki örnekte `yazar` ilişkisi ateşli yüklenecektir ve yazarın `kisiler` ilişkisi de ateşli yüklenecektir.
+In the example above, the `author` relationship will be eager loaded, and the author's `contacts` relation will also be loaded.
 
-### Ateşli Yükleme Sınırlamaları
+### Eager Load Constraints
 
-Bazen bir ilişkiyi ateşli yüklemek, ama ateşli yükleme için de bir şart belirlemek isteyebiliriz. İşte bir örnek:
+Sometimes you may wish to eager load a relationship, but also specify a condition for the eager load. Here's an example:
 
-	$uyeler = Uye::with(array('makaleler' => function($query)
+	$users = User::with(array('posts' => function($query)
 	{
-		$query->where('baslik', 'like', '%birinci%');
+		$query->where('title', 'like', '%first%');
 
 	}))->get();
 
-Bu örnekte üyenin makalelerinden sadece baslik alanında "birinci" kelimesi geçen makalelerini ateşli yüklüyoruz.
+In this example, we're eager loading the user's posts, but only if the post's title column contains the word "first".
 
-Tabii ki, ateşli yükleme Closure'ları "sınırlamalara" sınırlı değildir. Sıralama da yapabilirsiniz:
+Of course, eager loading Closures aren't limited to "constraints". You may also apply orders:
 
-	$uyeler = Uye::with(array('makaleler' => function($query)
+	$users = User::with(array('posts' => function($query)
 	{
 		$query->orderBy('created_at', 'desc');
 
 	}))->get();
 
-### Tembel Ateşli Yükleme
+### Lazy Eager Loading
 
-İlişkili modelleri, direkt olarak önceden mevcut model koleksiyonundan ateşli yüklemek de mümkündür. Bu özellikle ilişkili modeli önbellekleme ile birlikte yükleyip yüklememeye dinamik karar vereceğiniz zaman işe yarayabilir.
+It is also possible to eagerly load related models directly from an already existing model collection. This may be useful when dynamically deciding whether to load related models or not, or in combination with caching.
 
-	$kitaplar= Kitap::all();
+	$books = Book::all();
 
-	$kitaplar->load('yazar', 'kitabevi');
+	$books->load('author', 'publisher');
 
 <a name="inserting-related-models"></a>
-## İlişkili Modelleri Ekleme
+## Inserting Related Models
 
-#### İlişkili Bir Modelin Eklenmesi
+#### Attaching A Related Model
 
-Yeni ilişkili model ekleme ihtiyacınız çok olacaktır. Örneğin, bir makale için yeni bir yorum eklemek isteyebilirsiniz. Model üzerinde `makale_id` yabancı key alanını elle ayarlamak yerine, doğrudan ebeveyn `Makale` modelinden yeni yorum ekleyebilirsiniz:
+You will often need to insert new related models. For example, you may wish to insert a new comment for a post. Instead of manually setting the `post_id` foreign key on the model, you may insert the new comment from its parent `Post` model directly:
 
-	$yorum = new Yorum(array('mesaj' => 'Yeni bir yorum.'));
+	$comment = new Comment(array('message' => 'A new comment.'));
 
-	$makale = Makale::find(1);
+	$post = Post::find(1);
 
-	$yorum = $makale->yorumlar()->save($yorum);
+	$comment = $post->comments()->save($comment);
 
-Bu örnekte eklenen yorumdaki `makale_id` alanı otomatik olarak ayarlanmaktadır.
+In this example, the `post_id` field will automatically be set on the inserted comment.
 
-Eğer birden çok sayıda ilişkili model kaydetmeniz gerekirse:
+If you need to save multiple related models:
 
-	$yorumlar = array(
-		new Yorum(array('mesaj' => 'Yeni bir yorum.')),
-		new Yorum(array('mesaj' => 'Bir başka yorum.')),
-		new Yorum(array('mesaj' => 'Son bir yorum.'))
+	$comments = array(
+		new Comment(array('message' => 'A new comment.')),
+		new Comment(array('message' => 'Another comment.')),
+		new Comment(array('message' => 'The latest comment.'))
 	);
 
-	$makale = Makale::find(1);
+	$post = Post::find(1);
 
-	$yorum = $makale->yorumlar()->saveMany($yorumlar);
+	$post->comments()->saveMany($comments);
 
-### Modellerin Üye Yapılması (Belongs To)
+### Associating Models (Belongs To)
 
-Bir `belongsTo` ilişkisi güncellenirken, `associate` metodunu kullanabilirsiniz. Bu metod çocuk modeldeki yabancı anahtarı ayarlayacaktır:
+When updating a `belongsTo` relationship, you may use the `associate` method. This method will set the foreign key on the child model:
 
-	$hesap = Hesap::find(10);
+	$account = Account::find(10);
 
-	$uye->hesap()->associate($hesap);
+	$user->account()->associate($account);
 
-	$uye->save();
+	$user->save();
 
-### İlişkili Model Ekleme (Birçoktan Birçoğa)
+### Inserting Related Models (Many To Many)
 
-Birçoktan birçoğa ilişkilerle çalışırken de ilişkili model ekleyebilirsiniz. Daha önceki örneğimiz `Uye` ve `Rol` modellerini kullanmaya devam edelim. Bir üyeye yeni roller eklemeyi `attach` metodu ile yapabiliriz:
+You may also insert related models when working with many-to-many relations. Let's continue using our `User` and `Role` models as examples. We can easily attach new roles to a user using the `attach` method:
 
-#### Birçoktan Birçoğa Modellerinin Eklenmesi
+#### Attaching Many To Many Models
 
-	$uye = Uye::find(1);
+	$user = User::find(1);
 
-	$uye->roller()->attach(1);
+	$user->roles()->attach(1);
 
-İlişkiler için pivot tabloda tutulan nitelikleri bir dizi olarak da geçebilirsiniz:
+You may also pass an array of attributes that should be stored on the pivot table for the relation:
 
-	$uye->roller()->attach(1, array('sonaerme' => $sonaerme));
+	$user->roles()->attach(1, array('expires' => $expires));
 
-Tabii, `attach`'in ters işlemi `detach`'tir:
+Of course, the opposite of `attach` is `detach`:
 
-	$uye->roller()->detach(1);
+	$user->roles()->detach(1);
 
-Hem `attach` hem de `detach` ayrıca girdi olarak ID'lerden oluşan diziler de alırlar:
+Both `attach` and `detach` also take arrays of IDs as input:
 
-	$uye = Uye::find(1);
+	$user = User::find(1);
 
-	$uye->roller()->detach([1, 2, 3]);
+	$user->roles()->detach([1, 2, 3]);
 
-	$uye->roller()->attach([1 => ['attribute1' => 'value1'], 2, 3]);
-	
-#### Birçoktan Birçoğa Model Bağlamak İçin Sync Kullanımı
+	$user->roles()->attach([1 => ['attribute1' => 'value1'], 2, 3]);
 
-İlişkili modelleri bağlamak için `sync` metodunu da kullanabilirsiniz. Bu `sync` metodu parametre olarak pivot tablodaki yerlerin id'lerinden oluşan bir dizi geçirilmesini ister. Bu işlem tamamlandıktan sonra, model için kullanılacak ara tabloda sadece bu id'ler olacaktır:
+#### Using Sync To Attach Many To Many Models
 
-	$uye->roller()->sync(array(1, 2, 3));
+You may also use the `sync` method to attach related models. The `sync` method accepts an array of IDs to place on the pivot table. After this operation is complete, only the IDs in the array will be on the intermediate table for the model:
 
-#### Sync Yaparken Pivot Veri Eklenmesi
+	$user->roles()->sync(array(1, 2, 3));
 
-Belli id değerleri olan başka pivot tabloyu da ilişkilendirebilirsiniz:
+#### Adding Pivot Data When Syncing
 
-	$uye->roller()->sync(array(1 => array('sonaerme' => true)));
+You may also associate other pivot table values with the given IDs:
 
-Bazen yeni bir ilişkili model oluşturmak ve tek bir komutla bunu eklemek isteyebilirsiniz. Bu işlem için, `save` metodunu kullanabilirsiniz:
+	$user->roles()->sync(array(1 => array('expires' => true)));
 
-	$rol = new Rol(array('isim' => 'Editor'));
+Sometimes you may wish to create a new related model and attach it in a single command. For this operation, you may use the `save` method:
 
-	Uye::find(1)->roller()->save($rol);
+	$role = new Role(array('name' => 'Editor'));
 
-Bu örnekte, yeni bir `Rol` modeli kaydedilecek ve uye modeline eklenecektir. Bu işlem için bağlı tablolardaki niteliklerden oluşan bir dizi de geçebilirsiniz:
+	User::find(1)->roles()->save($role);
 
-	Uye::find(1)->roller()->save($rol, array('sonaerme' => $sonaerme));
+In this example, the new `Role` model will be saved and attached to the user model. You may also pass an array of attributes to place on the joining table for this operation:
+
+	User::find(1)->roles()->save($role, array('expires' => $expires));
 
 <a name="touching-parent-timestamps"></a>
-## Ebeveyn Zaman Damgalarına Dokunma
+## Touching Parent Timestamps
 
-Bir `Yorum`'un bir `Makale`'ye ait olması örneğimizdeki gibi, bir model başka bir modele ait (`belongsTo`) olduğu takdirde, çocuk modeli güncellediğiniz zaman ebeveyn zaman damgasını da güncellemek iyidir. Örneğin, bir `Yorum` güncellendiğinde, bunun sahibi olan `Makale`'nin `updated_at` zaman damgasını otomatikman güncellemek isteyebilirsiniz. Bunu gerçekleştirmek için tek yapacağınız şey, çocuk modele ilişkilerin isimlerini içeren bir `touches` özelliği eklemektir:
+When a model `belongsTo` another model, such as a `Comment` which belongs to a `Post`, it is often helpful to update the parent's timestamp when the child model is updated. For example, when a `Comment` model is updated, you may want to automatically touch the `updated_at` timestamp of the owning `Post`. Eloquent makes it easy. Just add a `touches` property containing the names of the relationships to the child model:
 
-	class Yorum extends Eloquent {
+	class Comment extends Eloquent {
 
-		protected $touches = array('makale');
+		protected $touches = array('post');
 
-		public function makale()
+		public function post()
 		{
-			return $this->belongsTo('Makale');
+			return $this->belongsTo('Post');
 		}
 
 	}
 
-Bunu yaptıktan sonra artık bir `Yorum` güncellediğinizde, sahibi olan `Makale` de güncellenmiş bir `updated_at` sütununa sahip olacaktır:
+Now, when you update a `Comment`, the owning `Post` will have its `updated_at` column updated:
 
-	$yorum = Yorum::find(1);
+	$comment = Comment::find(1);
 
-	$yorum->text = 'Bu yorumu düzelt!';
+	$comment->text = 'Edit to this comment!';
 
-	$yorum->save();
+	$comment->save();
 
 <a name="working-with-pivot-tables"></a>
-## Pivot Tablolarla Çalışmak
+## Working With Pivot Tables
 
-Daha önce öğrendiğiniz gibi, birçoktan birçoğa ilişkilerle çalışmak bir ara tablonun olmasını gerektirir. Eloquent işte bu tablo ile etkileşim için çok yararlı bazı yollar sağlamaktadır. Örneğin bizim bir `Uye` nesnemiz, bir de onun bağlı olduğu birçok `Rol` nesnelerimiz olsun. Bu ilişkiye eriştikten sonra, `pivot` tabloya modellerimiz üzerinden erişebiliriz:
+As you have already learned, working with many-to-many relations requires the presence of an intermediate table. Eloquent provides some very helpful ways of interacting with this table. For example, let's assume our `User` object has many `Role` objects that it is related to. After accessing this relationship, we may access the `pivot` table on the models:
 
-	$uye = Uye::find(1);
+	$user = User::find(1);
 
-	foreach ($uye->roller as $rol)
+	foreach ($user->roles as $role)
 	{
-		echo $rol->pivot->created_at;
+		echo $role->pivot->created_at;
 	}
 
-Dikkat ederseniz, elde ettiğimiz her bir `Rol` modeline otomatikman bir `pivot` niteliği atanmıştır. Bu nitelik, ara tabloyu temsil eden bir modeli taşır ve herhangi bir Eloquent modeli gibi kullanılabilir.
+Notice that each `Role` model we retrieve is automatically assigned a `pivot` attribute. This attribute contains a model representing the intermediate table, and may be used as any other Eloquent model.
 
-Ön tanımlı olarak, `pivot` nesnesinde sadece keyler olacaktır. Şayet pivot tablonuzda bunlardan başka nitelikler varsa, bunları ilişki tanımlama sırasında belirtmelisiniz:
+By default, only the keys will be present on the `pivot` object. If your pivot table contains extra attributes, you must specify them when defining the relationship:
 
-	return $this->belongsToMany('Rol')->withPivot('falan', 'filan');
+	return $this->belongsToMany('Role')->withPivot('foo', 'bar');
 
-Şimdi `Rol` modelinin `pivot` nesnesinde `falan` ve `filan` nitelikleri erişilebilir olacaktır.
+Now the `foo` and `bar` attributes will be accessible on our `pivot` object for the `Role` model.
 
-Eğer pivot tablonuzun `created_at` ve `updated_at` zaman damgalarını otomatik olarak halletmesini istiyorsanız, ilişki tanımlamasında `withTimestamps` metodunu kullanın:
+If you want your pivot table to have automatically maintained `created_at` and `updated_at` timestamps, use the `withTimestamps` method on the relationship definition:
 
-	return $this->belongsToMany('Rol')->withTimestamps();
+	return $this->belongsToMany('Role')->withTimestamps();
 
-#### Bir Pivot Tablodaki Kayıtların Silinmesi
+#### Deleting Records On A Pivot Table
 
-Bir modelin pivot tablosundaki tüm kayıtları silmek için, `detach` metodunu kullanabilirsiniz:
+To delete all records on the pivot table for a model, you may use the `detach` method:
 
-	Uye::find(1)->roller()->detach();
+	User::find(1)->roles()->detach();
 
-Bu operasyonun `roller` tablosundan kayıt silmediğine, sadece pivot tablodan sildiğine dikkat ediniz.
+Note that this operation does not delete records from the `roles` table, but only from the pivot table.
 
-#### Bir Pivot Tablodaki Bir Kaydın Güncellenmesi
+#### Updating A Record On A Pivot Table
 
-Bazen pivot tablonuzu güncellemeniz ama onu detach etmemeniz gerekebilir. Eğer pivot tablonuzu "yerinde" güncellemek istiyorsanız aşağıdakine benzer şekilde `updateExistingPivot` metodunu kullanabilirsiniz:
+Sometimes you may need to update your pivot table, but not detach it. If you wish to update your pivot table in place you may use `updateExistingPivot` method like so:
 
-	Uye::find(1)->roller()->updateExistingPivot($roleId, $attributes);
+	User::find(1)->roles()->updateExistingPivot($roleId, $attributes);
 
-#### Özel Bir Pivot Model Tanımlanması
+#### Defining A Custom Pivot Model
 
-Laravel size özel bir Pivot model tanımlama imkanı da verir. Özel bir model tanımlamak için, öncelikle `Eloquent`'i genişleten kendi "Taban" model sınıfınızı oluşturun. Diğer Eloquent modellerinizde, defaut `Eloquent` taban yerine bu özel taban modeli genişletin. Taban modelinize, sizin özel Pivot modelinizin bir olgusunu döndüren aşağıdaki fonksiyonu ekleyin:
+Laravel also allows you to define a custom Pivot model. To define a custom model, first create your own "Base" model class that extends `Eloquent`. In your other Eloquent models, extend this custom base model instead of the default `Eloquent` base. In your base model, add the following function that returns an instance of your custom Pivot model:
 
 	public function newPivot(Model $parent, array $attributes, $table, $exists)
 	{
@@ -1042,76 +1051,76 @@ Laravel size özel bir Pivot model tanımlama imkanı da verir. Özel bir model 
 	}
 
 <a name="collections"></a>
-## Koleksiyonlar
+## Collections
 
-Eloquent tarafından `get` metodu veya bir `relationship` (ilişki) aracılığıyla döndürülen tüm çoklu sonuç kümeleri bir Eloquent `Collection` nesnesi döndürecektir. Bu nesne PHP'nin `IteratorAggregate` arayüzünün bir uygulama biçimidir ve tıpkı bir dizide dolaşır gibi dolaşılabilinmektedir. Bunun yanında, bu nesne sonuç kümeleriyle çalışırken işe yarayan başka bir takım metodlara da sahiptir.
+All multi-result sets returned by Eloquent, either via the `get` method or a `relationship`, will return a collection object. This object implements the `IteratorAggregate` PHP interface so it can be iterated over like an array. However, this object also has a variety of other helpful methods for working with result sets.
 
-#### Bir Koleksiyonun Bir Key Taşıyıp Taşımadığının Yoklanması
+#### Checking If A Collection Contains A Key
 
-Örneğin biz `contains` metodunu kullanarak bir sonuç kümesinin belli bir primer key içerip içermediğini tespit edebiliriz:
+For example, we may determine if a result set contains a given primary key using the `contains` method:
 
-	$roller = Uye::find(1)->roller;
+	$roles = User::find(1)->roles;
 
-	if ($roller->contains(2))
+	if ($roles->contains(2))
 	{
 		//
 	}
 
-Koleksiyonlar aynı zamanda bir dizi ya da JSON'a dünüştürülebilmektedir:
+Collections may also be converted to an array or JSON:
 
-	$roller = Uye::find(1)->roller->toArray();
+	$roles = User::find(1)->roles->toArray();
 
-	$roller = Uye::find(1)->roller->toJson();
+	$roles = User::find(1)->roles->toJson();
 
-Eğer bir koleksiyon bir string kalıbına çevrilirse JSON olarak döndürülecektir:
+If a collection is cast to a string, it will be returned as JSON:
 
-	$roller = (string) Uye::find(1)->roller;
+	$roles = (string) User::find(1)->roles;
 
-#### Koleksiyonlarda Tekrarlı İşlemler
+#### Iterating Collections
 
-Eloquent koleksiyonları içerdikleri elemanları dolaşmak ve filtre etmekle ilgili bazı metodlara da sahiptir:
+Eloquent collections also contain a few helpful methods for looping and filtering the items they contain:
 
-	$roller = $uye->roller->each(function($rol)
-	{
-
-	});
-
-#### Koleksiyonlarda Filtreleme
-
-Verilen Closure (callback) [array_filter()](http://php.net/manual/en/function.array-filter.php) için fonksiyon olarak kullanılacak.
-
-	$uyeler = $uyeler->filter(function($uye)
-	{
-		return $uye->isAdmin();
-	});
-
-> **Not:** Bir koleksiyonu filtreler ve onu JSON'a döndürürken, dizinin keylerini reset etmek için önce `values` fonksiyonunu çağırmayı deneyin.
-
-#### Her Bir Koleksiyon Nesnesine Bir Anonim Fonksiyon (Callback) Uygulamak
-
-	$roller = Uye::find(1)->roller;
-
-	$roller->each(function($rol)
+	$roles = $user->roles->each(function($role)
 	{
 		//
 	});
 
-#### Bir Koleksiyonu Bir Değere Göre Sıralama
+#### Filtering Collections
 
-	$roller = $roller->sortBy(function($rol)
+When filtering collections, the callback provided will be used as callback for [array_filter](http://php.net/manual/en/function.array-filter.php).
+
+	$users = $users->filter(function($user)
 	{
-		return $rol->created_at;
+		return $user->isAdmin();
 	});
 
-#### Bir Koleksiyonu Bir Değere Göre Sıralama
+> **Note:** When filtering a collection and converting it to JSON, try calling the `values` function first to reset the array's keys.
 
-	$roller = $roller->sortBy('created_at');
+#### Applying A Callback To Each Collection Object
 
-#### Özel Bir Koleksiyon Tipinin Döndürülmesi
+	$roles = User::find(1)->roles;
 
-Bazen de, kendi eklediğiniz metodları olan özel bir koleksiyon nesnesi döndürmek isteyebilirsiniz. Bunu, Eloquent modeliniz üzerinde `newCollection` metodunu ezerek yapabilirsiniz:
+	$roles->each(function($role)
+	{
+		//
+	});
 
-	class Uye extends Eloquent {
+#### Sorting A Collection By A Value
+
+	$roles = $roles->sortBy(function($role)
+	{
+		return $role->created_at;
+	});
+
+#### Sorting A Collection By A Value
+
+	$roles = $roles->sortBy('created_at');
+
+#### Returning A Custom Collection Type
+
+Sometimes, you may wish to return a custom Collection object with your own added methods. You may specify this on your Eloquent model by overriding the `newCollection` method:
+
+	class User extends Eloquent {
 
 		public function newCollection(array $models = array())
 		{
@@ -1121,96 +1130,138 @@ Bazen de, kendi eklediğiniz metodları olan özel bir koleksiyon nesnesi dönd�
 	}
 
 <a name="accessors-and-mutators"></a>
-## Erişimciler & Değiştiriciler (Accessors & Mutators)
+## Accessors & Mutators
 
-#### Bir Erişimci Tanımlanması
+#### Defining An Accessor
 
-Eloquent model niteliklerini alıp getirirken veya onları ayarlarken dönüşüm yapmak için uygun bir yol sağlar. Bir erişimci beyan etmek için modeliniz üzerinde sadece bir `getFilanAttribute` metodu tanımlamak yeterlidir. Yalnız unutmamanız gereken şey, veritabanı sütunlarınızın isimleri yılan tarzı (küçük harfli kelimelerin boşluk olmaksızın alt tire ile birbirine bağlanması) olsa dahi, metodlarınızın deve tarzı (birinci kelimenin tümü küçük harf olmak ve sonraki kelimelerin ilk harfi büyük diğer hafleri küçük olmak üzere boşluk olmaksızın kelimelerin yanyana dizilmesi) olması gerektiğidir:
+Eloquent provides a convenient way to transform your model attributes when getting or setting them. Simply define a `getFooAttribute` method on your model to declare an accessor. Keep in mind that the methods should follow camel-casing, even though your database columns are snake-case:
 
-	class Uye extends Eloquent {
+	class User extends Eloquent {
 
-		public function getSoyAdiAttribute($value)
+		public function getFirstNameAttribute($value)
 		{
 			return ucfirst($value);
 		}
 
 	}
 
-Yukarıdaki örnekte `soy_adi` sütununun bir erişimcisi vardır. Niteliğin değerinin erişimciye geçildiğine dikkat ediniz.
+In the example above, the `first_name` column has an accessor. Note that the value of the attribute is passed to the accessor.
 
-#### Bir Değiştirici Tanımlanması
+#### Defining A Mutator
 
-Değiştiriciler de benzer şekilde deklare edilir:
+Mutators are declared in a similar fashion:
 
-	class Uye extends Eloquent {
+	class User extends Eloquent {
 
-		public function setSoyAdiAttribute($value)
+		public function setFirstNameAttribute($value)
 		{
-			$this->attributes['soy_adi'] = strtolower($value);
+			$this->attributes['first_name'] = strtolower($value);
 		}
 
 	}
 
 <a name="date-mutators"></a>
-## Tarih Değiştiricileri
+## Date Mutators
 
-Ön tanımlı olarak, Eloquent `created_at` ve `updated_at` sütunlarını [Carbon](https://github.com/briannesbitt/Carbon), olgularına çevirecektir. Carbon çeşitli yardımcı metodlar sağlar ve PHP'nin `DateTime` sınıfını genişletir.
+By default, Eloquent will convert the `created_at` and `updated_at` columns to instances of [Carbon](https://github.com/briannesbitt/Carbon), which provides an assortment of helpful methods, and extends the native PHP `DateTime` class.
 
-Siz hangi alanların otomatik olarak değiştirileceğini isteğinize göre ayarlayabilirsiniz, hatta modeldeki `getDates` metodunu ezmek suretiyle bu davranışı tamamen devre dışı bırakabilirsiniz:
+You may customize which fields are automatically mutated, and even completely disable this mutation, by overriding the `getDates` method of the model:
 
 	public function getDates()
 	{
 		return array('created_at');
 	}
 
-Bir sütun bir tarih olarak kabul edildiğinde, bunun değerini bir UNIX timetamp, date string (`Y-m-d`), date-time string ve tabii ki bir `DateTime` / `Carbon` olgusuna ayarlayabilirsiniz.
+When a column is considered a date, you may set its value to a UNIX timestamp, date string (`Y-m-d`), date-time string, and of course a `DateTime` / `Carbon` instance.
 
-Tarih değiştiricilerini tümden devre dışı bırakmak için `getDates` metodunda boş bir dizi döndürünüz:
+To totally disable date mutations, simply return an empty array from the `getDates` method:
 
 	public function getDates()
 	{
 		return array();
 	}
 
+<a name="attribute-casting"></a>
+## Attribute Casting
+
+If you have some attributes that you want to always convert to another data-type, you may add the attribute to the `casts` property of your model. Otherwise, you will have to define a mutator for each of the attributes, which can be time consuming. Here is an example of using the `casts` property:
+
+	/**
+	 * The attributes that should be casted to native types.
+	 *
+	 * @var array
+	 */
+	protected $casts = [
+		'is_admin' => 'boolean',
+	];
+
+Now the `is_admin` attribute will alwyas be cast to a boolean when you access it, even if the underlying value is stored in the database as an integer. Other supported cast types are: `integer`, `real`, `float`, `double`, `string`, `boolean`, and `array`.
+
+The `array` cast is particularly useful for working with columns that are stored as serialized JSON. For example, if your database has a TEXT type field that contains serialized JSON, adding the `array` cast to that attribute will automatically deserialize the attribute to a PHP array when you access it on your Eloquent model:
+
+	/**
+	 * The attributes that should be casted to native types.
+	 *
+	 * @var array
+	 */
+	protected $casts = [
+		'options' => 'array',
+	];
+
+Now, when you utilize the Eloquent model:
+
+	$user = User::find(1);
+
+	// $options is an array...
+	$options = $user->options;
+
+	// options is automatically serialized back to JSON...
+	$user->options = ['foo' => 'bar'];
+
 <a name="model-events"></a>
-## Model Olayları
+## Model Events
 
-Eloquent modelleri bazı olayları tetikleyerek, modelin yaşam döngüsündeki çeşitli noktalarda müdahale etmenize imkan verir. Bu amaçla şu metodlar kullanılmaktadır: `creating`, `created`, `updating`, `updated`, `saving`, `saved`, `deleting`, `deleted`, `restoring`, `restored`.
+Eloquent models fire several events, allowing you to hook into various points in the model's lifecycle using the following methods: `creating`, `created`, `updating`, `updated`, `saving`, `saved`, `deleting`, `deleted`, `restoring`, `restored`.
 
-Yeni bir öğe ilk defa kaydedilir kaydedilmez `creating` ve `created` olayları ateşlenecektir. Eğer bir öğe yeni değilse ve `save` metodu çağrılırsa, `updating` / `updated` olayları ateşlenecektir. Her iki durumda da `saving` / `saved` olayları ateşlenecektir.
+Whenever a new item is saved for the first time, the `creating` and `created` events will fire. If an item is not new and the `save` method is called, the `updating` / `updated` events will fire. In both cases, the `saving` / `saved` events will fire.
 
-#### Saklama Operasyonlarının Olaylar Aracığıyla İptal Edilmesi
+#### Cancelling Save Operations Via Events
 
-Eğer `creating`, `updating`, `saving` veya `deleting` olaylarından `false` döndürülürse, eylem iptal edilecektir:
+If `false` is returned from the `creating`, `updating`, `saving`, or `deleting` events, the action will be cancelled:
 
-	Uye::creating(function($uye)
+	User::creating(function($user)
 	{
-		if ( ! $uye->isValid()) return false;
+		if ( ! $user->isValid()) return false;
 	});
 
-#### Bir Model Boot Metodunun Ayarlanması
+#### Where To Register Event Listeners
 
-Eloquent modelleri bunun dışında static bir `boot` metodu içermekte olup, olay bağlamanızı kayıt etmeniz için uygun bir yerdir.
+Your `EventServiceProvider` serves as a convenient place to register your model event bindings. For example:
 
-	class Uye extends Eloquent {
+	/**
+	 * Register any other events for your application.
+	 *
+	 * @param  \Illuminate\Contracts\Events\Dispatcher  $events
+	 * @return void
+	 */
+	public function boot(DispatcherContract $events)
+	{
+		parent::boot($events);
 
-		public static function boot()
+		User::creating(function($user)
 		{
-			parent::boot();
-
-			// Olay bağlamayı ayarla...
-		}
-
+			//
+		});
 	}
 
 <a name="model-observers"></a>
-## Model Gözlemcileri
+## Model Observers
 
-Model olaylarının işlenmesini pekiştirmek için, bir model gözlemcisi kaydı yapabilirsiniz. Bir gözlemci sınıfında çeşitli model olaylarına tekabül eden metodlar bulunabilir. Örneğin bir gözlemcide, diğer model olay isimlerine ek olarak `creating`, `updating`, `saving` metodları olabilir.
+To consolidate the handling of model events, you may register a model observer. An observer class may have methods that correspond to the various model events. For example, `creating`, `updating`, `saving` methods may be on an observer, in addition to any other model event name.
 
-Yani, bir model gözlemcisi şöyle olabilir:
+So, for example, a model observer might look like this:
 
-	class UyeGozlemcisi {
+	class UserObserver {
 
 		public function saving($model)
 		{
@@ -1224,66 +1275,66 @@ Yani, bir model gözlemcisi şöyle olabilir:
 
 	}
 
-Modelinizde `observe` metodunu kullanarak bir gözlemci olgusu kaydı yapabilirsiniz:
+You may register an observer instance using the `observe` method:
 
-	Uye::observe(new UyeGozlemcisi);
+	User::observe(new UserObserver);
 
 <a name="converting-to-arrays-or-json"></a>
-## Diziye / JSON'a Çevirme
+## Converting To Arrays / JSON
 
-#### Bir Modelin Bir Diziye Çevrilmesi
+#### Converting A Model To An Array
 
-JSON APIler oluşturulurken, çoğu defa modellerinizi ve ilişkilerini dizilere veya JSON'a çevirmeniz gerekecektir. Bu yüzden Eloquent bunları yapacak metodlar içermektedir. Bir modeli ve onun yüklenen ilişkilerini bir diziye çevirmek için `toArray` metodunu kullanabilirsiniz:
+When building JSON APIs, you may often need to convert your models and relationships to arrays or JSON. So, Eloquent includes methods for doing so. To convert a model and its loaded relationship to an array, you may use the `toArray` method:
 
-	$uye = Uye::with('roller')->first();
+	$user = User::with('roles')->first();
 
-	return $uye->toArray();
+	return $user->toArray();
 
-Modellerin koleksiyonlarının da bütün olarak dizilere dönüştürülebildiğini unutmayın:
+Note that entire collections of models may also be converted to arrays:
 
-	return Uye::all()->toArray();
+	return User::all()->toArray();
 
-#### Bir Modelin JSON'a Çevrilmesi
+#### Converting A Model To JSON
 
-Bir Modeli JSON'a çevirmek için, `toJson` metodunu kullanabilirsiniz:
+To convert a model to JSON, you may use the `toJson` method:
 
-	return Uye::find(1)->toJson();
+	return User::find(1)->toJson();
 
-#### Bir Modelin Bir Rotadan Döndürülmesi
+#### Returning A Model From A Route
 
-Bir model veya koleksiyon bir string kalıbına sokulduğu takdirde, JSON'a çevrileceğine dikkat ediniz. Yani Elequent nesnelerini direkt olarak uygulamanızın rotalarından döndürebilirsiniz!
+Note that when a model or collection is cast to a string, it will be converted to JSON, meaning you can return Eloquent objects directly from your application's routes!
 
-	Route::get('uyeler', function()
+	Route::get('users', function()
 	{
-		return Uye:all();
+		return User::all();
 	});
 
-#### Niteliklerin Dizi veya JSON'a Çevrilmekten Saklanması
+#### Hiding Attributes From Array Or JSON Conversion
 
-Bazen bazı nitelikleri (örneğin şifreleri) modelinizin dizi veya JSON biçimlerinden hariç tutmak isteyebilirsiniz. Bunu yapmak için modelinize bir `hidden` özelliği ekleyiniz:
+Sometimes you may wish to limit the attributes that are included in your model's array or JSON form, such as passwords. To do so, add a `hidden` property definition to your model:
 
-	class Uye extends Eloquent {
+	class User extends Eloquent {
 
-		protected $hidden = array('parola');
+		protected $hidden = array('password');
 
 	}
 
-> **Not:** İlişkileri gizlerken dinamik erişimci ismini değil ilişkinin **metod** ismini kullanın.
+> **Note:** When hiding relationships, use the relationship's **method** name, not the dynamic accessor name.
 
-Alternatif olarak, beyaz bir liste tanımlamak için `visible` özelliğini kullanabilirsiniz:
+Alternatively, you may use the `visible` property to define a white-list:
 
-	protected $visible = array('adi', 'soy_adi');
+	protected $visible = array('first_name', 'last_name');
 
 <a name="array-appends"></a>
-Kimi durumlarda, veritabanınızdaki bir sütuna tekabül etmeyen dizi nitelikleri eklemeniz gerekebilir. Bunu yapmak için, değer için bir erişimci tanımlamanız yeterlidir:
+Occasionally, you may need to add array attributes that do not have a corresponding column in your database. To do so, simply define an accessor for the value:
 
 	public function getIsAdminAttribute()
 	{
 		return $this->attributes['admin'] == 'yes';
 	}
 
-Erişimciyi oluşturduktan sonra, ilgili modeldeki `appends` özelliğine değeri ekleyin:
+Once you have created the accessor, just add the value to the `appends` property on the model:
 
 	protected $appends = array('is_admin');
 
-Nitelik `appends` listesine eklendikten sonra modelin hem dizi hem de JSON formlarına dahil edilecektir. `appends` dizisindeki nitelikler modeldeki `visible` ve `hidden` konfigürasyonuna göre davranır. 
+Once the attribute has been added to the `appends` list, it will be included in both the model's array and JSON forms. Attributes in the `appends` array respect the `visible` and `hidden` configuration on the model.

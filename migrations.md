@@ -1,112 +1,104 @@
-# Migrasyon (Migration) ve Veri Ekme (Seeding)
+# Migrations & Seeding
 
-- [Giriş](#introduction)
-- [Migrasyonların Oluşturulması](#creating-migrations)
-- [Migrasyonların Çalıştırılması](#running-migrations)
-- [Migrasyonların Geriye Döndürülmesi](#rolling-back-migrations)
-- [Veritabanına Veri Ekme](#database-seeding)
+- [Introduction](#introduction)
+- [Creating Migrations](#creating-migrations)
+- [Running Migrations](#running-migrations)
+- [Rolling Back Migrations](#rolling-back-migrations)
+- [Database Seeding](#database-seeding)
 
 <a name="introduction"></a>
-## Giriş
+## Introduction
 
-Migrasyonlar veritabanı için bir sürüm kontrol türüdür. Bir ekibin veritabanı şemasını değiştirmesine ve son şema durumuna güncel kalmalarına imkan verir. Migrasyonlar uygulama şemasını kolayca yönetmek amacıyla tipik olarak [Şema (Schema) Kurucu](/docs/schema) ile eşleştirilirler.
+Migrations are a type of version control for your database. They allow a team to modify the database schema and stay up to date on the current schema state. Migrations are typically paired with the [Schema Builder](/docs/master/schema) to easily manage your application's schema.
 
 <a name="creating-migrations"></a>
-## Migrasyonların Oluşturulması
+## Creating Migrations
 
-Bir migrasyon oluşturmak için, Artisan KSA'da (Artisan Komut Satırı Arayüzü) `migrate:make` komutunu kullanabilirsiniz:
+To create a migration, you may use the `make:migration` command on the Artisan CLI:
 
-	php artisan migrate:make kullanicilar_tablosunu_olustur
+	php artisan make:migration create_users_table
 
-Migrasyon `app/database/migrations` dizininize konumlandırılır ve Laravel'in migrasyonların sırasını belirlemesine imkan veren bir zaman damgası içerir.
+The migration will be placed in your `database/migrations` folder, and will contain a timestamp which allows the framework to determine the order of the migrations.
 
-Migrasyonu oluştururken bir patika `--path` seçeneği de belirtebilirsiniz. Patika, kurulum kök dizinine göreceli olmalıdır:
+You may also specify a `--path` option when creating the migration. The path should be relative to the root directory of your installation:
 
-	php artisan migrate:make falancaMigrasyon --path=app/migrations
+	php artisan make:migration foo --path=app/migrations
 
-Tablo ismini ve yeni bir tablonun oluşturulacağını da, `--table` ve `--create` seçeneklerini kullanarak belirtebilirsiniz:
+The `--table` and `--create` options may also be used to indicate the name of the table, and whether the migration will be creating a new table:
 
-	php artisan migrate:make kullanicilar_tablosunu_olustur --table=users
+	php artisan make:migration add_votes_to_user_table --table=users
 
-	php artisan migrate:make kullanicilar_tablosuna_oy_verenler_ekle --create=users
+	php artisan make:migration create_users_table --create=users
 
 <a name="running-migrations"></a>
-## Migrasyonların Çalıştırılması
+## Running Migrations
 
-#### Bekleyen Migrasyonların Hepsinin Birden Çalıştırılması
+#### Running All Outstanding Migrations
 
 	php artisan migrate
 
-#### Bir Patikadaki Migrasyonların Çalıştırılması
+> **Note:** If you receive a "class not found" error when running migrations, try running the `composer dump-autoload` command.
 
-	php artisan migrate --path=app/falancaDizin/migrations
+### Forcing Migrations In Production
 
-#### Bir Paketin Tüm Bekleyen Migrasyonlarının Çalıştırılması
-
-	php artisan migrate --package=vendor/package
-
-> **Not:** Migrasyonlar çalıştırırken, "class not found" (sınıf bulunamadı) hatası alırsanız, `composer dump-autoload` komutunu çalıştırarak deneyiniz.
-
-### Üretim Ortamında Migrasyonların Zorlanması
-
-Bazı migration işlemleri yıkıcıdır, yani verilerinizi kaybetmenize yol açabilir. Bu komutları üretim veritabanınızda çalıştırmanızdan korumak amacıyla, bu komutları çalıştırdığınızda sizden teyit etmeniz istenecektir. Bu komutların böyle bir istek olmadan çalışmasını zorlamak için `--force` flamasını kullanın:
+Some migration operations are destructive, meaning they may cause you to lose data. In order to protect you from running these commands against your production database, you will prompted for confirmation before these commands are executed. To force the commands to run without a prompt, use the `--force` flag:
 
 	php artisan migrate --force
 
 <a name="rolling-back-migrations"></a>
-## Migrasyonların Geriye Döndürülmesi
+## Rolling Back Migrations
 
-#### Son Migrasyon İşleminin Geriye Döndürülmesi
+#### Rollback The Last Migration Operation
 
 	php artisan migrate:rollback
 
-#### Tüm Migrasyon İşlemlerinin Geriye Döndürülmesi
+#### Rollback all migrations
 
 	php artisan migrate:reset
 
-#### Tüm Migrasyon İşlemlerinin Geriye Döndürülmesi ve Hepsinin Tekrardan Çalıştırılması
+#### Rollback all migrations and run them all again
 
-	php artisan migrate:refresh		//Veri ekmeler dahil edilmeden
+	php artisan migrate:refresh
 
-	php artisan migrate:refresh --seed	//Veri ekmeler dahil edilerek
+	php artisan migrate:refresh --seed
 
 <a name="database-seeding"></a>
-## Veritabanına Veri Ekme
+## Database Seeding
 
-Veri Ekme (seeding), migrasyon ile oluşturulacak veritabanı tablosunda gerekli olacak ilk veri kayıtlarının (seed data) oluşturulması işlemidir(:çevirenin notu). Laravel, veritabanınızın deneme verisi ile veri ekme için kolaylık sağlayacak olan veri ekme (seed) sınıflarını bulundurur. Bütün veri ekme sınıfları `app/database/seeds` dizininde konumlandırılır. Veri ekme sınıflarına istediğiniz isimleri verebilirsiniz. Fakat isimlendirirken anlaşılacak belli bir geleneğe uyulması lehinizedir, örneğin `KullanicilarTablosunaVeriEkme`, vb. Ön tanımlı olarak, sizin için bir DatabaseSeeder sınıfı tanımlanmıştır. Veri ekme sırasını denetlemenize imkan verecek olan, bu sınıfın 'çağır' `call` metodunu kullanarak diğer veri ekme sınıflarınızı çalıştırabilirsiniz.
+Laravel also includes a simple way to seed your database with test data using seed classes. All seed classes are stored in `database/seeds`. Seed classes may have any name you wish, but probably should follow some sensible convention, such as `UserTableSeeder`, etc. By default, a `DatabaseSeeder` class is defined for you. From this class, you may use the `call` method to run other seed classes, allowing you to control the seeding order.
 
-#### Veritabanı Veri Ekme Sınıfı Örneği
+#### Example Database Seed Class
 
 	class DatabaseSeeder extends Seeder {
 
 		public function run()
 		{
-			$this->call('KullanicilarTablosunaVeriEkme');
+			$this->call('UserTableSeeder');
 
-			$this->command->info('Kullanıcı tablosuna veri ekildi!');
+			$this->command->info('User table seeded!');
 		}
 
 	}
 
-	class KullanicilarTablosunaVeriEkme extends Seeder {
+	class UserTableSeeder extends Seeder {
 
 		public function run()
 		{
-			DB::table('kullanicilar')->delete();
+			DB::table('users')->delete();
 
-			User::create(array('email' => 'falanca@filanca.com'));
+			User::create(array('email' => 'foo@bar.com'));
 		}
 
 	}
 
-Veritabanına veri ekmek için, Artisan KSA'da `db:seed` (veri ek) komutunu kullanabilirsiniz:
+To seed your database, you may use the `db:seed` command on the Artisan CLI:
 
 	php artisan db:seed
 
-Ön tanımlı olarak, bu `db:seed` komutu `DatabaseSeeder` sınıfını çalıştırır (bu sınıf diğer ekme sınıflarını çağırmak için kullanılabilmektedir). Buna karşın bireysel olarak çalıştırılacak belirli bir seeder sınıfını belirtmek için `--class` seçeneğini kullanabilirsiniz:
+By default, the `db:seed` command runs the `DatabaseSeeder` class, which may be used to call other seed classes. However, you may use the `--class` option to specify a specific seeder class to run individually:
 
-	php artisan db:seed --class=KullanicilarTablosunaVeriEkme
+	php artisan db:seed --class=UserTableSeeder
 
-Veritabanına `migrate:refresh` (yenile) komutunu kullanarak da veri ekebilirsiniz, bu komut aynı zamanda bütün migrasyonları geriye döndürüp, hepsini tekrardan çalıştıracaktır:
+You may also seed your database using the `migrate:refresh` command, which will also rollback and re-run all of your migrations:
 
 	php artisan migrate:refresh --seed

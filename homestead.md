@@ -1,26 +1,26 @@
 # Laravel Homestead
 
-- [Giriş](#introduction)
-- [Dahil Edilen Yazılımlar](#included-software)
-- [Yükleme & Kurulum](#installation-and-setup)
-- [Günlük Kullanım](#daily-usage)
-- [Portlar](#ports)
+- [Introduction](#introduction)
+- [Included Software](#included-software)
+- [Installation & Setup](#installation-and-setup)
+- [Daily Usage](#daily-usage)
+- [Ports](#ports)
 
 <a name="introduction"></a>
-## Giriş
+## Introduction
 
-Laravel sizin lokal geliştirme ortamınız da dahil olmak üzere bütün PHP geliştirme deneyimini zevkli bir hale getirmeye çalışmaktadır. [Vagrant](http://vagrantup.com) Sanal Makinelerin yönetilmesi ve hazırlanması için basit, zekice bir yol sağlamaktadır.
+Laravel strives to make the entire PHP development experience delightful, including your local development environment. [Vagrant](http://vagrantup.com) provides a simple, elegant way to manage and provision Virtual Machines.
 
-Laravel Homestead lokal makinenizde PHP, HHVM, bir web sunucusu ve diğer herhangi bir sunucu yazılımı yüklemenizi gerektirmeksizin size harika bir geliştirme ortamı sağlayan resmi, ambalajlanmış bir Vagrant "box"tur. İşletim sisteminizi karışmasını daha artık dert etmeyin! Vagrant box'ları tamamen kontrol altındadır. Eğer bir şeyler yanlış giderse, onu yok edebilir ve dakikalar içerisinde yeniden oluşturabilirsiniz!
+Laravel Homestead is an official, pre-packaged Vagrant "box" that provides you a wonderful development environment without requiring you to install PHP, HHVM, a web server, and any other server software on your local machine. No more worrying about messing up your operating system! Vagrant boxes are completely disposable. If something goes wrong, you can destroy and re-create the box in minutes!
 
-Homestead herhangi bir Windows, Mac veya Linux sisteminde çalışır ve Nginx web sunucusu, PHP 5.6, MySQL, Postgres, Redis, Memcached ve muhteşem Laravel uygulamaları geliştirmek için gerekli diğer tüm güzellikleri içerir.
+Homestead runs on any Windows, Mac, or Linux system, and includes the Nginx web server, PHP 5.6, MySQL, Postgres, Redis, Memcached, and all of the other goodies you need to develop amazing Laravel applications.
 
-> **Not:** Eğer Windows kullanıyorsanız, donanım sanallaştırmasını (hardware virtualization) (VT-x) etkinleştirmeniz gerekebilir. Bu genellikle BIOS'iniz aracılığıyla etkinleştirilebilmektedir.
+> **Note:** If you are using Windows, you may need to enable hardware virtualization (VT-x). It can usually be enabled via your BIOS.
 
-Homestead hali hazırda Vagrant 1.6 kullanılarak inşa ve test edilmiştir.
+Homestead is currently built and tested using Vagrant 1.6.
 
 <a name="included-software"></a>
-## Dahil Edilen Yazılımlar
+## Included Software
 
 - Ubuntu 14.04
 - PHP 5.6
@@ -28,134 +28,134 @@ Homestead hali hazırda Vagrant 1.6 kullanılarak inşa ve test edilmiştir.
 - Nginx
 - MySQL
 - Postgres
-- Node (Bower, Grunt ve Gulp ile)
+- Node (With Bower, Grunt, and Gulp)
 - Redis
 - Memcached
 - Beanstalkd
 - [Laravel Envoy](/docs/ssh#envoy-task-runner)
-- Fabric + HipChat Uzantısı
+- Fabric + HipChat Extension
 
 <a name="installation-and-setup"></a>
-## Yükleme & Kurulum
+## Installation & Setup
 
-### VirtualBox & Vagrant Yüklemesi
+### Installing VirtualBox & Vagrant
 
-Homestead ortamınızı başlatabilmek için, [VirtualBox](https://www.virtualbox.org/wiki/Downloads) ve [Vagrant](http://www.vagrantup.com/downloads.html) yüklemelisiniz. Bu yazılım paketlerinin her ikisi de tüm popüler işletim sistemleri için kullanımı kolay görsel yükleyiciler sağlar.
+Before launching your Homestead environment, you must install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](http://www.vagrantup.com/downloads.html). Both of these software packages provide easy-to-use visual installers for all popular operating systems.
 
-### Vagrant Box Eklenmesi
+### Adding The Vagrant Box
 
-VirtualBox ve Vagrant yüklendikten sonra, terminalinizde aşağıdaki komutu kullanarak Vagrant yüklemenize `laravel/homestead` box'ını eklemelisiniz. Bu kutunun indirilmesi, internet bağlantı hızınıza bağlı olarak birkaç dakika alacaktır:
+Once VirtualBox and Vagrant have been installed, you should add the `laravel/homestead` box to your Vagrant installation using the following command in your terminal. It will take a few minutes to download the box, depending on your Internet connection speed:
 
 	vagrant box add laravel/homestead
 
-### Homestead Yüklenmesi
+### Installing Homestead
 
-#### Composer + PHP Aracı İle
+#### With Composer + PHP Tool
 
-Kutuyu Vagrant yüklemenize ekledikten sonra, Composer `global` komutunu kullanarak Homestead CLI aracını kurmaya geçebilirsiniz:
+Once the box has been added to your Vagrant installation, you are ready to install the Homestead CLI tool using the Composer `global` command:
 
 	composer global require "laravel/homestead=~2.0"
 
-Terminalinizde `homestead` komutunu çalıştırdığınız zaman `homestead` çalıştırılabilir dosyasının bulunası için PATH'inizde `~/.composer/vendor/bin` dizininin yer aldığından emin olun.
+Make sure to place the `~/.composer/vendor/bin` directory in your PATH so the `homestead` executable is found when you run the `homestead` command in your terminal.
 
-Homestead CLI aracını kurduktan sonra , `Homestead.yaml` konfigürasyon dosyasını oluşturmak için `init` komutunu çalıştırın:
+Once you have installed the Homestead CLI tool, run the `init` command to create the `Homestead.yaml` configuration file:
 
 	homestead init
 
-Bu `Homestead.yaml` dosyası `~/.homestead` dizinine koyulacaktır. Eğer bir Mac veya Linux sistemi kullanıyorsanız, `Homestead.yaml` dosyanızı terminalinizde `homestead edit` komutunu çalıştırmak suretiyle düzenleyebilirsiniz:
+The `Homestead.yaml` file will be placed in the `~/.homestead` directory. If you're using a Mac or Linux system, you may edit `Homestead.yaml` file by running the `homestead edit` command in your terminal:
 
 	homestead edit
 
-#### Elle Git Aracılığıyla (Local PHP Olmadan)
+#### Manually Via Git (No Local PHP)
 
-Alternatif olarak, eğer lokal makinenize PHP kurmak istemiyorsanız, elle basitçe ambarı klonlaak suretiyle Homestead kurabilirsiniz. Homestead box sizin Laravel (ve PHP) projelerinizin tümü için barındırma yeri olarak hizmet edeceği için, bu ambarı Laravel projelerinizin tümünü tutacağınız merkezi bir `Homestead` dizinine klonlamayı düşünün:
+Alternatively, if you do not want to install PHP on your local machine, you may install Homestead manually by simply cloning the repository. Consider cloning the repository into a `Homestead` folder within your "home" directory, as the Homestead box will serve as the host to all of your Laravel (and PHP) projects:
 
 	git clone https://github.com/laravel/homestead.git Homestead
 
-Once you have installed the Homestead CLI aracını kurduktan sonra, `Homestead.yaml` yapılandırma dosyasını oluşturmak için `bash init.sh` komutunu çalıştırın:
+Once you have installed the Homestead CLI tool, run the `bash init.sh` command to create the `Homestead.yaml` configuration file:
 
 	bash init.sh
 
-Bu `Homestead.yaml` dosyası `~/.homestead` dizinine koyulacaktır.
+The `Homestead.yaml` file will be placed in your `~/.homestead` directory.
 
-### SSH Anahtarınızı Ayarlayın
+### Set Your SSH Key
 
-Ondan sonra da, `Homestead.yaml` dosyasını düzenlemelisiniz. Bu dosyada, public SSH anahtarınızın, bunun yanı sıra ana makineniz ile Homestead sanal makineniz arasında paylaşılmasını istediğiniz klasörlerin yolunu ayarlayabilirsiniz.
+Next, you should edit the `Homestead.yaml` file. In this file, you can configure the path to your public SSH key, as well as the folders you wish to be shared between your main machine and the Homestead virtual machine.
 
-Bir SSH anahtarınız yok mu? Mac ve Linux'te, genel olarak aşağıdaki komutu kullanarak bir SSH anahtar çifti oluşturabilirsiniz:
+Don't have an SSH key? On Mac and Linux, you can generally create an SSH key pair using the following command:
 
-	ssh-keygen -t rsa -C "your@homestead"
+	ssh-keygen -t rsa -C "you@homestead"
 
-Windows'ta, [Git](http://git-scm.com/) yükleyebilir ve yukarıdaki komutu vermek için Git'le birlikte bulunan `Git Bash` kabuğunu kullanabilirsiniz. Alternatif olarak, [PuTTY](http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html) ve [PuTTYgen](http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html) kullanabilirsiniz.
+On Windows, you may install [Git](http://git-scm.com/) and use the `Git Bash` shell included with Git to issue the command above. Alternatively, you may use [PuTTY](http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html) and [PuTTYgen](http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html).
 
-Bir SSH anahtarı oluşturduktan sonra, `Homestead.yaml` dosyanızın `authorize` özelliğinde anahtarın yolunu belirtin.
+Once you have created a SSH key, specify the key's path in the `authorize` property of your `Homestead.yaml` file.
 
-### Paylaşılan Klasörlerinizi Yapılandırın
+### Configure Your Shared Folders
 
-`Homestead.yaml` dosyanızın `folders` özelliği Homestead ortamınızda paylaşmak istediğiniz klasörlerin tümünü listeler. Bu klasörler içindeki dosyalar değiştikçe, bunlar lokal makineniz ile Homestead ortamı arasında senkronize tutulacaktır. Ne kadar gerekiyorsa o kadar paylaşılan klasör yapılandırabilirsiniz!
+The `folders` property of the `Homestead.yaml` file lists all of the folders you wish to share with your Homestead environment. As files within these folders are changed, they will be kept in sync between your local machine and the Homestead environment. You may configure as many shared folders as necessary!
 
-### Nginx Sitelerinizi Yapılandırın
+### Configure Your Nginx Sites
 
-Nginx size tanıdık değil mi? Problem değil. `sites` özelliği, Homestead ortamınızdaki bir klasöre kolaylıkla bir "domain" eşleştirmenize imkan verir. Örnek bir site yapılandırması `Homestead.yaml` dosyasına dahil edilmiştir. Aynı şekilde, Homestead ortamınıza gerektiği kadar çok sayıda site ekleyebilirsiniz. Homestead, üzerinde çalışmakta olduğunuz her Laravel projesi için kullanışlı, sanallaştırılmış bir ortam olarak hizmet edebilir!
+Not familiar with Nginx? No problem. The `sites` property allows you to easily map a "domain" to a folder on your Homestead environment. A sample site configuration is included in the `Homestead.yaml` file. Again, you may add as many sites to your Homestead environment as necessary. Homestead can serve as a convenient, virtualized environment for every Laravel project you are working on!
 
-`hhvm` opsiyonunu `true` ayarlamak suretiyle herhangi bir Homestead sitesini [HHVM](http://hhvm.com) kullanır hale getirebilirsiniz:
+You can make any Homestead site use [HHVM](http://hhvm.com) by setting the `hhvm` option to `true`:
 
 	sites:
 	    - map: homestead.app
 	      to: /home/vagrant/Code/Laravel/public
 	      hhvm: true
 
-### Bash Alias'ları
+### Bash Aliases
 
-Homestead kutunuza Bash aliasları eklemek için, basitçe `~/.homestead` dizininin köküne `aliases` dosyası ekleyin.
+To add Bash aliases to your Homestead box, simply add to the `aliases` file in the root of the `~/.homestead` directory.
 
-### Vagrant Box'ı Başlatın
+### Launch The Vagrant Box
 
-`Homestead.yaml` dosyasını istediğiniz gibi düzenledikten sonra, terminalinizde `homestead up` komutunu çalıştırın. Eğer Homestead'ı elle yüklemiş ve PHP `homestead` aracını kullanmıyorsanız, klonlanmış Homestead Git ambarınızı taşıyan dizinden `vagrant up` komutunu çalıştırın.
+Once you have edited the `Homestead.yaml` to your liking, run the `homestead up` command in your terminal. If you installed Homestead manually and are not using the PHP `homestead` tool, run `vagrant up` from the directory that contains your cloned Homestead Git repository.
 
-Vagrant sanal makineyi boot edecektir ve paylaşılan klasörlerinizi ve Nginx sitelerinizi otomatik olarak yapılandıracaktır! Makineyi yok etmek için, `homestead destroy` komutunu kullanabilirsiniz. Mevcut Homestead komutlarının tam bir listesini görmek için, `homestead list` çalıştırın.
+Vagrant will boot the virtual machine, and configure your shared folders and Nginx sites automatically! To destroy the machine, you may use the `homestead destroy` command. For a complete list of available Homestead commands, run `homestead list`.
 
-Nginx siteleriniz için "domain"leri makinenizdeki `hosts` dosyasına eklemeyi unutmayın! Bu `hosts` dosyası local domain'lerinize gelen istekleri Homestead ortamınıza yönlendirecektir. Mac ve Linux'te, bu dosya `/etc/hosts` konumundadır. Windows'ta, `C:\Windows\System32\drivers\etc\hosts` konumundadır. Bu dosyaya eklediğiniz satırlar aşağıdaki gibi gözükecektir:
+Don't forget to add the "domains" for your Nginx sites to the `hosts` file on your machine! The `hosts` file will redirect your requests for the local domains into your Homestead environment. On Mac and Linux, this file is located at `/etc/hosts`. On Windows, it is located at `C:\Windows\System32\drivers\etc\hosts`. The lines you add to this file will look like the following:
 
 	192.168.10.10  homestead.app
 
-IP adresinin `Homestead.yaml` dosyanızda ayarlanmış bir IP adresi olduğundan emin olun. Domain'i `hosts` dosyanıza ekledikten sonra, siteye tarayıcınız aracılığıyla erişebilirsiniz!
+Make sure the IP address listed is the one you set in your `Homestead.yaml` file. Once you have added the domain to your `hosts` file, you can access the site via your web browser!
 
 	http://homestead.app
 
-Veritabanlarınıza nasıl bağlanacağınızı öğrenmek için, okumaya devam edin!
+To learn how to connect to your databases, read on!
 
 <a name="daily-usage"></a>
-## Günlük Kullanım
+## Daily Usage
 
-### SSH Aracılığıyla Bağlanma
+### Connecting Via SSH
 
-Homestead ortamınıza SSH aracılığıyla bağlanmak için, terminalinizde `homestead ssh` komutunu veriniz.
+To connect to your Homestead environment via SSH, issue the `homestead ssh` command in your terminal.
 
-### Veritabanlarınıza Bağlanma
+### Connecting To Your Databases
 
-Laravel'in geliş halinde hem MySQL hem de Postgres için bir `homestead` veritabanı yapılandırılmıştır. Hatta daha fazla kolaylık için Laravel'in `local` "database" yapılandırma dosyası ön tanımlı olarak bu veritabanını kullanacak şekilde ayarlanmıştır.
+A `homestead` database is configured for both MySQL and Postgres out of the box. For even more convenience, Laravel's `local` database configuration is set to use this database by default.
 
-Navicat veya Sequel Pro aracılığıyla ana makinenizdeki MySQL veya Postgres veritabanlarınıza bağlanmak için, `127.0.0.1` ve 33060 (MySQL) veya 54320 (Postgres) portuna bağlanmalısınız. Her iki veritabanı için username ve password `homestead` / `secret`'dir.
+To connect to your MySQL or Postgres database from your main machine via Navicat or Sequel Pro, you should connect to `127.0.0.1` and port 33060 (MySQL) or 54320 (Postgres). The username and password for both databases is `homestead` / `secret`.
 
-> **Not:** Standart dışı bu portları sadece ana makinenizdeki veritabanlarına bağlanırken kullanmalısınız. Laravel, Sanal Makine _içerisinde_ çalıştığı için, Laravel veritabanı yapılandırma dosyanızda ön tanımlı 3306 ve 5432 portlarını kullanacaksınız.
+> **Note:** You should only use these non-standard ports when connecting to the databases from your main machine. You will use the default 3306 and 5432 ports in your Laravel database configuration file since Laravel is running _within_ the Virtual Machine.
 
-### İlave Sitelerin Eklenmesi
+### Adding Additional Sites
 
-Homestead ortamınızı hazırladıktan ve çalıştırdıktan sonra, Laravel uygulamalarınız için başka Nginx siteleri eklemek isteyebilirsiniz. Tek bir Homestead ortamında istediğiniz kadar çok sayıda Laravel yüklemesi çalıştırabilirsiniz. Bunu yapmanın iki yolu vardır. İlk olarak, basitçe bu siteleri `Homestead.yaml` dosyanıza ekleyebilir ve ondan sonra da `vagrant provision` çalıştırabilirsiniz.
+Once your Homestead environment is provisioned and running, you may want to add additional Nginx sites for your Laravel applications. You can run as many Laravel installations as you wish on a single Homestead environment. There are two ways to do this: First, you may simply add the sites to your `Homestead.yaml` file and then run `vagrant provision`.
 
-Alternatif olarak, Homestead ortamınızda bulunan `serve` skriptini kullanabilirsiniz. Bu `serve` skriptini kullanmak için, Homestead ortamınıza SSH ile girin ve aşağıdaki komutu çalıştırın:
+Alternatively, you may use the `serve` script that is available on your Homestead environment. To use the `serve` script, SSH into your Homestead environment and run the following command:
 
 	serve domain.app /home/vagrant/Code/path/to/public/directory
 
-> **Not:** `serve` komutunu çalıştırdıktan sonra, ana makinenizdeki `hosts` dosyanıza yeni siteyi eklemeyi unutmayın!
+> **Note:** After running the `serve` command, do not forget to add the new site to the `hosts` file on your main machine!
 
 <a name="ports"></a>
-## Portlar
+## Ports
 
-Aşağıdaki portlar Homestead ortamınıza yönlendirilir:
+The following ports are forwarded to your Homestead environment:
 
-- **SSH:** 2222 -> 22'ye yönlendirilir
-- **HTTP:** 8000 -> 80'e yönlendirilir
-- **MySQL:** 33060 -> 3306'ya yönlendirilir
-- **Postgres:** 54320 -> 5432'ye yönlendirilir
+- **SSH:** 2222 -> Forwards To 22
+- **HTTP:** 8000 -> Forwards To 80
+- **MySQL:** 33060 -> Forwards To 3306
+- **Postgres:** 54320 -> Forwards To 5432

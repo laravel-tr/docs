@@ -1,196 +1,204 @@
-# Formlar & HTML
+# Forms & HTML
 
-- [Form Açmak](#opening-a-form)
-- [CSRF Koruması](#csrf-protection)
-- [Forma Model Bağlanması](#form-model-binding)
-- [Label Elementi](#labels)
-- [Text, Textarea, Password & Hidden Alanlar](#text)
-- [Onay Kutuları ve Seçenek Düğmeleri](#checkboxes-and-radio-buttons)
-- [File Inputu](#file-input)
-- [Aşağı Açılır Listeler](#drop-down-lists)
-- [Düğmeler](#buttons)
-- [Özel Makrolar](#custom-macros)
-- [URL Oluşturma](#generating-urls)
+- [Opening A Form](#opening-a-form)
+- [CSRF Protection](#csrf-protection)
+- [Form Model Binding](#form-model-binding)
+- [Labels](#labels)
+- [Text, Text Area, Password & Hidden Fields](#text)
+- [Checkboxes and Radio Buttons](#checkboxes-and-radio-buttons)
+- [File Input](#file-input)
+- [Number Input](#number)
+- [Drop-Down Lists](#drop-down-lists)
+- [Buttons](#buttons)
+- [Custom Macros](#custom-macros)
+- [Generating URLs](#generating-urls)
 
 <a name="opening-a-form"></a>
-## Form Açmak
+## Opening A Form
 
-#### Form Açmak
+#### Opening A Form
 
-	{{ Form::open(array('url' => 'falan/filan')) }}
+	{{ Form::open(array('url' => 'foo/bar')) }}
 		//
 	{{ Form::close() }}
 
-Varsayılan olarak, `POST` metodu kullanılır; ancak, istediğiniz bir metodu da belirtebilirsiniz:
+By default, a `POST` method will be assumed; however, you are free to specify another method:
 
-	echo Form::open(array('url' => 'falan/filan', 'method' => 'put'))
+	echo Form::open(array('url' => 'foo/bar', 'method' => 'put'))
 
-> **Not:** HTML formları, sadece `POST` ve `GET` metotlarını desteklediği için, `PUT` ve `DELETE` metotları formunuza otomatik olarak bir `_method` gizli alanı eklenmek suretiyle taklit edilecektir.
+> **Note:** Since HTML forms only support `POST` and `GET`, `PUT` and `DELETE` methods will be spoofed by automatically adding a `_method` hidden field to your form.
 
-İsimli rotalara veya controller eylemlerine işaret eden formlar da açabilirsiniz:
+You may also open forms that point to named routes or controller actions:
 
 	echo Form::open(array('route' => 'route.name'))
 
 	echo Form::open(array('action' => 'Controller@method'))
 
-Ayrıca, rota parametreleri de geçebilirsiniz:
+You may pass in route parameters as well:
 
 	echo Form::open(array('route' => array('route.name', $user->id)))
 
 	echo Form::open(array('action' => array('Controller@method', $user->id)))
 
-Formunuz dosya yüklemelerini kabul edecekse, diziye `files` seçeneğini ekleyin:
+If your form is going to accept file uploads, add a `files` option to your array:
 
-	echo Form::open(array('url' => 'falan/filan', 'files' => true))
+	echo Form::open(array('url' => 'foo/bar', 'files' => true))
 
 <a name="csrf-protection"></a>
-## CSRF Koruması
+## CSRF Protection
 
-#### Bir Forma CSRF Değeri Eklemek
+#### Adding The CSRF Token To A Form
 
-Laravel, uygulamanızı siteler arası istek sahtekarlıklarından korumak için kolay bir metot sunar. Öncelikle, kullanıcının oturumuna rastgele bir değer yerleştirilir. Eğer `Form::open` metodunu `POST`, `PUT` veya `DELETE` ile kullanırsanız, CSRF değeri, formlarınıza gizli bir alan olarak otomatik olarak yerleştirilir. Alternatif olarak, gizli CSRF alanı için HTML kodu üretmek isterseniz, `token` metodunu kullanabilirsiniz:
+Laravel provides an easy method of protecting your application from cross-site request forgeries. First, a random token is placed in your user's session. If you use the `Form::open` method with `POST`, `PUT` or `DELETE` the CSRF token will be added to your forms as a hidden field automatically. Alternatively, if you wish to generate the HTML for the hidden CSRF field, you may use the `token` method:
 
 	echo Form::token();
 
-#### Bir Rotaya CSRF Filtresi Eklemek
+#### Attaching The CSRF Filter To A Route
 
-	Route::post('profil', array('before' => 'csrf', function()
+	Route::post('profile', array('before' => 'csrf', function()
 	{
 		//
 	}));
 
 <a name="form-model-binding"></a>
-## Forma Model Bağlanması
+## Form Model Binding
 
-#### Bir Model Formu Açmak
+#### Opening A Model Form
 
-Sıklıkla, bir modelin içeriğine dayanan bir form oluşturmak isteyebilirsiniz. Bunu yapmak için, `Form::model` metodunu kullanın:
+Often, you will want to populate a form based on the contents of a model. To do so, use the `Form::model` method:
 
 	echo Form::model($user, array('route' => array('user.update', $user->id)))
 
-Şimdi, bir form elementi oluşturduğunuzda, mesela bir text input, elementin ismiyle eşleşen modelin değeri, otomatik olarak alanın değeri olarak belirlenir. Yani, örneğin, `email` ismine sahip bir text alanı için, kullanıcı modelinin `email` niteliği değer olarak atanır. Bununla birlikte, dahası da var! Oturum flaş verisinde inputa uyan bir öğe mevcutsa, bu değer, model'in değerine nazaran öncelik alacaktır. Yani, öncelik şu şekildedir:
+Now, when you generate a form element, like a text input, the model's value matching the field's name will automatically be set as the field value. So, for example, for a text input named `email`, the user model's `email` attribute would be set as the value. However, there's more! If there is an item in the Session flash data matching the input name, that will take precedence over the model's value. So, the priority looks like this:
 
-1. Oturum Flaş Verisi (Önceki Girdi)
-2. Doğrudan Atanmış Değer
-3. Model Nitelik Değeri
+1. Session Flash Data (Old Input)
+2. Explicitly Passed Value
+3. Model Attribute Data
 
-Bu size model değerlerine bağlanan formları sadece çabukça oluşturmanıza imkan vermekle kalmaz, sunucu tarafında bir geçerlilik hatası olduğunda tekrar kolayca doldurmanızı da sağlayacaktır!
+This allows you to quickly build forms that not only bind to model values, but easily re-populate if there is a validation error on the server!
 
-> **Not:** `Form::model` kullanıyor olduğunuzda, `Form::close` ile formunuzu kapatmayı unutmayın!
+> **Note:** When using `Form::model`, be sure to close your form with `Form::close`!
 
 <a name="labels"></a>
-## Label Elementi
+## Labels
 
-#### Bir Label Elementi Üretilmesi
+#### Generating A Label Element
 
-	echo Form::label('email', 'E-Mail Adresi');
+	echo Form::label('email', 'E-Mail Address');
 
-#### Ek HTML Nitelikleri Belirtme
+#### Specifying Extra HTML Attributes
 
-	echo Form::label('email', 'E-Mail Adresi', array('class' => 'awesome'));
+	echo Form::label('email', 'E-Mail Address', array('class' => 'awesome'));
 
-> **Not:** Bir label oluştururken, label ismiyle aynı isimde oluşturduğunuz bir form elementi otomatik olarak label ile aynı isimde bir ID de alacaktır.
+> **Note:** After creating a label, any form element you create with a name matching the label name will automatically receive an ID matching the label name as well.
 
 <a name="text"></a>
-## Text, Textarea, Password & Hidden Alanlar
+## Text, Text Area, Password & Hidden Fields
 
-#### Bir Text Inputu Üretilmesi
+#### Generating A Text Input
 
-	echo Form::text('uyeadi');
+	echo Form::text('username');
 
-#### Ön Tanımlı Bir Değer Belirtilmesi
+#### Specifying A Default Value
 
-	echo Form::text('email', 'ornek@gmail.com');
+	echo Form::text('email', 'example@gmail.com');
 
-> **Not:** *hidden* ve *textarea* metodları *text* metodu ile aynı şekilde yazılır.
+> **Note:** The *hidden* and *textarea* methods have the same signature as the *text* method.
 
-#### Bir Password Inputu Üretilmesi
+#### Generating A Password Input
 
-	echo Form::password('parola');
+	echo Form::password('password');
 
-#### Diğer Inputlar Üretilmesi
+#### Generating Other Inputs
 
 	echo Form::email($name, $value = null, $attributes = array());
 	echo Form::file($name, $attributes = array());
 
 <a name="checkboxes-and-radio-buttons"></a>
-## Onay Kutuları ve Seçenek Düğmeleri
+## Checkboxes and Radio Buttons
 
-#### Bir Checkbox Veya Radio Inputu Üretilmesi
+#### Generating A Checkbox Or Radio Input
 
-	echo Form::checkbox('isim', 'deger');
+	echo Form::checkbox('name', 'value');
 
-	echo Form::radio('isim', 'deger');
+	echo Form::radio('name', 'value');
 
-#### Seçilmiş Bir Checkbox Veya Radio Inputu Üretilmesi
+#### Generating A Checkbox Or Radio Input That Is Checked
 
-	echo Form::checkbox('isim', 'deger', true);
+	echo Form::checkbox('name', 'value', true);
 
-	echo Form::radio('isim', 'deger', true);
+	echo Form::radio('name', 'value', true);
+
+<a name="number"></a>
+## Number
+
+#### Generating A Number Input
+
+	echo Form::number('name', 'value');
 
 <a name="file-input"></a>
-## File Inputu
+## File Input
 
-#### Bir File Inputu Üretilmesi
+#### Generating A File Input
 
-	echo Form::file('resim');
+	echo Form::file('image');
 
-> **Not:** Bu form `files` opsiyonu `true` ayarlanmış olarak açılmış olmalıdır.
+> **Note:** The form must have been opened with the `files` option set to `true`.
 
 <a name="drop-down-lists"></a>
-## Aşağı Açılır Listeler
+## Drop-Down Lists
 
-#### Aşağı Açılır Bir Liste Üretilmesi
+#### Generating A Drop-Down List
 
-	echo Form::select('boyut', array('B' => 'Büyük', 'K' => 'Küçük'));
+	echo Form::select('size', array('L' => 'Large', 'S' => 'Small'));
 
-#### Ön Tanımlı Seçilmiş Bir Aşağı Açılır Liste Üretilmesi
+#### Generating A Drop-Down List With Selected Default
 
-	echo Form::select('size', array('B' => 'Büyük', 'K' => 'Küçük''), 'K');
+	echo Form::select('size', array('L' => 'Large', 'S' => 'Small'), 'S');
 
-#### Gruplanmış Bir Liste Üretilmesi
+#### Generating A Grouped List
 
-	echo Form::select('hayvan', array(
-		'Kediler' => array('tekir' => 'Tekir'),
-		'Köpekler' => array('kangal' => 'Kangal'),
+	echo Form::select('animal', array(
+		'Cats' => array('leopard' => 'Leopard'),
+		'Dogs' => array('spaniel' => 'Spaniel'),
 	));
 
-#### Bir Aralık Olan Bir Aşağı Açılır Liste Üretilmesi
+#### Generating A Drop-Down List With A Range
 
     echo Form::selectRange('number', 10, 20);
 
-#### Ay İsimleri Olan Bir Liste Üretilmesi
+#### Generating A List With Month Names
 
     echo Form::selectMonth('month');
 
 <a name="buttons"></a>
-## Düğmeler
+## Buttons
 
-#### Bir Submit Düğmesinin Üretilmesi
+#### Generating A Submit Button
 
-	echo Form::submit('Tıkla beni!');
+	echo Form::submit('Click Me!');
 
-> **Not:** Bir button elemanı üretmeniz gerekiyorsa, *button* metodunu kullanın. Bu aynı *submit* gibi yazılır.
+> **Note:** Need to create a button element? Try the *button* method. It has the same signature as *submit*.
 
 <a name="custom-macros"></a>
-## Özel Makrolar
+## Custom Macros
 
-#### Bir Form Makrosunun Kayda Geçirilmesi
+#### Registering A Form Macro
 
-"Makrolar" denen kendi özel Form sınıf yardımcılarınızı tanımlamak kolaydır. Nasıl çalıştığını görün: Önce belli bir isim ve Closure fonksiyonu ile makroyu kayda geçirin:
+It's easy to define your own custom Form class helpers called "macros". Here's how it works. First, simply register the macro with a given name and a Closure:
 
-	Form::macro('makroAlan', function()
+	Form::macro('myField', function()
 	{
 		return '<input type="awesome">';
 	});
 
-Şimdi adını kullanarak makronuzu çağırabilirsiniz:
+Now you can call your macro using its name:
 
-#### Özel Bir Form Makrosunun Çağırılması
+#### Calling A Custom Form Macro
 
-	echo Form::makroAlan();
+	echo Form::myField();
 
 <a name="generating-urls"></a>
-## URL Oluşturma
+## Generating URLs
 
-URL oluşturma ile ilgili detaylı bilgi için dokümantasyonun <a href="/docs/helpers#urls">Yardımcı (Helper) Fonksiyonları</a> bölümüne bakınız.
+For more information on generating URL's, check out the documentation on [helpers](/docs/helpers#urls).

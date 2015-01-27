@@ -1,17 +1,17 @@
-# Yardımcı (Helper) Fonksiyonları
+# Helper Functions
 
-- [Arrayler (Diziler)](#arrays)
-- [Dosya Yolları](#paths)
-- [Yazı İşlemleri](#strings)
-- [URL İşlemleri](#urls)
-- [Diğer](#miscellaneous)
+- [Arrays](#arrays)
+- [Paths](#paths)
+- [Strings](#strings)
+- [URLs](#urls)
+- [Miscellaneous](#miscellaneous)
 
 <a name="arrays"></a>
-## Arrayler (Diziler)
+## Arrays
 
 ### array_add
 
-`array_add` fonksiyonu, verilen anahtar / değer çiftini, eğer daha önce eklenmemişse array'e eklemeye yarar.
+The `array_add` function adds a given key / value pair to the array if the given key doesn't already exist in the array.
 
 	$array = array('foo' => 'bar');
 
@@ -19,7 +19,7 @@
 
 ### array_divide
 
-`array_divide` fonksiyonu, birincisi anahtarlar, ikincisi değerler olacak şekilde iki farklı array döndürür.
+The `array_divide` function returns two arrays, one containing the keys, and the other containing the values of the original array.
 
 	$array = array('foo' => 'bar');
 
@@ -27,7 +27,7 @@
 
 ### array_dot
 
-`array_dot` fonksiyonu, çok boyutlu bir array'i derinlikleri 'nokta (dot)' notasyonunu sağlayacak şekilde 1 boyutlu array'e çevirir.
+The `array_dot` function flattens a multi-dimensional array into a single level array that uses "dot" notation to indicate depth.
 
 	$array = array('foo' => array('bar' => 'baz'));
 
@@ -37,13 +37,13 @@
 
 ### array_except
 
-`array_except` fonksiyonu, verilen anahtar / değer çiftini array'den siler.
+The `array_except` method removes the given key / value pairs from the array.
 
 	$array = array_except($array, array('keys', 'to', 'remove'));
 
 ### array_fetch
 
-`array_fetch` metodu seçilen bir iç elemanı içeren düz bir dizi döndürür.
+The `array_fetch` method returns a flattened array containing the selected nested element.
 
 	$array = array(
 		array('developer' => array('name' => 'Taylor')),
@@ -56,7 +56,7 @@
 
 ### array_first
 
-`array_first` fonksiyonu, verilen doğruluk testine uyan ilk array elemanını döndürür.
+The `array_first` method returns the first element of an array passing a given truth test.
 
 	$array = array(100, 200, 300);
 
@@ -65,13 +65,13 @@
 		return $value >= 150;
 	});
 
-Ayrıca varsayılan bir değer, üçüncü eleman olarak verilebilir:
+A default value may also be passed as the third parameter:
 
 	$value = array_first($array, $callback, $default);
 
 ### array_last
 
-`array_last` metodu verilen doğruluk testine uyan son array elemanını döndürür.
+The `array_last` method returns the last element of an array passing a given truth test.
 
 	$array = array(350, 400, 500, 300, 200, 100);
 
@@ -82,13 +82,13 @@ Ayrıca varsayılan bir değer, üçüncü eleman olarak verilebilir:
 
 	// 500
 
-Ayrıca varsayılan bir değer, üçüncü eleman olarak geçilebilir:
+A default value may also be passed as the third parameter:
 
 	$value = array_last($array, $callback, $default);
 
 ### array_flatten
 
-`array_flatten` metodu çok boyutlu bir diziyi tek düzey halinde düzleştirir.
+The `array_flatten` method will flatten a multi-dimensional array into a single level.
 
 	$array = array('name' => 'Joe', 'languages' => array('PHP', 'Ruby'));
 
@@ -98,7 +98,7 @@ Ayrıca varsayılan bir değer, üçüncü eleman olarak geçilebilir:
 
 ### array_forget
 
-`array_forget` metodu "dot" notasyonu kullanarak, derin bir iç içe diziden belirli bir anahtar / değer çiftini kaldıracaktır.
+The `array_forget` method will remove a given key / value pair from a deeply nested array using "dot" notation.
 
 	$array = array('names' => array('joe' => array('programmer')));
 
@@ -106,19 +106,19 @@ Ayrıca varsayılan bir değer, üçüncü eleman olarak geçilebilir:
 
 ### array_get
 
-`array_get` metodu nokta notasyonu kullanarak derin bir iç içe diziden belirli bir değeri döndürür.
+The `array_get` method will retrieve a given value from a deeply nested array using "dot" notation.
 
 	$array = array('names' => array('joe' => array('programmer')));
 
 	$value = array_get($array, 'names.joe');
-	
+
 	$value = array_get($array, 'names.john', 'default');
-	
-> **Not:** `array_get` gibi birşey ama onun yerine nesneler mi istiyorsunuz? `object_get` kullanın.
+
+> **Note:** Want something like `array_get` but for objects instead? Use `object_get`.
 
 ### array_only
 
-`array_only` fonksiyonu, array'den sadece verilen anahtar / değer çiftlerini döndürür.
+The `array_only` method will return only the specified key / value pairs from the array.
 
 	$array = array('name' => 'Joe', 'age' => 27, 'votes' => 1);
 
@@ -126,7 +126,7 @@ Ayrıca varsayılan bir değer, üçüncü eleman olarak geçilebilir:
 
 ### array_pluck
 
-`array_pluck` metodu verilen bir anahtar / değer çiftleri listesini diziden koparacaktır.
+The `array_pluck` method will pluck a list of the given key / value pairs from the array.
 
 	$array = array(array('name' => 'Taylor'), array('name' => 'Dayle'));
 
@@ -136,7 +136,7 @@ Ayrıca varsayılan bir değer, üçüncü eleman olarak geçilebilir:
 
 ### array_pull
 
-`array_pull` metodu diziden belirli bir anahtar / değer çifti döndürecek, aynı zamanda bu çifti diziden çıkartacaktır.
+The `array_pull` method will return a given key / value pair from the array, as well as remove it.
 
 	$array = array('name' => 'Taylor', 'age' => 27);
 
@@ -144,7 +144,7 @@ Ayrıca varsayılan bir değer, üçüncü eleman olarak geçilebilir:
 
 ### array_set
 
-`array_set` metodu nokta notasyonu kullanarak, derin bir iç içe dizide bir değer ayarlar.
+The `array_set` method will set a value within a deeply nested array using "dot" notation.
 
 	$array = array('names' => array('programmer' => 'Joe'));
 
@@ -152,7 +152,7 @@ Ayrıca varsayılan bir değer, üçüncü eleman olarak geçilebilir:
 
 ### array_sort
 
-`array_sort` metodu bir diziyi verilen bir Closure sonuçlarına göre sıralar.
+The `array_sort` method sorts the array by the results of the given Closure.
 
 	$array = array(
 		array('name' => 'Jill'),
@@ -166,7 +166,7 @@ Ayrıca varsayılan bir değer, üçüncü eleman olarak geçilebilir:
 
 ### array_where
 
-Bir diziyi verilen Closure kullanarak filtreler.
+Filter the array using the given Closure.
 
 	$array = array(100, '200', 300, '400', 500);
 
@@ -179,51 +179,51 @@ Bir diziyi verilen Closure kullanarak filtreler.
 
 ### head
 
-Dizideki ilk elemanı döndürür. PHP 5.3.x'deki metod zincirleme işine yarar.
+Return the first element in the array. Useful for method chaining in PHP 5.3.x.
 
 	$first = head($this->returnsArray('foo'));
 
 ### last
 
-Dizideki son elemanı döndürür. Metod zincirlemesinde işe yarar.
+Return the last element in the array. Useful for method chaining.
 
 	$last = last($this->returnsArray('foo'));
 
 <a name="paths"></a>
-## Dosya Yolları
+## Paths
 
 ### app_path
 
-`app` dizininin tam dosya yolunu getirir.
+Get the fully qualified path to the `app` directory.
 
 	$path = app_path();
 
 ### base_path
 
-Uygulamanın ana dizininin tam dosya yolunu getirir.
+Get the fully qualified path to the root of the application install.
 
 ### public_path
 
-`public` dizininin tam dosya yolunu getirir.
+Get the fully qualified path to the `public` directory.
 
 ### storage_path
 
-`app/storage` dizininin tam dosya yolunu getirir.
+Get the fully qualified path to the `app/storage` directory.
 
 <a name="strings"></a>
-## Yazı İşlemleri
+## Strings
 
 ### camel_case
 
-Yazıyı `camelCase` olacak şekilde düzenler.
+Convert the given string to `camelCase`.
 
-	$camel = camsel_case('foo_bar');
+	$camel = camel_case('foo_bar');
 
 	// fooBar
 
 ### class_basename
 
-Verilen class'ın namespace'ler olmadan sadece adını dondürür.
+Get the class name of the given class, without any namespace names.
 
 	$class = class_basename('Foo\Bar\Baz');
 
@@ -231,19 +231,19 @@ Verilen class'ın namespace'ler olmadan sadece adını dondürür.
 
 ### e
 
-Verilen yazıya UTF-8 desteğiyle `htmlentities` fonksiyonunu uygular.
+Run `htmlentities` over the given string, with UTF-8 support.
 
 	$entities = e('<html>foo</html>');
 
 ### ends_with
 
-Bir stringin verilen değerle bitip bitmediğini tespit eder.
+Determine if the given haystack ends with a given needle.
 
 	$value = ends_with('This is my name', 'name');
 
 ### snake_case
 
-Yazıyı `snake_case` olacak şekilde düzenler.
+Convert the given string to `snake_case`.
 
 	$snake = snake_case('fooBar');
 
@@ -251,11 +251,11 @@ Yazıyı `snake_case` olacak şekilde düzenler.
 
 ### str_limit
 
-Bir stringin karakter sayısını sınırlar.
+Limit the number of characters in a string.
 
 	str_limit($value, $limit = 100, $end = '...')
 
-Örnek:
+Example:
 
 	$value = str_limit('The PHP framework for web artisans.', 7);
 
@@ -263,19 +263,19 @@ Bir stringin karakter sayısını sınırlar.
 
 ### starts_with
 
-Bir stringin verilen değerle başlayıp başlamadığını tespit eder.
+Determine if the given haystack begins with the given needle.
 
 	$value = starts_with('This is my name', 'This');
 
 ### str_contains
 
-Verilen yazının içinde verilen değerin olup olmadığına karar verir.
+Determine if the given haystack contains the given needle.
 
 	$value = str_contains('This is my name', 'my');
 
 ### str_finish
 
-Verilen yazının sonuna verilen değeri ekler. Verilen değerden oluşan ekstraları yok eder.
+Add a single instance of the given needle to the haystack. Remove any extra instances.
 
 	$string = str_finish('this/string', '/');
 
@@ -283,31 +283,31 @@ Verilen yazının sonuna verilen değeri ekler. Verilen değerden oluşan ekstra
 
 ### str_is
 
-Verilen yazıyla verilen değerin eşleşip eşleşmediğine karar verir. Yıldız işareti (*) genel arama karakteri olarak kullanılabilir.
+Determine if a given string matches a given pattern. Asterisks may be used to indicate wildcards.
 
 	$value = str_is('foo*', 'foobar');
 
 ### str_plural
 
-Verilen kelimeyi çoğul hale getirir (Sadece ingilizce için geçerli).
+Convert a string to its plural form (English only).
 
 	$plural = str_plural('car');
 
 ### str_random
 
-Verilen değer kadar uzunlukta rastgele karakterlerden oluşan bir yazı üretir.
+Generate a random string of the given length.
 
 	$string = str_random(40);
 
 ### str_singular
 
-Verilen kelimeyi tekil hale getirir (Sadece ingilizce için geçerli).
+Convert a string to its singular form (English only).
 
 	$singular = str_singular('cars');
 
 ### studly_case
 
-Verilen yazıyı `StudlyCase` olacak şekilde düzenler.
+Convert the given string to `StudlyCase`.
 
 	$value = studly_case('foo_bar');
 
@@ -315,102 +315,102 @@ Verilen yazıyı `StudlyCase` olacak şekilde düzenler.
 
 ### trans
 
-Verilen dil satırını çevirir. `Lang::get` fonksiyonunun kısayolu.
+Translate a given language line. Alias of `Lang::get`.
 
 	$value = trans('validation.required'):
 
 ### trans_choice
 
-Verilen dil satırını çekimli çevirir. `Lang::choice` fonksiyonunun kısayolu.
+Translate a given language line with inflection. Alias of `Lang::choice`.
 
 	$value = trans_choice('foo.bar', $count);
 
 <a name="urls"></a>
-## URL İşlemleri
+## URLs
 
 ### action
 
-Belirli bir denetçi eylemi için bir URL üretir.
+Generate a URL for a given controller action.
 
 	$url = action('HomeController@getIndex', $params);
 
 ### route
 
-Verilen isimli rota için URL oluştur.
+Generate a URL for a given named route.
 
 	$url = route('routeName', $params);
 
 ### asset
 
-Bir varlık için bir URL üretir.
+Generate a URL for an asset.
 
 	$url = asset('img/photo.jpg');
 
 ### link_to
 
-Verilen URL'e gerekli HTML linkini oluşturur.
+Generate a HTML link to the given URL.
 
 	echo link_to('foo/bar', $title, $attributes = array(), $secure = null);
 
 ### link_to_asset
 
-Verilen varlık için bir HTML bağlantısı üretir.
+Generate a HTML link to the given asset.
 
 	echo link_to_asset('foo/bar.zip', $title, $attributes = array(), $secure = null);
 
 ### link_to_route
 
-Verilen rota için gerekli HTML linkini oluşturur.
+Generate a HTML link to the given route.
 
 	echo link_to_route('route.name', $title, $parameters = array(), $attributes = array());
 
 ### link_to_action
 
-Verilen bir denetçi eylemi için bir HTML linki oluşturur.
+Generate a HTML link to the given controller action.
 
 	echo link_to_action('HomeController@getIndex', $title, $parameters = array(), $attributes = array());
 
 ### secure_asset
 
-Verilen eleman için gerekli HTML linkini HTTPS kullanarak oluşturur.
+Generate a HTML link to the given asset using HTTPS.
 
 	echo secure_asset('foo/bar.zip', $title, $attributes = array());
 
 ### secure_url
 
-Verilen URL'e gerekli HTML linkini HTTPS kullanarak oluşturur.
+Generate a fully qualified URL to a given path using HTTPS.
 
 	echo secure_url('foo/bar', $parameters = array());
 
 ### url
 
-Verilen bir dosya yolu için tam kalifiye bir URL üretir.
+Generate a fully qualified URL to the given path.
 
 	echo url('foo/bar', $parameters = array(), $secure = null);
 
 <a name="miscellaneous"></a>
-## Diğer
+## Miscellaneous
 
 ### csrf_token
 
-CSRF token'inin güncel değerini döndürür.
+Get the value of the current CSRF token.
 
 	$token = csrf_token();
 
 ### dd
 
-Verilen veriyi ekrana basar ve uygulamayı durdurur.
+Dump the given variable and end execution of the script.
 
 	dd($value);
 
 ### value
 
-Eğer verilen değer anonim bir fonksiyonsa, değer olarak anonim fonksiyonun döndürdüğü değeri döndürür. Eğer değilse direkt değeri döndürür.
+If the given value is a `Closure`, return the value returned by the `Closure`. Otherwise, return the value.
 
 	$value = value(function() { return 'bar'; });
 
 ### with
 
-Verilen nesneyi döndürür. PHP 5.3.x kullanımında metod zincirleme işlemi için çok yararlı.
+Return the given object. Useful for method chaining constructors in PHP 5.3.x.
 
 	$value = with(new Foo)->doWork();

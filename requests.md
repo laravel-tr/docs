@@ -1,154 +1,203 @@
-# İstekler (Requests) ve Girdi (Input)
+# HTTP Requests
 
-- [Temel Girdi](#basic-input)
-- [Çerezler (Cookies)](#cookies)
-- [Önceki Girdi](#old-input)
-- [Dosyalar](#files)
-- [İstek Bilgileri](#request-information)
+- [Obtaining A Request Instance](#obtaining-a-request-instance)
+- [Retrieving Input](#retrieving-input)
+- [Old Input](#old-input)
+- [Cookies](#cookies)
+- [Files](#files)
+- [Other Request Information](#other-request-information)
 
-<a name="basic-input"></a>
-## Temel Girdi
+<a name="obtaining-a-request-instance"></a>
+## Obtaining A Request Instance
 
-Tüm kullanıcı girdisine birkaç basit metodla erişebilirsiniz. İstek için kullanılmış olan HTTP eylemi için endişe etmenize gerek yoktur, bütün eylemler için girdi bilgisine erişim aynıdır.
+### Via Facade
 
-#### Bir Girdi Değerinin Öğrenilmesi
+The `Request` facade will grant you access to the current request that is bound in the container. For example:
 
-	$ismi = Input::get('ismi');
+	$name = Request::input('name');
 
-#### Bir Girdi Değerinin (Eksik Olması Durumunda Varsayılacak Olan Bir "Ön Değer" Belirtilerek) Öğrenilmesi
+Remember, if you are in a namespace, you will have to import the `Request` facade using a `use Request;` statement at the top of your class file.
 
-	$ismi = Input::get('ismi', 'Saliha');
+### Via Dependency Injection
 
-#### Bir Girdi Değerinin Mevcut Olduğunun Test Edilmesi
+To obtain an instance of the current HTTP request via dependency injection, you should type-hint the class on your controller constructor or method. The current request instance will automatically be injected by the [service container](/docs/master/container):
 
-	if (Input::has('ismi'))
+	<?php namespace App\Http\Controllers;
+
+	use Illuminate\Http\Request;
+	use Illuminate\Routing\Controller;
+
+	class UserController extends Controller {
+
+		/**
+		 * Store a new user.
+		 *
+		 * @param  Request  $request
+		 * @return Response
+		 */
+		public function store(Request $request)
+		{
+			$name = $request->input('name');
+
+			//
+		}
+
+	}
+
+If your controller method is also expecting input from a route parameter, simply list your route arguments after your other dependencies:
+
+	<?php namespace App\Http\Controllers;
+
+	use Illuminate\Http\Request;
+	use Illuminate\Routing\Controller;
+
+	class UserController extends Controller {
+
+		/**
+		 * Store a new user.
+		 *
+		 * @param  Request  $request
+		 * @param  int  $id
+		 * @return Response
+		 */
+		public function update(Request $request, $id)
+		{
+			//
+		}
+
+	}
+
+<a name="retrieving-input"></a>
+## Retrieving Input
+
+#### Retrieving An Input Value
+
+Using a few simple methods, you may access all user input from your `Illuminate\Http\Request` instance. You do not need to worry about the HTTP verb used for the request, as input is accessed in the same way for all verbs.
+
+	$name = Request::input('name');
+
+#### Retrieving A Default Value If The Input Value Is Absent
+
+	$name = Request::input('name', 'Sally');
+
+#### Determining If An Input Value Is Present
+
+	if (Request::has('name'))
 	{
 		//
 	}
 
-#### İstekteki Tüm Girdi Değerlerinin Öğrenilmesi
+#### Getting All Input For The Request
 
-	$girdi = Input::all();
+	$input = Request::all();
 
-#### İstek Girdisinin Sadece Bazı Değerlerinin Öğrenilmesi
+#### Getting Only Some Of The Request Input
 
-	$girdi = Input::only('kullaniciadi', 'sifre');
+	$input = Request::only('username', 'password');
 
-	$girdi = Input::except('kredi_karti');
+	$input = Request::except('credit_card');
 
-"Dizi" girdileri olan formlarda çalışırken dizilere erişim için nokta gösterimini kullanabilirsiniz:
+When working on forms with "array" inputs, you may use dot notation to access the arrays:
 
-	$input = Input::get('products.0.name');
-
-> **Not:** Bazı JavaScript kütüphaneleri, örneğin Backbone, girdi bilgisini uygulamaya JSON olarak gönderir. Bu girdi verisine de yine normal şekilde `Input::get` ile erişebilirsiniz.
-
-<a name="cookies"></a>
-## Çerezler (Cookies)
-
-Laravel çerçevesi tarafından oluşturulan tüm çerezler, bir kimlik doğrulama kodu ile şifrelenir ve imzalanır. Kullanıcı tarafından değiştirilmesi halinde geçersiz kabul edilecektir.
-
-#### Bir Çerez Değerinin Öğrenilmesi
-
-	$deger = Cookie::get('ismi');
-
-#### Cevaba (Response) Yeni Bir Çerez İliştirilmesi
-
-	$yanit = Response::make('Merhaba Dünya');
-
-	$yanit->withCookie(Cookie::make('ismi', 'degeri', $dakika));
-
-#### Sonraki Cavap İçin Kuyruğa Bir Çerez İliştirilmesi
-
-Cevap oluşturulmadan önce bir çerez oluşturmak isterseniz, `Cookie::queue()` metodunu kullanın. Uygulamanızdan gelen son cevaba yeni bir çerez iliştirilecektir.
-
-	Cookie::queue($name, $value, $minutes);
-
-#### Süresiz Bir Çerez Oluşturulması
-
-	$cerez = Cookie::forever('ismi', 'degeri');
+	$input = Request::input('products.0.name');
 
 <a name="old-input"></a>
-## Önceki Girdi
+## Old Input
 
-Bazı durumlarda bir isteğin girdisini bir sonraki isteğe kadar tutmanız gerekebilir. Örneğin, doğrulama hataları için kontrol ettikten sonra bir formu yeniden bu önceki girdi bilgisi ile doldurmak gerekebilir.
+Laravel also allows you to keep input from one request during the next request. For example, you may need to re-populate a form after checking it for validation errors.
 
-#### Girdinin Oturuma(Session) Geçici Olarak Yansıtılması (flash)
+#### Flashing Input To The Session
 
-	Input::flash();
+The `flash` method will flash the current input to the [session](/docs/master/session) so that it is available during the user's next request to the application:
 
-#### Girdinin Sadece Bazı Değerlerinin Oturuma Geçici Olarak Yansıtılması
+	Request::flash();
 
-	Input::flashOnly('kullaniciadi', 'email');	//sadece belirtilenler
+#### Flashing Only Some Input To The Session
 
-	Input::flashExcept('sifre');	//belirtilenler hariç
+	Request::flashOnly('username', 'email');
 
-Girdinin geçici olarak oturuma yansıtılmasını, sık şekilde bir önceki sayfaya tekrar-yönlendirme (redirect) ile birlikte yapacağınız için, bu yansıtmayı (redirect)'e zincir ek yapabilirsiniz.
+	Request::flashExcept('password');
 
-	return Redirect::to('form')->withInput();	//tüm girdi değerleri ile beraber
+#### Flash & Redirect
 
-	return Redirect::to('form')->withInput(Input::except('sifre'));	//belirtilenler hariç
+Since you often will want to flash input in association with a redirect to the previous page, you may easily chain input flashing onto a redirect.
 
-> **Not:** Diğer verilerin istekler arasında geçici yansıtmasını (flash), Oturum [Session](/docs/session) sınıfını kullanarak  yapabilirsiniz.
+	return redirect('form')->withInput();
 
-#### Önceki Girdi Verisinin Elde Edilmesi
+	return redirect('form')->withInput(Request::except('password'));
 
-	Input::old('kullaniciadi');
+#### Retrieving Old Data
+
+To retrieve flashed input from the previous request, use the `old` method on the `Request` instance.
+
+	$username = Request::old('username');
+
+If you are displaying old input within a Blade template, it is more convenient to use the `old` helper:
+
+	{{ old('username') }}
+
+<a name="cookies"></a>
+## Cookies
+
+All cookies created by the Laravel framework are encrypted and signed with an authentication code, meaning they will be considered invalid if they have been changed by the client.
+
+#### Retrieving A Cookie Value
+
+	$value = Request::cookie('name');
+
+#### Attaching A New Cookie To A Response
+
+The `cookie` helper serves as a simple factory for generating new `Symfony\Component\HttpFoundation\Cookie` instances. The cookies may be attached to a `Response` instance using the `withCookie` method:
+
+	$response = new Illuminate\Http\Response('Hello World');
+
+	$response->withCookie(cookie('name', 'value', $minutes));
+
+#### Creating A Cookie That Lasts Forever*
+
+_By "forever", we really mean five years._
+
+	$response->withCookie(cookie()->forever('name', 'value'));
 
 <a name="files"></a>
-## Dosyalar
+## Files
 
-#### Yollanan Bir Dosyanın Öğrenilmesi
+#### Retrieving An Uploaded File
 
-	$dosya = Input::file('foto');
+	$file = Request::file('photo');
 
-#### Bir Dosya Yollanmış Olup Olmadığının Belirlenmesi
+#### Determining If A File Was Uploaded
 
-	if (Input::hasFile('foto'))
+	if (Request::hasFile('photo'))
 	{
 		//
 	}
 
-Dosya `file` metodu tarafından döndürülen nesne, PHP `SplFileInfo` sınıfının bir uzantısı olan ve dosya ile etkileşim için çeşitli metodlar sağlayan `Symfony\Component\HttpFoundation\File\UploadedFile` sınıfının bir olgusudur.
+The object returned by the `file` method is an instance of the `Symfony\Component\HttpFoundation\File\UploadedFile` class, which extends the PHP `SplFileInfo` class and provides a variety of methods for interacting with the file.
 
-#### Yüklenmiş Olan Bir Dosyanın Geçerli Olup Olmadığının Belirlenmesi
+#### Determining If An Uploaded File Is Valid
 
-	if (Input::file('foto')->isValid())
+	if (Request::file('photo')->isValid())
 	{
 		//
 	}
 
-#### Yüklenmiş Olan Bir Dosyanın Taşınması
+#### Moving An Uploaded File
 
-	Input::file('foto')->move($hedefDizinPatikasi);
+	Request::file('photo')->move($destinationPath);
 
-	Input::file('foto')->move($hedefDizinPatikasi, $dosyaAdi);
+	Request::file('photo')->move($destinationPath, $fileName);
 
-#### Yüklenmiş Olan Bir Dosyanın Dosya Yolunun Öğrenilmesi
+### Other File Methods
 
-	$patika = Input::file('foto')->getRealPath();
+There are a variety of other methods available on `UploadedFile` instances. Check out the [API documentation for the class](http://api.symfony.com/2.5/Symfony/Component/HttpFoundation/File/UploadedFile.html) for more information regarding these methods.
 
-#### Yüklenmiş Olan Bir Dosyanın Orijinal Adının Öğrenilmesi
+<a name="other-request-information"></a>
+## Other Request Information
 
-	$name = Input::file('foto')->getClientOriginalName();
+The `Request` class provides many methods for examining the HTTP request for your application and extends the `Symfony\Component\HttpFoundation\Request` class. Here are some of the highlights.
 
-#### Yüklenmiş Olan Bir Dosyanın Uzantısının Öğrenilmesi
-
-	$uzanti = Input::file('foto')->getClientOriginalExtension();
-
-#### Yüklenmiş Olan Bir Dosyanın Boyutunun Öğrenilmesi
-
-	$buyukluk = Input::file('foto')->getSize();
-
-#### Yüklenmiş Olan Bir Dosyanın MIME Türünün Öğrenilmesi
-
-	$mime = Input::file('foto')->getMimeType();
-
-<a name="request-information"></a>
-## İstek Bilgileri
-
-İstek `Request` sınıfı, uygulamanıza gelecek olan HTTP isteğini incelemeniz için birçok metod sunar ve `Symfony\Component\HttpFoundation\Request` sınıfının bir uzantısıdır. Bunlardan bazıları şöyledir.
-
-#### İstek URI'nın Öğrenilmesi
+#### Retrieving The Request URI
 
 	$uri = Request::path();
 
@@ -161,62 +210,13 @@ Dosya `file` metodu tarafından döndürülen nesne, PHP `SplFileInfo` sınıfı
 		//
 	}
 
-#### İstek Patikasının Bir Desene Uygunluğunun Test Edilmesi
+#### Determining If The Request Path Matches A Pattern
 
 	if (Request::is('admin/*'))
 	{
 		//
 	}
 
-#### İstek URL'nin Öğrenilmesi
+#### Get The Current Request URL
 
 	$url = Request::url();
-
-#### İstek URI'nın Herhangi Bir Bölümünün Öğrenilmesi
-
-	$segment = Request::segment(1);
-
-#### Bir İstek Başlığı(Header) Değerinin Öğrenilmesi
-
-	$deger = Request::header('Content-Type');
-
-#### Sunucu bilgileri için $_SERVER Değerlerinin Öğrenilmesi
-
-	$deger = Request::server('PATH_INFO');
-
-#### İsteğin HTTPS Üzerinden Olup Olmadığının Belirlenmesi
-
-	if (Request::secure())
-	{
-		//
-	}
-
-#### İsteğin AJAX Kullanıyor Olup Olmadığının Belirlenmesi
-
-	if (Request::ajax())
-	{
-		//
-	}
-
-#### İsteğin JSON Content Tipine Sahip Olup Olmadığının Belirlenmesi
-
-	if (Request::isJson())
-	{
-		//
-	}
-
-#### İsteğin JSON İstiyor Olup Olmadığının Belirlenmesi
-
-	if (Request::wantsJson())
-	{
-		//
-	}
-
-#### İstenen Cevap Biçiminin Kontrol Edilmesi
-
-`Request::format` metodu HTTP Accept header'ine dayalı olarak, istenen cevap formatını döndürecektir:
-
-	if (Request::format() == 'json')
-	{
-		//
-	}

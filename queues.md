@@ -1,184 +1,181 @@
-# Kuyruklar
+# Queues
 
-- [Yapılandırma](#configuration)
-- [Temel Kullanım](#basic-usage)
-- [Kuyruğa Closure Fonksiyonu Ekleme](#queueing-closures)
-- [Kuyruk Dinleyicileri Çalıştırma](#running-the-queue-listener)
-- [Daemon Kuyruk İşçisi](#daemon-queue-worker)
-- [Push Kuyrukları](#push-queues)
-- [Başarısız İşler](#failed-jobs)
+- [Configuration](#configuration)
+- [Basic Usage](#basic-usage)
+- [Queueing Closures](#queueing-closures)
+- [Running The Queue Listener](#running-the-queue-listener)
+- [Daemon Queue Worker](#daemon-queue-worker)
+- [Push Queues](#push-queues)
+- [Failed Jobs](#failed-jobs)
 
 <a name="configuration"></a>
-## Yapılandırma
+## Configuration
 
-Laravel'in Queue (kuyruk) bileşeni bir takım farklı kuyruk servisleri için tek bir API sağlamaktadır. Kuyruklar e-mail göndermek gibi zaman harcayan görevleri ileri bir zamana kadar ertelemenize imkan verir ve böylece uygulamanıza yapılan web istekleri büyük ölçüde hızlanır.
+The Laravel Queue component provides a unified API across a variety of different queue services. Queues allow you to defer the processing of a time consuming task, such as sending an e-mail, until a later time, thus drastically speeding up the web requests to your application.
 
-Kuyruk yapılandırma dosyası `app/config/queue.php` olarak saklanır. Bu dosyada framework'e dahil edilmiş kuyruk sürücülerinin her birisi için bağlantı yapılandırmaları bulacaksınız. Laravel'deki kuyruk sürücüleri arasında [Beanstalkd](http://kr.github.com/beanstalkd), [IronMQ](http://iron.io), [Amazon SQS](http://aws.amazon.com/sqs), [Redis](http://redis.io) ve senkronize (lokal kullanım için) sürücü yer almaktadır.
+The queue configuration file is stored in `config/queue.php`. In this file you will find connection configurations for each of the queue drivers that are included with the framework, which includes a database, [Beanstalkd](http://kr.github.com/beanstalkd), [IronMQ](http://iron.io), [Amazon SQS](http://aws.amazon.com/sqs), [Redis](http://redis.io), null, and synchronous (for local use) driver. The `null` queue driver simply discards queued jobs so they are never run.
 
-Listelenen bu kuyruk sürücüleri için aşağıdaki bağımlılıklar gereklidir:
+### Queue Database Table
 
-- Beanstalkd: `pda/pheanstalk ~2.0`
+In order to use the `database` queue driver, you will need a database table to hold the jobs. To generate a migration to create this table, run the `queue:table` Artisan command:
+
+	php artisan queue:table
+
+### Other Queue Dependencies
+
+The following dependencies are needed for the listed queue drivers:
+
 - Amazon SQS: `aws/aws-sdk-php`
+- Beanstalkd: `pda/pheanstalk ~3.0`
 - IronMQ: `iron-io/iron_mq`
+- Redis: `predis/predis ~1.0`
 
 <a name="basic-usage"></a>
-## Temel Kullanım
+## Basic Usage
 
-#### Bir İşin Kuyruğa Sokulması
+#### Pushing A Job Onto The Queue
 
-Kuyruğa yeni bir iş itmek için `Queue::push` metodunu kullanın:
+All of the queueable jobs for your application are stored in the `App\Commands` directory. You may generate a new queued command using the Artisan CLI:
 
-	Queue::push('SendEmail', array('message' => $message));
+	php artisan make:command SendEmail --queued
 
-#### Bir İş İşleyicisinin Tanımlanması
+To push a new job onto the queue, use the `Queue::push` method:
 
-`push` metoduna girilen ilk parametre işi yapmak için kullanılacak sınıfın adıdır. İkinci parametre işleyiciye geçirilecek veri dizisidir. Bir iş işleyicisi şu şekilde tanımlanmalıdır:
+	Queue::push(new SendEmail($message));
 
-	class SendEmail {
+By default, the `make:command` Artisan command generates a "self-handling" command, meaning a `handle` method is added to the command itself. This method will be called when the job is executed by the queue. You may type-hint any dependencies you need on the `handle` method and the [IoC container](/docs/master/container) will automatically inject them:
 
-		public function fire($is, $veri)
-		{
-			//
-		}
-
-	}
-
-Gerekli olan tek metodun `fire` olduğuna dikkat edin. Bu metod bir `iş` olgusu ve bir de kuyruğa sokulacak `veri` dizisi parametrelerini alır.
-
-#### Özel Bir İşleyici Metodunun Belirlenmesi
-
-Eğer iş'in `fire`'den başka bir metod kullanmasını istiyorsanız, işi sokarken (yani push metodunda) metodu belirleyebilirsiniz:
-
-	Queue::push('SendEmail@send', array('message' => $message));
-
-#### Bir İş İçin Kuyruk / Tüp Belirtilmesi
-
-Bir işin gönderilmesi gereken kuyruğu / tüpü de belirtebilirsiniz:
-
-	Queue::push('SendEmail@send', array('message' => $message), 'emails');
-
-#### Birden Çok İş İçin Aynı Yükün Geçilmesi
-
-Birkaç kuyruk işi için aynı veriyi geçmeniz gerekiyorsa, `Queue::bulk` metodunu kullanabilirsiniz:
-
-	Queue::bulk(array('SendEmail', 'NotifyUser'), $payload);
-
-#### Bir İşin Çalıştırılmasının Geciktirilmesi
-
-Kimi zaman sıraya sokulmuş bir işin çalıştırılmasını geciktirmek isteyebilirsiniz. Örneğin, bir müşteriye kayıt olduktan 15 dakika sonra bir e-posta gönderen bir işi kuyruğa koymak isteyebilirsiniz. Bunu `Queue::later` metodunu kullanarak başarabilirsiniz:
-
-	$date = Carbon::now()->addMinutes(15);
-
-	Queue::later($date, 'SendEmail@send', array('message' => $message));
-
-Bu örnekte, işe atamak istediğimiz gecikme süresini belirtmek için [Carbon](https://github.com/briannesbitt/Carbon) date kitaplığını kullanıyoruz. Alternatif olarak geciktirmek istediğiniz saniye sayısını tam sayı olarak geçebilirsiniz.
-
-#### İşlenmiş Bir İşin Silinmesi
-
-Bir iş işlendikten sonra kuyruktan silinmelidir. Silme işlemi ilgili `iş` olgusunda `delete` metodu kullanılarak yapılabilir:
-
-	public function fire($is, $veri)
-	{
-		// İşi işle...
-
-		$is->delete();
-	}
-
-#### Bir İşin Tekrar Kuyruğa Koyulması
-
-Bir işi tekrar kuyruğa devretmek isterseniz, bunu `release` metodu aracılığıyla yapabilirsiniz:
-
-	public function fire($is, $veri)
-	{
-		// İş sürecini yürüt...
-
-		$is->release();
-	}
-
-İş tekrar salınmadan önce kaç saniye bekleneceğini de belirleyebilirsiniz:
-
-	$is->release(5);
-
-#### Çalıştırma Girişimlerinin Sayısını Yoklama
-
-İş işlenirken bir istisna oluşursa, otomatik olarak kuyruğa tekrar salınacaktır. `attempts` metodunu kullanarak, işi çalıştırmak için yapılmış olan girişim sayısını da yoklayabilirsiniz:
-
-	if ($is->attempts() > 3)
+	public function handle(UserRepository $users)
 	{
 		//
 	}
 
-#### Bir İşin ID'sine Erişme
+If you would like your command to have a separate handler class, you should add the `--handler` flag to the `make:command` command:
 
-İş tanımlayıcılarına da erişebilirsiniz:
+	php artisan make:command SendEmail --queued --handler
 
-	$is->getJobId();
+The generated handler will be placed in `App\Handlers\Commands` and will be resolved out of the IoC container.
+
+#### Specifying The Queue / Tube For A Job
+
+You may also specify the queue / tube a job should be sent to:
+
+	Queue::pushOn('emails', new SendEmail($message));
+
+#### Passing The Same Payload To Multiple Jobs
+
+If you need to pass the same data to several queue jobs, you may use the `Queue::bulk` method:
+
+	Queue::bulk(array(new SendEmail($message), new AnotherCommand));
+
+#### Delaying The Execution Of A Job
+
+Sometimes you may wish to delay the execution of a queued job. For instance, you may wish to queue a job that sends a customer an e-mail 15 minutes after sign-up. You can accomplish this using the `Queue::later` method:
+
+	$date = Carbon::now()->addMinutes(15);
+
+	Queue::later($date, new SendEmail($message));
+
+In this example, we're using the [Carbon](https://github.com/briannesbitt/Carbon) date library to specify the delay we wish to assign to the job. Alternatively, you may pass the number of seconds you wish to delay as an integer.
+
+#### Queues And Eloquent Models
+
+If your queued job accepts an Eloquent model in its constructor, only the identifier for the model will be serialized onto the queue. When the job is actually handled, the queue system will automatically re-retrieve the full model instance from the database. It's all totally transparent to your application and prevents issues that can arise from serializing full Eloquent model instances.
+
+#### Deleting A Processed Job
+
+Once you have processed a job, it must be deleted from the queue. If no exception is thrown during the execution of your job, this will be done automatically.
+
+If you would like to `delete` or `release` the job manually, the `Illuminate\Queue\InteractsWithQueue` trait provides access to the queue job `release` and `delete` methods. The `release` method accepts a single value: the number of seconds you wish to wait until the job is made available again.
+
+	public function handle(SendEmail $command)
+	{
+		if (true)
+		{
+			$this->release(30);
+		}
+	}
+
+#### Releasing A Job Back Onto The Queue
+
+IF an exception is thrown while the job is being processed, it will automatically be released back onto the queue so it may be attempted again. The job will continue to be released until it has been attempted the maximum number of times allowed by your application. The number of maximum attempts is defined by the `--tries` switch used on the `queue:listen` or `queue:work` Artisan commands.
+
+#### Checking The Number Of Run Attempts
+
+If an exception occurs while the job is being processed, it will automatically be released back onto the queue. You may check the number of attempts that have been made to run the job using the `attempts` method:
+
+	if ($this->attempts() > 3)
+	{
+		//
+	}
+
+> **Note:** Your command / handler must use the `Illuminate\Queue\InteractsWithQueue` trait in order to call this method.
 
 <a name="queueing-closures"></a>
-## Kuyruğa Closure Fonksiyonu Ekleme
+## Queueing Closures
 
-Kuyruğa bir Closure de push edebilirsiniz. Bu, kuyruğa sokulması gerekecek hızlı, basit görevler için çok uygundur:
+You may also push a Closure onto the queue. This is very convenient for quick, simple tasks that need to be queued:
 
-#### Kuyruğa Bir Closure Sokulması
+#### Pushing A Closure Onto The Queue
 
-	Queue::push(function($is) use ($id)
+	Queue::push(function($job) use ($id)
 	{
 		Account::delete($id);
 
-		$is->delete();
+		$job->delete();
 	});
 
-> **Not:** Kuyruğa sokulmuş Closure'lar için nesneleri `use` direktifi aracılığıyla kullanılabilir yapmak yerine, birincil anahtarları geçmeyi ve ilgili modeli kuyruk işiniz içinden tekrar çekmeyi düşünün. Bu, beklenmedik serileştirme davranışlarını çoğu keresinde önleyecektir.
+> **Note:** Instead of making objects available to queued Closures via the `use` directive, consider passing primary keys and re-pulling the associated models from within your queue job. This often avoids unexpected serialization behavior.
 
-Iron.io [push kuyrukları](#push-queues) kullanılıyorken, Closure'ların kuyruğa sokulmasında daha fazla önlem almalısınız. Kuyruk mesajlarızı alan son nokta, isteğin gerçekten Iron.io'den mi geldiğini doğrulayacak bir jeton yoklaması yapmalıdır. Örneğin, sizin push kuyruk son noktanız şuna benzer bir şey olmalıdır: `https://uygulamaniz.com/queue/receive?token=SecretToken`. Böylece, kuyruk istek sıralamasından önce uygulamanızdaki gizli jetonun değerini kontrol edebilirsiniz.
+When using Iron.io [push queues](#push-queues), you should take extra precaution queueing Closures. The end-point that receives your queue messages should check for a token to verify that the request is actually from Iron.io. For example, your push queue end-point should be something like: `https://yourapp.com/queue/receive?token=SecretToken`. You may then check the value of the secret token in your application before marshalling the queue request.
 
 <a name="running-the-queue-listener"></a>
-## Kuyruk Dinleyicileri Çalıştırma
+## Running The Queue Listener
 
-Laravel, kuyruğa itildikçe yeni işler çalıştıran bir Artisan görevi içermektedir. Bu görevi çalıştırmak için `queue:listen` komutunu kullanabilirsiniz:
+Laravel includes an Artisan task that will run new jobs as they are pushed onto the queue. You may run this task using the `queue:listen` command:
 
-#### Kuyruk Dinleyici Başlatılması
+#### Starting The Queue Listener
 
 	php artisan queue:listen
 
-Ayrıca dinleyicinin kullanacağı kuyruk bağlantısını da belirtebilirsiniz:
+You may also specify which queue connection the listener should utilize:
 
 	php artisan queue:listen connection
 
-Unutmamanız gereken şey, bu görev başlatıldıktan sonra elle durdurulana kadar çalışmaya devam edeceğidir. Kuyruk dinleyicinin çalışmayı durdurmamasından emin olmak için [Supervisor](http://supervisord.org/) gibi bir süreç monitörü kullanabilirsiniz.
+Note that once this task has started, it will continue to run until it is manually stopped. You may use a process monitor such as [Supervisor](http://supervisord.org/) to ensure that the queue listener does not stop running.
 
-Kuyruk önceliklerini ayarlamak için `listen` komutuna virgülle ayrılmış bir kuyruk bağlantıları listesi geçebilirsiniz:
+You may pass a comma-delimited list of queue connections to the `listen` command to set queue priorities:
 
 	php artisan queue:listen --queue=high,low
 
-Bu örnekte, `high-connection` üzerindeki işler, her zaman için `low-connection`'dan gelen işlere geçmeden önce yürütülecektir.
+In this example, jobs on the `high-connection` will always be processed before moving onto jobs from the `low-connection`.
 
-#### İş Zaman Aşımı Parametresi Belirleme
+#### Specifying The Job Timeout Parameter
 
-Ayrıca her işin çalışmasına izin verilecek zaman süresini (saniye cinsinden) de ayarlayabilirsiniz:
+You may also set the length of time (in seconds) each job should be allowed to run:
 
 	php artisan queue:listen --timeout=60
 
-#### Kuyruk Uyku Süresinin Belirtilmesi
+#### Specifying Queue Sleep Duration
 
-Ek olarak, yeni işin eyleme alınmadan önce beklenileceği süreyi saniye cinsinden belirtebilirsiniz:
+In addition, you may specify the number of seconds to wait before polling for new jobs:
 
 	php artisan queue:listen --sleep=5
 
-Not: kuyruk sadece kuyrukta iş olmadığı takdirde "uyur". Eğer kuyrukta başka işler varsa, kuyruk uyumaksızın onları çalışmaya devam edecektir.
+Note that the queue only "sleeps" if no jobs are on the queue. If more jobs are available, the queue will continue to work them without sleeping.
 
-#### Kuyruktaki İlk İşin İşleme Geçirilmesi
+#### Processing The First Job On The Queue
 
-Kuyruktaki sadece ilk sıradaki işi yürütmek için `queue:work` komutunu kullanabilirsiniz:
+To process only the first job on the queue, you may use the `queue:work` command:
 
 	php artisan queue:work
 
 <a name="daemon-queue-worker"></a>
-## Daemon Kuyruk İşçisi
+## Daemon Queue Worker
 
-`queue:work` ayrıca işlerin işlenmesinin framework tekrar boot edilmeksizin devam etmesi için kuyruk işçisinin zorlanması için bir `--daemon` seçeneği içermektedir. Bu, `queue:listen` komutuyla karşılaştırıldığında CPU kullanımında önemli bir azalmayla sonuçlanır ama yayımlama sırasında halihazırda çalışmakta olan kuyrukların drene edilmesi gerekliliği karmaşıklığını ekler.
+The `queue:work` also includes a `--daemon` option for forcing the queue worker to continue processing jobs without ever re-booting the framework. This results in a significant reduction of CPU usage when compared to the `queue:listen` command, but at the added complexity of needing to drain the queues of currently executing jobs during your deployments.
 
-Bir kuyruk işçisini daemon modunda başlatmak için, `--daemon` flagını kullanın:
+To start a queue worker in daemon mode, use the `--daemon` flag:
 
 	php artisan queue:work connection --daemon
 
@@ -186,78 +183,87 @@ Bir kuyruk işçisini daemon modunda başlatmak için, `--daemon` flagını kull
 
 	php artisan queue:work connection --daemon --sleep=3 --tries=3
 
-Gördüğünüz gibi, `queue:work` komutu `queue:listen` için kullanılan seçeneklerin pek çoğunu desteklemektedir. Mevcut seçeneklerin tümünü görmek için `php artisan help queue:work` komutunu kullanabilirsiniz.
+As you can see, the `queue:work` command supports most of the same options available to `queue:listen`. You may use the `php artisan help queue:work` command to view all of the available options.
 
-### Daemon Kuyruk İşçileriyle Yayımlama
+### Deploying With Daemon Queue Workers
 
-Bir uygulamayı daemon kuyruk işçileri kullanarak yayımlamanın en basit yolu yayımlamanızın en başında uygulamanızı bakım (maintenance) moduna koymaktır. Bu `php artisan down` komutu kullanılarak yapılabilir. Uygulama bakım moduna alındıktan sonra, Laravel artık kuyruğa yeni işler kabul etmeyecektir ama mevcut işleri işlemeye devam edecektir.
+The simplest way to deploy an application using daemon queue workers is to put the application in maintenance mode at the beginning of your deployment. This can be done using the `php artisan down` command. Once the application is in maintenance mode, Laravel will not accept any new jobs off of the queue, but will continue to process existing jobs.
 
-Worker'larınızı yeniden başlatmanın en kolay yolu yayımlama scriptinize aşağıdaki komutu dahil etmektir:
+The easiest way to restart your workers is to include the following command in your deployment script:
 
 	php artisan queue:restart
 
-Bu komut tüm kuyruk işçilerine mevcut işlerini işlemeyi bitirdikten sonra yeniden başlatmaları talimatı verecektir.
+This command will instruct all queue workers to restart after they finish processing their current job.
 
-> **Not:** Bu komut restart planlamak için cache sistemine dayanmaktadır. APCu default olarak CLI komutları için çalışmaz. Eğer APCu kullanıyorsanız, APCu yapılandırmanıza `apc.enable_cli=1` ekleyin.
+> **Note:** This command relies on the cache system to schedule the restart. By default, APCu does not work for CLI commands. If you are using APCu, add `apc.enable_cli=1` to your APCu configuration.
 
-### Daemon Kuyruk İşçileri İçin Kodlama
+### Coding For Daemon Queue Workers
 
-Daemon kuyruk işçileri her biri işlerini işlemeden önce frameworkü yeniden başlatmazlar. Bu nedenle, işlerinizi bitirmeden önce çok büyük kaynakları serbest bırakmaya özen göstermelisiniz. Örneğin, GD kitaplığıyla resim manipulasyonu yapıyorsanız, yaptıktan sonra `imagedestroy` ile belleği rahatlatmalısınız.
+Daemon queue workers do not restart the framework before processing each job. Therefore, you should be careful to free any heavy resources before your job finishes. For example, if you are doing image manipulation with the GD library, you should free the memory with `imagedestroy` when you are done.
 
-Benzer şekilde, uzun çalışan daemon'larla kullanıldığı zaman veritabanı bağlantınız kopabilir. Taze bir bağlantınız olmasını temin etmek için `DB::reconnect` metodunu kullanabilirsiniz.
+Similarly, your database connection may disconnect when being used by long-running daemon. You may use the `DB::reconnect` method to ensure you have a fresh connection.
 
 <a name="push-queues"></a>
-## Push Kuyrukları
+## Push Queues
 
-Push kuyrukları size herhangi bir art alan veya arka plan dinleyici çalıştırmaksızın güçlü Laravel 4 kuyruk araçlarını kullanmanıza imkan verir. Push kuyrukları şu anda sadece [Iron.io](http://iron.io) sürücüsü tarafından desteklenmektedir. Başlamak için önce bir Iron.io hesabı oluşturun ve Iron kimlik bilgilerinizi `app/config/queue.php` yapılandırma dosyasına ekleyin.
+Push queues allow you to utilize the powerful Laravel 4 queue facilities without running any daemons or background listeners. Currently, push queues are only supported by the [Iron.io](http://iron.io) driver. Before getting started, create an Iron.io account, and add your Iron credentials to the `config/queue.php` configuration file.
 
-#### Bir Push Kuyruk Aboneliğinin Kayda Geçirilmesi
+#### Registering A Push Queue Subscriber
 
-Daha sonra, yeni push edilmiş kuyruk işlerini alacak bir URL son noktasını kayda geçirmek için `queue:subscribe` Artisan komutunu kullanabilirsiniz:
+Next, you may use the `queue:subscribe` Artisan command to register a URL end-point that will receive newly pushed queue jobs:
 
-	php artisan queue:subscribe queue_name http://falan.com/queue/receive
+	php artisan queue:subscribe queue_name http://foo.com/queue/receive
 
-Şimdi, sizin Iron panonuza giriş yaptığınız zaman, yeni push kuyruğunuzu ve abone olunan URL'yi göreceksiniz. Verilen bir kuyruk için istediğiniz kadar çok URL kaydedebilirsiniz. Sonra da, `queue/receive` son noktanız için bir rota oluşturun ve `Queue::marshal` metodundan cevap döndürün:
+Now, when you login to your Iron dashboard, you will see your new push queue, as well as the subscribed URL. You may subscribe as many URLs as you wish to a given queue. Next, create a route for your `queue/receive` end-point and return the response from the `Queue::marshal` method:
 
 	Route::post('queue/receive', function()
 	{
 		return Queue::marshal();
 	});
 
-Doğru iş işleyici sınıfının ateşlenmesiyle `marshal` metodu ilgilenecektir. Push kuyruğundaki işleri ateşlemek için, konvansiyonal kuyruklar için kullanılan aynı `Queue::push` metodunu kullanmanız yeterlidir.
+The `marshal` method will take care of firing the correct job handler class. To fire jobs onto the push queue, just use the same `Queue::push` method used for conventional queues.
 
 <a name="failed-jobs"></a>
-## Başarısız İşler
+## Failed Jobs
 
-İşler her zaman planladığımız şekilde gitmediğinden, bazen kuyruğa soktuğumuz işler başarılamaz. Dert etmeyin, bu en iyilerimizin bile başına gelir! Laravel bir işin en fazla kaç defa denenmesi gerektiğini belirtmeniz için kolay bir yol içerir. Bir iş bu girişme miktarını aştıktan sonra, `failed_jobs` (başarısız işler) tablosuna eklenecektir. Başarısız işler tablosunun adını `app/config/queue.php` yapılandırma dosyasında ayarlayabilirsiniz.
+Since things don't always go as planned, sometimes your queued jobs will fail. Don't worry, it happens to the best of us! Laravel includes a convenient way to specify the maximum number of times a job should be attempted. After a job has exceeded this amount of attempts, it will be inserted into a `failed_jobs` table. The failed jobs table name can be configured via the `config/queue.php` configuration file.
 
-`failed_jobs` tablosu için bir migrasyon oluşturmak için, `queue:failed-table` komutunu kullanabilirsiniz:
+To create a migration for the `failed_jobs` table, you may use the `queue:failed-table` command:
 
 	php artisan queue:failed-table
 
-Bir işin maksimum kaç defa yapılma girişiminde bulunulacağını `queue:listen` komutunda `--tries` anahtarını kullanarak belirtebilirsiniz:
+You can specify the maximum number of times a job should be attempted using the `--tries` switch on the `queue:listen` command:
 
 	php artisan queue:listen connection-name --tries=3
 
-Eğer bir kuyruk işi başarısız olduğu takdirde çağrılacak bir olay kayda geçirmek isterseniz, `Queue::failing` metodunu kullanabilirsiniz. Bu olay ekibinizi bir e-posta veya [HipChat](https://www.hipchat.com) aracılığıyla bilgilendirmek için harika bir fırsattır.
+If you would like to register an event that will be called when a queue job fails, you may use the `Queue::failing` method. This event is a great opportunity to notify your team via e-mail or [HipChat](https://www.hipchat.com).
 
 	Queue::failing(function($connection, $job, $data)
 	{
 		//
 	});
 
-Başarısız olmuş işlerinizin tümünü görmek için `queue:failed` Artisan komutunu kullanabilirsiniz:
+You may also define a `failed` method directly on a queue job class, allowing you to perform job specific actions when a failure occurs:
+
+	public function failed()
+	{
+		// Called when the job is failing...
+	}
+
+### Retrying Failed Jobs
+
+To view all of your failed jobs, you may use the `queue:failed` Artisan command:
 
 	php artisan queue:failed
 
-Bu `queue:failed` komutu iş ID, bağlantı, kuyruk ve başarısızlık zamanını listeleyecektir. Bunlardan iş ID başarısız işi yeniden denemek için kullanılabilir. Örneğin, ID'si 5 olan başarısız bir işi yeniden denemek için aşağıdaki komut verilmelidir:
+The `queue:failed` command will list the job ID, connection, queue, and failure time. The job ID may be used to retry the failed job. For instance, to retry a failed job that has an ID of 5, the following command should be issued:
 
 	php artisan queue:retry 5
 
-Başarısız bir işi silmek isterseniz, `queue:forget` komutunu kullanabilirsiniz:
+If you would like to delete a failed job, you may use the `queue:forget` command:
 
 	php artisan queue:forget 5
 
-Başarısız işlerinizin tümünü silmek için `queue:flush` komutunu kullanabilirsiniz:
+To delete all of your failed jobs, you may use the `queue:flush` command:
 
 	php artisan queue:flush
