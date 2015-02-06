@@ -1,46 +1,46 @@
 # Artisan CLI
 
-- [Introduction](#introduction)
-- [Usage](#usage)
-- [Calling Commands Outside Of CLI](#calling-commands-outside-of-cli)
-- [Scheduling Artisan Commands](#scheduling-artisan-commands)
+- [Giriş](#introduction)
+- [Kullanım](#usage)
+- [Artisan Komutlarının CLI Dışında Kullanımı](#calling-commands-outside-of-cli)
+- [Zaman Ayarlı Artisan Komutlar](#scheduling-artisan-commands)
 
 <a name="introduction"></a>
-## Introduction
+## Giriş
 
-Artisan is the name of the command-line interface included with Laravel. It provides a number of helpful commands for your use while developing your application. It is driven by the powerful Symfony Console component.
+Artisan, Laravel içerisinde gelen CLI(Komut Satırı Arayüzü)'ın adıdır. Artisan size uygulamanızı geliştirirken birçok yardımcı komut sağlar. Artisan, güçlü Symfony Console bileşeni üzerinden geliştirilmiştir.
 
 <a name="usage"></a>
-## Usage
+## Kullanım
 
-#### Listing All Available Commands
+#### Tüm Artisan Komutlarının Listelenmesi
 
-To view a list of all available Artisan commands, you may use the `list` command:
+Tüm Artisan komutlarının listesini görmek için, `list` komutunu kullanabilirsiniz:
 
 	php artisan list
 
-#### Viewing The Help Screen For A Command
+#### Bir Komut için Yardım Ekranının Görüntülenmesi
 
-Every command also includes a "help" screen which displays and describes the command's available arguments and options. To view a help screen, simply precede the name of the command with `help`:
+Her komut ayrıca bir yardım ekranı içerir. Bu ekran komutların erişilebir parametlerini ve seçeneklerini görüntüler. Yardım ekranını görüntülemek için `help` ile birlikte komutun adını girin:
 
 	php artisan help migrate
 
-#### Specifying The Configuration Environment
+#### Yapılandırma Ortamının Belirtilmesi
 
-You may specify the configuration environment that should be used while running a command using the `--env` switch:
+Bir komut çalışırken `--env` ile kullanılacak yapılandırma ortamını belirtebilirsiniz:
 
 	php artisan migrate --env=local
 
-#### Displaying Your Current Laravel Version
+#### Güncel Laravel Sürümünüzün Gösterilmesi
 
-You may also view the current version of your Laravel installation using the `--version` option:
+Ayrıca Laravel yüklemenizin güncel sürümünü de `--version` seçeneğini kullanarak görebilirsiniz:
 
 	php artisan --version
 
 <a name="calling-commands-outside-of-cli"></a>
-## Calling Commands Outside Of CLI
+## Komutların CLI'in Dışından Çağrılması
 
-Sometimes you may wish to execute an Artisan command outside of the CLI. For example, you may wish to fire an Artisan command from an HTTP route. Just use the `Artisan` facade:
+Bazen Artisan komutlarını CLI dışından çalıştırmaya ihtiyacınız olabilir. Örneğin, Bir HTTP rotasında bit Artisan komutunu Fire ederek çalıştırabiliriz. Sadece `Artisan` facade'ını kullanın:
 
 	Route::get('/foo', function()
 	{
@@ -49,7 +49,7 @@ Sometimes you may wish to execute an Artisan command outside of the CLI. For exa
 		//
 	});
 
-You may even queue Artisan commands so they are processed in the background by your [queue workers](/docs/master/queues):
+Artisan komutlarını kuyruğa ekleyerek arkaplanda [queue workers](/docs/master/queues) tarafından işlenmesini sağlayabilirsiniz:
 
 	Route::get('/foo', function()
 	{
@@ -59,21 +59,21 @@ You may even queue Artisan commands so they are processed in the background by y
 	});
 
 <a name="scheduling-artisan-commands"></a>
-## Scheduling Artisan Commands
+## Artisan Komutlarının Zamanlanması
 
-In the past, developers have generated a Cron entry for each console command they wished to schedule. However, this is a headache. Your console schedule is no longer in source control, and you must SSH into your server to add the Cron entries. Let's make our lives easier. The Laravel command scheduler allows you to fluently and expressively define your command schedule within Laravel itself, and only a single Cron entry is needed on your server.
+Geçmişte, geliştiriciler zaman ayarlı olarak çalıştırmak istedikleri her bir komut için bir Cron tanımalaması yapmak zorundaydırlar. Ancak, bu bir baş ağrısıdır. Sizin zaman ayarlı komutlarınız kaynak kod kontrol sistemi içerisinde değil ve yeni bir Cron tanımlaması yapmak için SSH ile sunucunuza bağlanmanız gerekiyor. Hadi hayatımızı kolaylaştıralım. Laravel komut planlayıcısı sizin zaman ayarlı komutlarınızı tanımlamanızı sağlar ve sizin sunucunuzda sadece bir tane Cron tanımalamasına ihtiyacınız var.
 
-Your command schedule is stored in the `app/Console/Kernel.php` file. Within this class you will see a `schedule` method. To help you get started, a simple example is included with the method. You are free to add as many scheduled jobs as you wish to the `Schedule` object. The only Cron entry you need to add to your server is this:
+Sizin zaman ayarlı komutlarınız `app/Console/Kernel.php` dosyasında tutulur. Bu sınıfın içinde `schedule` isimli bir metod göreceksiniz. Başlamanıza yardımcı olmak için, bu metoda basit bir örnek dahil edilmiştir. `Schedule` nesnesine bir çok zaman ayarlı komutu ekleme konusunda özgürsünüz. Sadece aşağıdaki şekilde bir Cron tanımlaması sunucunuza yapmalısınız:
 
 	* * * * * php /path/to/artisan schedule:run 1>> /dev/null 2>&1
 
-This Cron will call the Laravel command scheduler every minute. Then, Laravel evalutes your scheduled jobs and runs the jobs that are due. It couldn't be easier!
+Bu Cron her saniye Laravel komut planlayıcısını çağıracak. Sonra, Laravel sizin zaman ayarkı işlerinizi değerlendirir ve and ve bağlantılı olan işleri çalıştırır. Daha kolay olamazdı!
 
-### More Scheduling Examples
+### Daha Fazla Zaman Ayarlı Örnekler
 
-Let's look at a few more scheduling examples:
+Daha fazla zaman ayarlı öğrneğe bakalım:
 
-#### Scheduling Closures
+#### Zaman Ayarlı Closure'lar
 
 	$schedule->call(function()
 	{
@@ -81,15 +81,15 @@ Let's look at a few more scheduling examples:
 
 	})->hourly();
 
-#### Scheduling Terminal Commands
+#### Zaman Ayarlı Terminal Komutları
 
 	$schedule->exec('composer self-update')->daily();
 
-#### Manual Cron Expression
+#### Manuel Cron İfadesi
 
 	$schedule->command('foo')->cron('* * * * *');
 
-#### Frequent Jobs
+#### Belirli Aralıklı Görevler
 
 	$schedule->command('foo')->everyFiveMinutes();
 
@@ -97,42 +97,42 @@ Let's look at a few more scheduling examples:
 
 	$schedule->command('foo')->everyThirtyMinutes();
 
-#### Daily Jobs
+#### Günlük Görevler
 
 	$schedule->command('foo')->daily();
 
-#### Daily Jobs At A Specific Time (24 Hour Time)
+#### Belirli Bir Zamandaki Görevler (24 Saat)
 
 	$schedule->command('foo')->dailyAt('15:00');
 
-#### Twice Daily Jobs
+#### Günde 2 Kere Çalışan Görevler
 
 	$schedule->command('foo')->twiceDaily();
 
-#### Job The Runs Every Weekday
+#### Haftaiçi Hergün Çalışan Görevler
 
 	$schedule->command('foo')->weekdays();
 
-#### Weekly Jobs
+#### Haftalık Görevler
 
 	$schedule->command('foo')->weekly();
 
-	// Schedule weekly job for specific day (0-6) and time...
+	// Haftanın belirli bir gün(0-6) ve saatinde çalışan zaman ayarlı görev...
 	$schedule->command('foo')->weeklyOn(1, '8:00');
 
-#### Monthly Jobs
+#### Aylık Görevler
 
 	$schedule->command('foo')->monthly();
 
-#### Limit The Environment The Jobs Should Run In
+#### Belirli bir ordamda(Environment) çalışacak şekilde sınırlandırma
 
 	$schedule->command('foo')->monthly()->environments('production');
 
-#### Indicate The Job Should Run Even When Application Is In Maintenance Mode
+#### Uygulama bakım modunda olsa bile görevlerin çalıştırılmasını sağlar
 
 	$schedule->command('foo')->monthly()->evenInMaintenanceMode();
 
-#### Only Allow Job To Run When Callback Is True
+#### Sadece Callback True Olduğu Zaman Çalışacak Görev
 
 	$schedule->command('foo')->monthly()->when(function()
 	{
