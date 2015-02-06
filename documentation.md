@@ -15,8 +15,8 @@
     - [Cevaplar (Responses)](/docs/responses)
     - [Görünümler (Views)](/docs/views)
 - Mimari Temeller
-    - [Service Providers](/docs/providers)
-    - [Service Container](/docs/container)
+    - [Servis Sağlayıcılar](/docs/providers)
+    - [Servis Kanteyneri](/docs/container)
     - [Sözleşmeler](/docs/contracts)
     - [Cepheler (Facades)](/docs/facades)
     - [İstek Yaşam Döngüsü](/docs/lifecycle)
