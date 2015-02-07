@@ -13,7 +13,7 @@ Aktif işbirliğini teşvik etmek amacıyla, Laravel şu anda bug bildirimlerini
 
 Eğer bir hata bildirimi hazırlarsan, senin sorunun bir başlık ve net bir açıklama içermelidir. Ayrıca mümkün olduğunca ilgili bilgileri ve sorunu gösteren bir kod örneğini içermelidir. Hata bildiriminin amacı kendini - ve diğerleri - hata çoğaltmak ve düzeltme geliştirmek için kolay hale getirmektirtir.
 
-Unutma, hata raporları diğerleri ile aynı problemi çözme konusunda işbirliği yapmayı mümkün kılacak şekilde oluşturulur. Hata bildirimi otomatik olarak herhangi bir faaliyet görmeyi veya başkalarının onu düzeltmeye hemen başlayacğını bekleme. Hata raporu oluşturma size ve başkalarına sorunu çözme konusunda yardım sağlayacaktır.
+Unutma, hata bildirimleri diğerleri ile aynı problemi çözme konusunda işbirliği yapmayı mümkün kılacak şekilde oluşturulur. Hata bildirimi otomatik olarak herhangi bir faaliyet görmeyi veya başkalarının onu düzeltmeye hemen başlayacğını bekleme. Hata raporu oluşturma size ve başkalarına sorunu çözme konusunda yardım sağlayacaktır.
 
 Laravel kaynak kodu Github'da yönetilmektedir ve Laravel projelerinin her biri için ambarlar vardır:
 
