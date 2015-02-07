@@ -1,29 +1,29 @@
-# Encryption
+# Şifreleme
 
-- [Introduction](#introduction)
-- [Basic Usage](#basic-usage)
+- [Önsöz](#introduction)
+- [Temel Kullanım](#basic-usage)
 
 <a name="introduction"></a>
-## Introduction
+## Önsöz
 
-Laravel provides facilities for strong AES encryption via the Mcrypt PHP extension.
+Laravel Mcrypt PHP eklentisi aracılığı ile güçlü AES şifreleme olanakları sağlar.
 
 <a name="basic-usage"></a>
-## Basic Usage
+## Temel Kullanım
 
-#### Encrypting A Value
+#### Bir Değer Şifreleme
 
 	$encrypted = Crypt::encrypt('secret');
 
-> **Note:** Be sure to set a 16, 24, or 32 character random string in the `key` option of the `config/app.php` file. Otherwise, encrypted values will not be secure.
+> **Not:** `config/app.php` dosyasındaki `key` alanına 16, 24 ya da 32 karakterli rastgele bir dize değerininin tanımlanmış olduğundan emin olun. Aksi durumda, şifreli değerleriniz güvenli olmayacaktır.
 
-#### Decrypting A Value
+#### Bir Değerin Deşifresi
 
 	$decrypted = Crypt::decrypt($encryptedValue);
 
-#### Setting The Cipher & Mode
+#### Şifre Anahtarı & Mod Ayarı
 
-You may also set the cipher and mode used by the encrypter:
+Ayrıca şifreleyicinin kullandığı şifre anahtarını ve modununu değiştirebilirsiniz:
 
 	Crypt::setMode('ctr');
 
