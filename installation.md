@@ -18,8 +18,6 @@ Laravel bağımlılıklarını yönetmek için [Composer](http://getcomposer.org
 
 	composer global require "laravel/installer=~1.1"
 
-Make sure to place the `~/.composer/vendor/bin` directory in your PATH so the `laravel` executable can be located by your system.
-
 Terminalinizde `laravel` komutunu çalıştırdığınızda `laravel` çalıştırıcısının bulunabilmesi için PATH'inizde `~/.composer/vendor/bin` dizininin bulunduğundan emin olun.
 
 Bunu bir kere kurduktan sonra, basit `laravel new` komutu sizin belirttiğiniz dizine yeni bir Laravel yüklemesi oluşturacaktır. Örneğin, `laravel new blog` komutu, içinde tüm bağımlılıkları yüklenmiş yeni bir laravel kurulumu barındıran `blog` klasörünü oluşturacaktır. Bu yolla kurulum yapmak Composer aracılığıyla yüklemekten çok daha hızlıdır:
@@ -49,7 +47,7 @@ PHP 5.5 için, bazı OS yayımlamaları PHP JSON eklentisinin elle yüklenmesini
 
 Laravel'i kurduktan sonra yapmanız gereken ilk şey; rastgele bir dizeden oluşan uygulama anahtarını girmektir. Laravel'i Composer aracılığı ile kurduysanız, bu anahtar sizin için `key:generate` komutu tarafından tanımlanmıştır.
 
-Örneğin, Bu dize 32 karakter uzunluğunda olmalıdır. Bu anahtar`app.php` yapılandırma dosyasında ayarlanabilir. **Eğer uygulama anahtarı değeri tanımlanmamışsa, sizin kullanıcı oturum bilgileriniz ve diğer şifreli verilerinizgüvenli olmayacaktır!**
+Örneğin, Bu dize 32 karakter uzunluğunda olmalıdır. Bu anahtar`app.php` yapılandırma dosyasında ayarlanabilir. **Eğer uygulama anahtarı değeri tanımlanmamışsa, sizin kullanıcı oturum bilgileriniz ve diğer şifreli verileriniz güvenli olmayacaktır!**
 
 Laravel'in çalışabilmesi için neredeyse hiç yapılandırma ayarı gerekmez. Geliştirmeye hemen başlayabilirsiniz! Ancak `config/app.php` dosyasını ve dokümantasyonunu gözden geçirebilirsiniz. Buradaki `timezone` (saat dilimi) ve `locale` gibi değerleri uygulamanızın ihtiyaçlarına göre düzenleyebilirsiniz.
 
@@ -63,7 +61,7 @@ Laravel yüklendikten sonra, [local ortamınızı yapılandırmanız](/docs/mast
 Laravel `storage` dizin içeriğinin web sunucu tarafından yazılabilir olmasını gerektirmektedir.
 
 <a name="pretty-urls"></a>
-## Zarig URL'ler
+## Zarif URL'ler
 
 ### Apache
 
