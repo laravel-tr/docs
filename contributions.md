@@ -1,21 +1,21 @@
-# Contribution Guide
+# Katkıda Bulunma Kılavuzu
 
-- [Bug Reports](#bug-reports)
-- [Core Development Discussion](#core-development-discussion)
-- [Which Branch?](#which-branch)
-- [Security Vulnerabilities](#security-vulnerabilities)
-- [Coding Style](#coding-style)
+- [Bug Bildirimi](#bug-reports)
+- [Çekirdek Geliştirme Tartışmaları](#core-development-discussion)
+- [Hangi Dal?](#which-branch)
+- [Güvenlik Açıkları](#security-vulnerabilities)
+- [Kodlama Biçimi](#coding-style)
 
 <a name="bug-reports"></a>
-## Bug Reports
+## Hata Bildirimi
 
-To encourage active collaboration, Laravel strongly encourages pull requests, not just bug reports. "Bug reports" may also be sent in the form of a pull request containing a failing unit test.
+Aktif işbirliğini teşvik etmek amacıyla, Laravel şu anda bug bildirimlerini değil, sadece çekme isteklerini (pull requests) kabul etmektedir. "Bug bildirimleri" başarısız kalan bir unit testini içeren bir çekme isteği şeklinde gönderilebilir.
 
-However, if you file a bug report, your issue should contain a title and a clear description of the issue. You should also include as much relevant information as possible and a code sample that demonstrates the issue. The goal of a bug report is to make it easy for yourself - and others - to replicate the bug and develop a fix.
+Eğer bir hata bildirimi hazırlarsan, senin sorunun bir başlık ve net bir açıklama içermelidir. Ayrıca mümkün olduğunca ilgili bilgileri ve sorunu gösteren bir kod örneğini içermelidir. Hata bildiriminin amacı kendini - ve diğerleri - hata çoğaltmak ve düzeltme geliştirmek için kolay hale getirmektirtir.
 
-Remember, bug reports are created in the hope that others with the same problem will be able to collaborate with you on solving it. Do not expect that the bug report will automatically see any activity or that others will jump to fix it. Creating a bug report serves to help yourself and others start on the path of fixing the problem.
+Unutma, hata bildirimleri diğerleri ile aynı problemi çözme konusunda işbirliği yapmayı mümkün kılacak şekilde oluşturulur. Hata bildirimi otomatik olarak herhangi bir faaliyet görmeyi veya başkalarının onu düzeltmeye hemen başlayacğını bekleme. Hata raporu oluşturma size ve başkalarına sorunu çözme konusunda yardım sağlayacaktır.
 
-The Laravel source code is managed on Github, and there are repositories for each of the Laravel projects:
+Laravel kaynak kodu Github'da yönetilmektedir ve Laravel projelerinin her biri için ambarlar vardır:
 
 - [Laravel Framework](https://github.com/laravel/framework)
 - [Laravel Application](https://github.com/laravel/laravel)
@@ -28,34 +28,34 @@ The Laravel source code is managed on Github, and there are repositories for eac
 - [Laravel Art](https://github.com/laravel/art)
 
 <a name="core-development-discussion"></a>
-## Core Development Discussion
+## Çekirdek Geliştirme Tartışmaları
 
-Discussion regarding bugs, new features, and implementation of existing features takes place in the `#laravel-dev` IRC channel (Freenode). Taylor Otwell, the maintainer of Laravel, is typically present in the channel on weekdays from 8am-5pm (UTC-06:00 or America/Chicago), and sporadically present in the channel at other times.
+Buglar, yeni özellikler ve mevcut özelliklerin uygulanmasıyla ilgili tartışmalar `#laravel-dev` IRC channel'da (Freenode) gerçekleşmektedir. Laravel'in geliştiricisi Taylor Otwell tipik olarak hafta içinde 8am-5pm (UTC-06:00 or America/Chicago) saatleri arasında bu kanalda bulunmaktadır ve diğer saatlerde zaman zaman kanalda olmaktadır.
 
-The `#laravel-dev` IRC channel is open to all. All are welcome to join the channel either to participate or simply observe the discussions!
+`#laravel-dev` IRC channel herkese açıktır. İster katılımcı olarak ister sadece tartışmaları izlemek için olsun herkesi kanala bekliyoruz!
 
 <a name="which-branch"></a>
-## Which Branch?
+## Hangi Dal?
 
-**All** bug fixes should be sent to the latest stable branch. Bug fixes should **never** be sent to the `master` branch unless they fix features that exist only in the upcoming release.
+**Tüm** bug düzeltmeleri en son kararlı dala gönderilmelidir. Bug düzeltmeleri, düzeltilen özellikler sadece çıkacak sürümde mevcut olmadığı sürece **asla** `master` dalına gönderilmemelidir.
 
-**Minor** features that are **fully backwards compatible** with the current Laravel release may be sent to the latest stable branch.
+Güncel Laravel sürümü ile **geriye dönük tam uyumlu** **Minor** özellikler en son kararlı dala gönderilebilir.
 
-**Major** new features should always be sent to the `master` branch, which contains the upcoming Laravel release.
+**Major** yeni özellikler her zaman için `master` dalına gönderilmelidir; bu dal, çıkacak Laravel sürümünü içerir.
 
-If you are unsure if your feature qualifies as a major or minor, please ask Taylor Otwell in the `#laravel-dev` IRC channel (Freenode).
+Sizin özelliğin major mu minör mü olduğundan emin değilseniz lütfen `#laravel-dev` IRC channel (Freenode)'da Taylor Otwell'e sorun.
 
 <a name="security-vulnerabilities"></a>
-## Security Vulnerabilities
+## Güvenlik Açıkları
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell at <a href="mailto:taylorotwell@gmail.com">taylorotwell@gmail.com</a>. All security vulnerabilities will be promptly addressed.
+Laravelde bir güvenlik açığı keşfederseniz, lütfen <a href="mailto:taylorotwell@gmail.com">taylorotwell@gmail.com</a> adresinden Taylor Otwell'e bir e-posta gönderin. Tüm güvenlik açıkları derhal ele alınacaktır.
 
 <a name="coding-style"></a>
-## Coding Style
+## Kodlama Biçimi
 
-Laravel follows the [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) and [PSR-1](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md) coding standards. In addition to these standards, the following coding standards should be followed:
+Laravel [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) ve [PSR-1](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md) kodlama standartlarını takip eder. Bu standartlara ek olarak, aşağıdaki kodlama standartlarına uyulmalıdır:
 
-- The class namespace declaration must be on the same line as `<?php`.
-- A class' opening `{` must be on the same line as the class name.
-- Functions and control structures must use Allman style braces.
-- Indent with tabs, align with spaces.
+- Sınıf aduzayı beyanları `<?php` ile aynı satırda olmalıdır.
+- Bir sınıfın açılışı `{` sınıf ismi ile aynı satırda olmalıdır.
+- Fonksiyon ve kontrol yapıları Allman biçimi parantezler kullanmalıdır.
+- Sekmelerle girintileyin, boşluklarla hizalayın.
