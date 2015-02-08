@@ -1,16 +1,16 @@
 # Contracts
 
-- [Introduction](#introduction)
+- [Giriş](#introduction)
 - [Why Contracts?](#why-contracts)
 - [Contract Reference](#contract-reference)
 - [How To Use Contracts](#how-to-use-contracts)
 
 <a name="introduction"></a>
-## Introduction
+## Giriş
 
-Laravel's Contracts are a set of interfaces that define the core services provided by the framework. For example, a `Queue` contract defines the methods needed for queueing jobs, while the `Mailer` contract defines the methods needed for sending e-mail.
+Laravel'in Sözleşmeleri (Contracts) Laravel'in çekirdeğindeki komponentleri açıklayan interfacelerdir. Örneğin, bir `Queue` sözleşmesi, Laravel'in kuyruk sistemindeki gerekli methodları belirtir. Aynı şekilde, `Mailer` sözleşmesi de e-mail gönderimi için gerekli olan methodları belirtir.
 
-Each contract has a corresponding implementation provided by the framework. For example, Laravel provides a `Queue` implementation with a variety of drivers, and a `Mailer` implementation that is powered by [SwiftMailer](http://swiftmailer.org/).
+Her sözleşmenin Laravel çekirdeğinde bir implementasyonu bulunmaktadır. Örneğin, Laravel `Queue` (Kuyruk) fonksiyonalitesini, `Queue` sözleşmesine sadık kalan birçok driver implementasyonu üzerinden gerçekleştirirken, `Mailer` fonksiyonalitesini ise [SwiftMailer](http://swiftmailer.org/) paketi üzerinden gerçekleştirir.
 
 All of the Laravel contracts live in [their own GitHub repository](https://github.com/illuminate/contracts). This provides a quick reference point for all available contracts, as well as a single, decoupled package that may be utilized by other package developers.
 
