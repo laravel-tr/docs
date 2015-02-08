@@ -3,12 +3,12 @@
 - [Giriş](#introduction)
 - [Kullanım](#usage)
 - [Artisan Komutlarının CLI Dışında Kullanımı](#calling-commands-outside-of-cli)
-- [Zaman Ayarlı Artisan Komutlar](#scheduling-artisan-commands)
+- [Zaman Ayarlı Artisan Komutları](#scheduling-artisan-commands)
 
 <a name="introduction"></a>
 ## Giriş
 
-Artisan, Laravel içerisinde gelen CLI(Komut Satırı Arayüzü)'ın adıdır. Artisan size uygulamanızı geliştirirken birçok yardımcı komut sağlar. Artisan, güçlü Symfony Console bileşeni üzerinden geliştirilmiştir.
+Artisan, Laravel içerisinde gelen CLI (Komut Satırı Arayüzü)'ın adıdır. Artisan size uygulamanızı geliştirirken birçok yardımcı komut sağlar. Artisan, güçlü Symfony Console bileşeni üzerinden geliştirilmiştir.
 
 <a name="usage"></a>
 ## Kullanım
@@ -40,7 +40,7 @@ Ayrıca Laravel yüklemenizin güncel sürümünü de `--version` seçeneğini k
 <a name="calling-commands-outside-of-cli"></a>
 ## Komutların CLI'in Dışından Çağrılması
 
-Bazen Artisan komutlarını CLI dışından çalıştırmaya ihtiyacınız olabilir. Örneğin, Bir HTTP rotasında bit Artisan komutunu Fire ederek çalıştırabiliriz. Sadece `Artisan` facade'ını kullanın:
+Bazen Artisan komutlarını CLI dışından çalıştırmaya ihtiyacınız olabilir. Örneğin, Bir HTTP rotasındayken bir Artisan komutunu ateşleyerek çalıştırabiliriz. Bunu yapmak için sadece `Artisan` facade'ını kullanmanız yeterlidir:
 
 	Route::get('/foo', function()
 	{
@@ -61,7 +61,7 @@ Artisan komutlarını kuyruğa ekleyerek arkaplanda [queue workers](/docs/master
 <a name="scheduling-artisan-commands"></a>
 ## Artisan Komutlarının Zamanlanması
 
-Geçmişte, geliştiriciler zaman ayarlı olarak çalıştırmak istedikleri her bir komut için bir Cron tanımalaması yapmak zorundaydırlar. Ancak, bu bir baş ağrısıdır. Sizin zaman ayarlı komutlarınız kaynak kod kontrol sistemi içerisinde değil ve yeni bir Cron tanımlaması yapmak için SSH ile sunucunuza bağlanmanız gerekiyor. Hadi hayatımızı kolaylaştıralım. Laravel komut planlayıcısı sizin zaman ayarlı komutlarınızı tanımlamanızı sağlar ve sizin sunucunuzda sadece bir tane Cron tanımalamasına ihtiyacınız var.
+Geçmişte, geliştiriciler zaman ayarlı olarak çalıştırmak istedikleri her bir komut için bir Cron tanımalaması yapmak zorundaydılar. Ancak, bu bir baş ağrısıdır. Sizin zaman ayarlı komutlarınız kaynak kod kontrol sistemi içerisinde olmadığından dolayı, yeni bir Cron tanımlaması yapmak için SSH ile sunucunuza bağlanmanız gerekmekteydi. Hadi hayatımızı kolaylaştıralım. Laravel komut planlayıcısı sizin zaman ayarlı komutlarınızı tanımlamanızı sağlar ve sizin sunucunuzda sadece bir tane Cron tanımalamasına ihtiyaç duyar.
 
 Sizin zaman ayarlı komutlarınız `app/Console/Kernel.php` dosyasında tutulur. Bu sınıfın içinde `schedule` isimli bir metod göreceksiniz. Başlamanıza yardımcı olmak için, bu metoda basit bir örnek dahil edilmiştir. `Schedule` nesnesine bir çok zaman ayarlı komutu ekleme konusunda özgürsünüz. Sadece aşağıdaki şekilde bir Cron tanımlaması sunucunuza yapmalısınız:
 
