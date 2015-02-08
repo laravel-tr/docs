@@ -1,7 +1,7 @@
 # Contracts
 
 - [Giriş](#introduction)
-- [Why Contracts?](#why-contracts)
+- [Neden sözleşmeleri kullanıyoruz?](#why-contracts)
 - [Contract Reference](#contract-reference)
 - [How To Use Contracts](#how-to-use-contracts)
 
@@ -12,18 +12,18 @@ Laravel'in Sözleşmeleri (Contracts) Laravel'in çekirdeğindeki komponentleri 
 
 Her sözleşmenin Laravel çekirdeğinde bir implementasyonu bulunmaktadır. Örneğin, Laravel `Queue` (Kuyruk) fonksiyonalitesini, `Queue` sözleşmesine sadık kalan birçok driver implementasyonu üzerinden gerçekleştirirken, `Mailer` fonksiyonalitesini ise [SwiftMailer](http://swiftmailer.org/) paketi üzerinden gerçekleştirir.
 
-All of the Laravel contracts live in [their own GitHub repository](https://github.com/illuminate/contracts). This provides a quick reference point for all available contracts, as well as a single, decoupled package that may be utilized by other package developers.
+Tüm Laravel sözleşmeleri [kendi Github ambarlarında](https://github.com/illuminate/contracts) bulunmaktadır. Böylece tüm sözleşmeler için sabit bir referans noktası sağlanmış olup, paket geliştiricilerin kendi projelerinde kullanabileceği bağımsız bir komponent ortaya çıkmıştır.
 
 <a name="why-contracts"></a>
-## Why Contracts?
+## Neden sözleşmeleri kullanıyoruz?
 
-You may have several questions regarding contracts. Why use interfaces at all? Isn't using interfaces more complicated?
+Sözleşmeler hakkında bazı soru işaretleri bulunabilir. Neden interfaceleri kullanıyoruz? Interfaceleri kullanmak uygulamayı daha da komplike bir hale getirmiyor mu?
 
-Let's distill the reasons for using interfaces to the following headings: loose coupling and simplicity.
+Sözleşme kullanmaktaki amaçlarımızı 2 başlık altında inceleyelim: bağımsızlık ve basitlik.
 
-### Loose Coupling
+### Bağımsızlık
 
-First, let's review some code that is tightly coupled to a cache implementation. Consider the following:
+Öncelikle, Cache implementasyonuna sıkıca bağlanmış bir kod örneği görelim.
 
 	<?php namespace App\Orders;
 
@@ -61,11 +61,11 @@ First, let's review some code that is tightly coupled to a cache implementation.
 
 	}
 
-In this class, the code is tightly coupled to a given cache implementation. It is tightly coupled because we are depending on a concrete Cache class from a package vendor. If the API of that package changes our code must change as well.
+Bu sınıf, cache sınıfına sıkıca bağlanmıştır. Sıkıca bağlanmıştır çünkü bir cache paketini sınıfımız üzerinde direkt olarak kullanmaktayız. Eğer bu paketin API'i değişirse, bizim de kodlarımızı değiştirmemiz gerekecektir.
 
-Likewise, if we want to replace our underlying cache technology (Memcached) with another technology (Redis), we again will have to modify our repository. Our repository should not have so much knowledge regarding who is providing them data or how they are providing it.
+Aynı şekilde, eğer halihazırda kullandığımız bir (Memcached) özelliğini farklı bir teknoloji ile (Redis gibi) kullanmaya kalkarsak, yine kodlarımızı değiştirmemiz gerekecektir. Bizim sınıfımız önbellekleme işleminin nasıl yapılması gerektiği konusunda bilgi sahibi olmak zorunda değildir.
 
-**Instead of this approach, we can improve our code by depending on a simple, vendor agnostic interface:**
+**Belirli bir sınıfa bağlı kalmak yerine, bir sözleşmeye (interfaceye) bağlı kalan herhangi bir implementasyonu kullanabilmeliyiz:**
 
 	<?php namespace App\Orders;
 
@@ -86,9 +86,9 @@ Likewise, if we want to replace our underlying cache technology (Memcached) with
 
 	}
 
-Now the code is not coupled to any specific vendor, or even Laravel. Since the contracts package contains no implementation and no dependencies, you may easily write an alternative implementation of any given contract, allowing you to replace your cache implementation without modifying any of your cache consuming code.
+Artık yazdığımız kod herhangi bir pakete bağlı değildir, Laravel'e bile. Contracts komponenti herhangi bir bağımlılığa sahip olmadığı için, siz kolayca her sözleşme için alternatif bir implementasyon oluşturabilirsiniz.
 
-### Simplicity
+### Basitlik
 
 When all of Laravel's services are neatly defined within simple interfaces, it is very easy to determine the functionality offered by a given service. **The contracts serve as succinct documentation to the framework's features.**
 
