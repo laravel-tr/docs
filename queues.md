@@ -1,29 +1,29 @@
-# Queues
+# Kuyruklar
 
-- [Configuration](#configuration)
-- [Basic Usage](#basic-usage)
-- [Queueing Closures](#queueing-closures)
-- [Running The Queue Listener](#running-the-queue-listener)
-- [Daemon Queue Worker](#daemon-queue-worker)
-- [Push Queues](#push-queues)
-- [Failed Jobs](#failed-jobs)
+- [Yapılandırma](#configuration)
+- [Temel Kullanım](#basic-usage)
+- [Kuyruğa Closure Fonksiyonu Ekleme](#queueing-closures)
+- [Kuyruk Dinleyicileri Çalıştırma](#running-the-queue-listener)
+- [Daemon Kuyruk İşçisi](#daemon-queue-worker)
+- [Push Kuyrukları](#push-queues)
+- [Başarısız İşler](#failed-jobs)
 
 <a name="configuration"></a>
-## Configuration
+## Yapılandırma
 
-The Laravel Queue component provides a unified API across a variety of different queue services. Queues allow you to defer the processing of a time consuming task, such as sending an e-mail, until a later time, thus drastically speeding up the web requests to your application.
+Laravel'in Queue (kuyruk) bileşeni bir takım farklı kuyruk servisleri için tek bir API sağlamaktadır. Kuyruklar e-mail göndermek gibi zaman harcayan görevleri ileri bir zamana kadar ertelemenize imkan verir ve böylece uygulamanıza yapılan web istekleri büyük ölçüde hızlanır.
 
-The queue configuration file is stored in `config/queue.php`. In this file you will find connection configurations for each of the queue drivers that are included with the framework, which includes a database, [Beanstalkd](http://kr.github.com/beanstalkd), [IronMQ](http://iron.io), [Amazon SQS](http://aws.amazon.com/sqs), [Redis](http://redis.io), null, and synchronous (for local use) driver. The `null` queue driver simply discards queued jobs so they are never run.
+Kuyruk yapılandırma dosyası `config/queue.php` olarak saklanır. Bu dosyada framework'e dahil edilmiş kuyruk sürücülerinin her birisi için bağlantı yapılandırmaları bulacaksınız. Laravel'deki kuyruk sürücüleri arasında veritabanı, [Beanstalkd](http://kr.github.com/beanstalkd), [IronMQ](http://iron.io), [Amazon SQS](http://aws.amazon.com/sqs), [Redis](http://redis.io), null ve senkronize (lokal kullanım için) sürücü yer almaktadır. `null` kuyruk sürücüsü işleri kuyruğa sokar fakat bunları asla çalıştırma.
 
-### Queue Database Table
+### Kuyruk Veritabanı Tablosu
 
-In order to use the `database` queue driver, you will need a database table to hold the jobs. To generate a migration to create this table, run the `queue:table` Artisan command:
+Kuyruk sürücüsü olarak `veritabanı` kullanırsanız, işleri tutmak için bir veritabanı tablosuna ihtiyacınız olacak. Bu tabloyu yaratmak için bir migration oluşturmak için `queue:table` Artisan komutnu çalıştırın:
 
 	php artisan queue:table
 
-### Other Queue Dependencies
+### Diğer Kuyruk Bağımlılıkları
 
-The following dependencies are needed for the listed queue drivers:
+Listelenen bu kuyruk sürücüleri için aşağıdaki bağımlılıklar gereklidir:
 
 - Amazon SQS: `aws/aws-sdk-php`
 - Beanstalkd: `pda/pheanstalk ~3.0`
@@ -31,15 +31,15 @@ The following dependencies are needed for the listed queue drivers:
 - Redis: `predis/predis ~1.0`
 
 <a name="basic-usage"></a>
-## Basic Usage
+## Temel Kullanım
 
-#### Pushing A Job Onto The Queue
+#### Bir İşin Kuyruğa Sokulması
 
 All of the queueable jobs for your application are stored in the `App\Commands` directory. You may generate a new queued command using the Artisan CLI:
 
 	php artisan make:command SendEmail --queued
 
-To push a new job onto the queue, use the `Queue::push` method:
+Kuyruğa yeni bir iş itmek için `Queue::push` metodunu kullanın:
 
 	Queue::push(new SendEmail($message));
 
