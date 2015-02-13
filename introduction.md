@@ -1,27 +1,27 @@
-# Introduction
+# Tanıtım
 
-- [Where To Start](#where-to-start)
-- [Laravel Philosophy](#laravel-philosophy)
+- [Nereden Başlamalı](#where-to-start)
+- [Laravel Felsefesi](#laravel-philosophy)
 
 <a name="where-to-start"></a>
-## Where To Start
+## Nereden Başlamalı
 
-Learning a new framework can be daunting, but it's also exciting. To smooth your transition, we've attempted to create very clear, concise documentation for Laravel. Here are some recommendations for what to read first:
+Yeni bir frameworkün öğrenilmesi zorlayıcı olabilir ama aynı zamanda heyecan vericidir. Geçişinizi kolaylaştırmak için çok temiz, özlü bir Laravel dokümantasyonu oluşturmaya çalıştık. İşte ilk önce neyi okuyacağınız konusunda bazı öneriler:
 
-- [Installation](/docs/master/installation) and [Configuration](/docs/master/configuration)
-- [Routing](/docs/master/routing)
-- [Requests & Input](/docs/master/requests)
-- [Responses](/docs/master/responses)
-- [Views](/docs/master/views)
-- [Controllers](/docs/master/controllers)
+- [Kurulum](/docs/master/installation) ve [Yapılandırma](/docs/master/configuration)
+- [Rotalar](/docs/master/routing)
+- [İstekler (Requests) & Girdi (Input)](/docs/master/requests)
+- [Cevaplar (Responses)](/docs/master/responses)
+- [Görünümler (Views)](/docs/master/views)
+- [Denetçiler (Controllers)](/docs/master/controllers)
 
-After reading through these documents, you should have a good grasp on basic request / response handling in Laravel. Next, you may wish to read about [configuring your database](/docs/master/database), the [fluent query builder](/docs/master/queries), and the [Eloquent ORM](/docs/master/eloquent). Or, you may wish to read about [authentication and security](/docs/master/authentication) so you can start signing people into your application.
+Bu belgeleri iyice okuduktan sonra, Laravelde temel istek / cevap işleyişi üzerinde iyi bir kavrayışa sahip olacaksınız. Daha sonra, [veritbanınızın yapılandırılması](/docs/master/database), the [fluent sorgu oluşturucusu](/docs/master/queries) ve [Eloquent ORM](/docs/master/eloquent) konularını okumak isteyebilirsiniz. Yada, insanları uygulamanızda oturum açmaya başlatabilmek için [kimlik doğrulama ve güvenlik](/docs/master/authentication) konularını okumak isteyebilirsiniz.
 
 <a name="laravel-philosophy"></a>
-## Laravel Philosophy
+## Laravel Felsefesi
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as authentication, routing, sessions, and caching.
+Laravel etkileyici ve zarif sözdizimine sahip bir web uygulama çatısıdır (framework). Bizler geliştirmenin gerçekten tatmin edici olması için keyifli ve üretken bir deneyim olması gerektiğine inanıyoruz. Laravel birçok web uygulamasında kullanılan yetkilendirme, rotalama, oturum yönetimi ve ön bellekleme gibi ortak görevleri kolaylaştırarak, geliştiriciliğin zorluklarını ortadan kaldırmak amacını gütmektedir.
 
-Laravel aims to make the development process a pleasing one for the developer without sacrificing application functionality. Happy developers make the best code. To this end, we've attempted to combine the very best of what we have seen in other web frameworks, including frameworks implemented in other languages, such as Ruby on Rails, ASP.NET MVC, and Sinatra.
+Laravel, geliştiriciler için, uygulama işlevselliğinden ödün vermeden geliştirme aşamasını memnuniyet verici hale getirmeyi amaç edinmiştir. En iyi kodu mutlu geliştiriciler yazar. Bu hedefe varmak için, başka dillerde yazılmış Ruby on Rails, ASP.NET MVC ve Sinatra gibi çatılar da dahil olmak üzere, diğer çatılarda gördüğümüz en iyi özellikleri birleştirmeye çalıştık.
 
-Laravel is accessible, yet powerful, providing powerful tools needed for large, robust applications. A superb inversion of control container, expressive migration system, and tightly integrated unit testing support give you the tools you need to build any application with which you are tasked.
+Laravel büyük, kapsamlı uygulamalar için gereken araçları içeren erişilebilir, aynı zamanda güçlü bir çatıdır. Mükemmel kontrol konteyneri, etkileyici migrasyon sistemi ve sağlam bir yerleşik ünite test desteği size geliştirmeyi amaçladığınız uygulama için gerekli araçları sağlayacaktır.
