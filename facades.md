@@ -1,38 +1,38 @@
-# Facades
+# Cepheler (Facades)
 
-- [Introduction](#introduction)
-- [Explanation](#explanation)
-- [Practical Usage](#practical-usage)
-- [Creating Facades](#creating-facades)
-- [Mocking Facades](#mocking-facades)
-- [Facade Class Reference](#facade-class-reference)
+- [Giriş](#introduction)
+- [Açıklama](#explanation)
+- [Pratik Kullanım](#practical-usage)
+- [Cephe Oluşturma](#creating-facades)
+- [Cepheleri Taklit Etme](#mocking-facades)
+- [Facade Sınıf Referansı](#facade-class-reference)
 
 <a name="introduction"></a>
-## Introduction
+## Giriş
 
-Facades provide a "static" interface to classes that are available in the application's [IoC container](/docs/ioc). Laravel ships with many facades, and you have probably been using them without even knowing it! Laravel "facades" serve as "static proxies" to underlying classes in the IoC container, providing the benefit of a terse, expressive syntax while maintaining more testability and flexibility than traditional static methods.
+Cepheler uygulamanızın [IoC konteynerinde](/docs/ioc) bulunan sınıflar için "statik" bir arayüz sağlar. Laravel birçok cephe ile gelmektedir ve büyük bir ihtimalle daha ne olduklarını bilmeden onları kullanıyorsunuzdur! Laravel "facade'ları" IoC konteynerindeki altta yatan sınıflara "static proksiler" olarak hizmet ederek, geleneksel static metodlardan daha fazla test edilebilirlik ve esneklik sürdürürken özlü ve anlamlı sözdizimi yararını sağlarlar.
 
-Occasionally, You may wish to create your own facades for your applications and packages, so let's explore the concept, development and usage of these classes.
+Zaman zaman, uygulama ve paketleriniz için kendi cephelerinizi oluşturmak isteyebilirsiniz, bu itibarla bu sınıfların kavramlarını, geliştirilmesini ve kullanımını inceleyelim.
 
-> **Note:** Before digging into facades, it is strongly recommended that you become very familiar with the Laravel [IoC container](/docs/ioc).
+> **Not:** Cepheler konusunu incelemeden önce Laravel [IoC konteyneri](/docs/ioc) ile çok aşina olmanız kuvvetle önerilir.
 
 <a name="explanation"></a>
-## Explanation
+## Açıklama
 
-In the context of a Laravel application, a facade is a class that provides access to an object from the container. The machinery that makes this work is in the `Facade` class. Laravel's facades, and any custom facades you create, will extend the base `Facade` class.
+Bir Laravel uygulaması bağlamında bir cephe bir nesneye onun konteynerinden erişim sağlayan bir sınıf demektir. Bu işi yapan mekanizmalar `Facade` sınıfında tanımlıdır. Laravel'in cepheleri ve sizin oluşturduğunuz kendi cepheleriniz bu temel `Facade` sınıfından türeyecektir.
 
-Your facade class only needs to implement a single method: `getFacadeAccessor`. It's the `getFacadeAccessor` method's job to define what to resolve from the container. The `Facade` base class makes use of the `__callStatic()` magic-method to defer calls from your facade to the resolved object.
+Sizin cephe sınıfınız sadece tek bir metoda tatbikat getirmesi gerekiyor: `getFacadeAccessor`. `getFacadeAccessor` methodunun tanımlayacağı iş konteynerden ne çözeceğidir. `Facade` temel sınıfı sizin cephelerinizden, çözülmüş nesneye yapılan çağrıları ertelemek için `__callStatic()` sihirli-metodunu kullanır.
 
-So, when you make a facade call like `Cache::get`, Laravel resolves the Cache manager class out of the IoC container and calls the `get` method on the class. In technical terms, Laravel Facades are a convenient syntax for using the Laravel IoC container as a service locator.
+Böylece, siz `Cache::get` gibi bir facade çağrısı yaptığınız zaman, Laravel IoC konteynerindeki Cache manager sınıfını çözümler ve o sınıftaki `get` metodunu çağırır. Teknik açıdan ifade edilirse, Laravel Facade'ları bir hizmet bulucu olarak Laravel IoC konteynerinin kullanılması için pratik bir sözdizimidir.
 
 <a name="practical-usage"></a>
-## Practical Usage
+## Pratik Kullanım
 
-In the example below, a call is made to the Laravel cache system. By glancing at this code, one might assume that the static method `get` is being called on the `Cache` class.
+Aşağıdaki örnekte, Laravel önbellekleme sistemine bir çağrı yapılmış. Bu koda göz attığınızda, `Cache` sınıfında statik bir metod olan `get`'in çağrılıyor olduğunu düşünebilirsiniz.
 
-	$value = Cache::get('key');
+	$deger = Cache::get('anahtar');
 
-However, if we look at that `Illuminate\Support\Facades\Cache` class, you'll see that there is no static method `get`:
+Ancak, eğer `Illuminate\Support\Facades\Cache` sınıfına bakacak olursak, orada `get` adında statik bir metod olmadığını görürüz :
 
 	class Cache extends Facade {
 
@@ -45,13 +45,13 @@ However, if we look at that `Illuminate\Support\Facades\Cache` class, you'll see
 
 	}
 
-The Cache class extends the base `Facade` class and defines a method `getFacadeAccessor()`. Remember, this method's job is to return the name of an IoC binding.
+Bu Cache sınıfı temel `Facade` sınıfından türetilmiş ve `getFacadeAccessor()` adında bir metod tanımlamış. Bu metodun işinin bir IoC bağlamasının adını döndürmek olduğunu hatırlayın.
 
-When a user references any static method on the `Cache` facade, Laravel resolves the `cache` binding from the IoC container and runs the requested method (in this case, `get`) against that object.
+Bir kullanıcı `Cache` cephesinde herhangi bir statik metoda başvurduğunda, Laravel, IoC konteynerinden `cache` bağlamasını çözecek ve istenen metodu (bu örnekte `get`) bu nesneden çalıştıracaktır.
 
-So, our `Cache::get` call could be re-written like so:
+Yani bizim `Cache::get` çağrımız şu şekilde yeniden yazılabilir:
 
-	$value = $app->make('cache')->get('key');
+	$deger = $app->make('cache')->get('anahtar');
 
 #### Importing Facades
 
@@ -78,15 +78,15 @@ Remember, if you are using a facade when a controller that is namespaced, you wi
 	}
 
 <a name="creating-facades"></a>
-## Creating Facades
+## Cephe Oluşturma
 
-Creating a facade for your own application or package is simple. You only need 3 things:
+Kendi uygulama veya paketiniz için bir cephe oluşturulması kolaydır. Sadece üç şeye ihtiyacınız vardır:
 
-- An IoC binding.
-- A facade class.
-- A facade alias configuration.
+- Bir IoC bağlayıcısı.
+- Bir cephe sınıfı.
+- Bir cephe takma adı yapılandırması.
 
-Let's look at an example. Here, we have a class defined as `PaymentGateway\Payment`.
+Bir örnek bakalım. Burada, `PaymentGateway\Payment` olarak tanımlanmış bir sınıfımız var.
 
 	namespace PaymentGateway;
 
@@ -106,9 +106,9 @@ We need to be able to resolve this class from the IoC container. So, let's add a
 		return new \PaymentGateway\Payment;
 	});
 
-A great place to register this binding would be to create a new [service provider](/docs/ioc#service-providers) named `PaymentServiceProvider`, and add this binding to the `register` method. You can then configure Laravel to load your service provider from the `config/app.php` configuration file.
+Bu bağlamayı kayda geçirmek için harika bir yer `PaymentServiceProvider` adında yeni bir [hizmet sağlayıcı](/docs/ioc#service-providers) oluşturmak ve bu bağlamayı `register` metoduna eklemek olacaktır. Daha sonra Laravel'i sizin hizmet sağlayıcınızı `config/app.php` yapılandırma dosyasından yükleyecek şekilde yapılandırın.
 
-Next, we can create our own facade class:
+Daha sonra, kendi cephe sınıfımızı oluşturabiliriz:
 
 	use Illuminate\Support\Facades\Facade;
 
@@ -118,25 +118,25 @@ Next, we can create our own facade class:
 
 	}
 
-Finally, if we wish, we can add an alias for our facade to the `aliases` array in the `config/app.php` configuration file. Now, we can call the `process` method on an instance of the `Payment` class.
+Son olarak, eğer istiyorsak, `config/app.php` yapılandırma dosyasındaki `aliases` dizisine kendi cephe'miz için bir takma ad ekleyebiliriz. Artık, `process` metodunu `Payment` sınıfının bir olgusunda çağırabiliriz.
 
 	Payment::process();
 
-### A Note On Auto-Loading Aliases
+### Alias (Takma Ad)'ların Otomatik Yüklenmesi Üzerine Bir Bilgi Notu
 
-Classes in the `aliases` array are not available in some instances because [PHP will not attempt to autoload undefined type-hinted classes](https://bugs.php.net/bug.php?id=39003). If `\ServiceWrapper\ApiTimeoutException` is aliased to `ApiTimeoutException`, a `catch(ApiTimeoutException $e)` outside of the namespace `\ServiceWrapper` will never catch the exception, even if one is thrown. A similar problem is found in classes which have type hints to aliased classes. The only workaround is to forego aliasing and `use` the classes you wish to type hint at the top of each file which requires them.
+[PHP, tanımlanmamış tip dayatmalı sınıfları otomatik olarak yüklemeye çalışmayacağı için](https://bugs.php.net/bug.php?id=39003) `aliases` dizisindeki sınıflar bazı durumlarda kullanılamamaktadır. `\ServiceWrapper\ApiTimeoutException` sınıfı eğer `ApiTimeoutException` olarak aliaslanmış ise, namespace `\ServiceWrapper` aduzayının dışındaki bir `catch(ApiTimeoutException $e)` ifadesi bu istisnayı hiçbir zaman, hatta istisna çıkması durumunda bile yakalamayacaktır. Benzer bir durum, aliaslanmış sınıflara tip dayatması olan Sınıf'larda da bulunmuştur. Tek geçici çözüm, aliaslamaktan vazgeçmek ve tip dayatması yapmak istediğiniz sınıfları bunları gerektiren her dosyanın en başında `use` etmektir.
 
 <a name="mocking-facades"></a>
-## Mocking Facades
+## Cepheleri Taklit Etme
 
-Unit testing is an important aspect of why facades work the way that they do. In fact, testability is the primary reason for facades to even exist. For more information, check out the [mocking facades](/docs/testing#mocking-facades) section of the documentation.
+Ünite testi cephelerin nasıl çalıştıkları konusunda önemli bir husustur. Gerçekten, cephelerin varlıkları için bile ilk neden test edilebilirliktir. Daha fazla bilgi için, belgelerdeki [Cepheleri Taklit Etme](/docs/testing#mocking-facades) kesimine bakın.
 
 <a name="facade-class-reference"></a>
-## Facade Class Reference
+## Facade Sınıf Referansı
 
-Below you will find every facade and its underlying class. This is a useful tool for quickly digging into the API documentation for a given facade root. The [IoC binding](/docs/ioc) key is also included where applicable.
+Aşağıda, her facade'ı ve onun altında yatan sınıfı bulacaksınız. Bu, verilen bir facade kökü için API dokümantasyonuna hızla girme için yararlı bir araçtır. Uygun olduğunda [IoC bağlama](/docs/ioc) anahtarı da dahil edilmiştir.
 
-Facade  |  Class  |  IoC Binding
+Facade  |  Sınıf  |  IoC Bağlaması
 ------------- | ------------- | -------------
 App  |  [Illuminate\Foundation\Application](http://laravel.com/api/5.0/Illuminate/Foundation/Application.html)  | `app`
 Artisan  |  [Illuminate\Console\Application](http://laravel.com/api/5.0/Illuminate/Console/Application.html)  |  `artisan`
