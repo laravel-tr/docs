@@ -22,12 +22,12 @@ Out of the box, Laravel supported `single`, `daily`, and `syslog` logging modes.
 
 The amount of error detail your application displays through the browser is controlled by the `app.debug` configuration option in your `config/app.php` configuration file. By default, this configuration option is set to respect the `APP_DEBUG` environment variable, which is stored in your `.env` file.
 
-For local development, you should set the `APP_DEBUG` environment variable to `true`. **In your production environment, this value should always be `false`.**
+Lokal geliştirme ortamınız için, `APP_DEBUG` ortam değişkenini `true` olarak ayarlamalısınız. ** Üretim ortamınızda ise bu değer daima `false` olmalıdır.**
 
 <a name="handling-errors"></a>
 ## Hataların İşlenmesi
 
-All exceptions are handled by the `App\Exceptions\Handler` class. This class contains two methods: `report` and `render`.
+Tüm istisnalar `App\Exceptions\Handler` sınıfı ile karşılanmaktadır. Bu sınıf 2 metod içerir: `report` ve `render`.
 
 The `report` method is used to log exceptions or send them to an external service like [BugSnag](https://bugsnag.com). By default, the `report` method simply passes the exception to the base implementation on the parent class where the exception is logged. However, you are free to log exceptions however you wish. If you need to report different types of exceptions in different ways, you may use the PHP `instanceof` comparison operator:
 
