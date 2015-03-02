@@ -8,15 +8,15 @@
 <a name="configuration"></a>
 ## Yapılandırma
 
-The logging facilities for your application are configured in the `Illuminate\Foundation\Bootstrap\ConfigureLogging` bootstrapper class. This class utilizees the `log` configuration option from your `config/app.php` configuration file.
+Sizin uygulamanızın günlükleme özellikleri `Illuminate\Foundation\Bootstrap\ConfigureLogging` dosyasındaki önyükleyici sınıfında yapılandırılmıştır. Bu sınıf sizin `config/app.php` yapılandırma dosyanızdan yapılandırma seçeneğini `log` olarak ayarlar.
 
-By default, the logger is configured to use daily log files; however, you may customize this behavior as needed. Since Laravel uses the popular [Monolog](https://github.com/Seldaek/monolog) logging library, you can take advantage of the variety of handlers that Monolog offers.
+Ön tanımlı olarak, Günlük log dosyalarını kullanacak şekilde ayarlanmıştır. Ancak ihtiyacınız olan şekilde,  bu davranışı özelliştirebilirsiniz. Laravel popüler günlükleme kütüphanesi olan [Monolog](https://github.com/Seldaek/monolog) 'u kullandığından, Monolog'un sunduğu işleyici çeşitliliğinin avantajlarından yararlanabilirsiniz.
 
 Örneğin, tek bir büyük dosya yerine günlük log dosyaları kullanmak istiyorsanız, `config/app.php` dosyanızda aşağıdaki değişikliği yapabilirsiniz:
 
 	'log' => 'single'
 
-Out of the box, Laravel supported `single`, `daily`, and `syslog` logging modes. However, you are free to customize the logging for your application as you wish by overriding the `ConfigureLogging` bootstrapper class.
+Resmi olarak, Laravel `single`, `daily` ve `syslog` günlükleme modlarını destekler. Ancak, Siz `ConfigureLogging` önyükleyici sınıfını ezerek, uygulamanız günlüğü özelleştirme konusunda özgürsünüz.
 
 ### Hata Ayrıntısı
 
