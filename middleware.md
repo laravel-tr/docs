@@ -1,30 +1,30 @@
 # HTTP Middleware
 
-- [Introduction](#introduction)
-- [Defining Middleware](#defining-middleware)
-- [Registering Middleware](#registering-middleware)
+- [Giriş](#introduction)
+- [Middleware Tanımlama](#defining-middleware)
+- [Middleware Kaydetme](#registering-middleware)
 
 <a name="introduction"></a>
-## Introduction
+## Giriş
 
-HTTP middleware provide a convenient mechanism for filtering HTTP requests entering your application. For example, Laravel includes a middleware that verifies the user of your application is authenticated. If the user is not authenticated, the middleware will redirect the user to the login screen. However, if the user is authenticated, the middleware will allow the request to proceed further into the application.
+HTTP middleware uygulamalarınıza gelen HTTP isteklerini filtreleyebilmeniz için uygun bir mekanizma sağlar. Örneğin, Laravel içinde dahili olarak bulunan bir middleware kullanıcının giriş yapıp yapmadığını kontrol eder. Eğer kullanıcı giriş yapmamışsa, middleware kullanıcıyı giriş ekranına yönlendirecektir. Ancak, Eğer kullanıcı giriş yapmışsa, uygulamanızın içinde devam edebilmesi için middleware isteğe izin verecektir.
 
-Of course, middleware can be written to perform a variety of tasks besides authentication. A CORS middleware might be responsible for adding the proper headers to all responses leaving your application. A logging middleware might log all incoming requests to your application.
+Tabi ki, kimlik kontrolü dışında çeşitli biçimlerdede middleware yazılabilir. CORS middleware uygulamanızın verdiği tüm cevaplara doğru HTTP Başlıklarını eklemekten sorumlu olabilir. Logging middleware uygulamanıza gelen tüm istekleri loglayabilir.
 
-There are several middleware included in the Laravel framework, including middleware for maintenance, authentication, CSRF protection, and more. All of these middleware are located in the `app/Http/Middleware` directory.
+Laravel frameworkü içinde çeşitli middlewareler vardır, bunlardan bazıları bakım, kimlik kontrolü, CSRF koruması vb. Tüm bu middlewareler `app/Http/Middleware` klasörü altında bulunmaktadır.
 
 <a name="defining-middleware"></a>
-## Defining Middleware
+## Middleware Tanımlama
 
-To create a new route filter, use the `make:middleware` Artisan command:
+Yeni bir route filtresi yaratmak için, `make:middleware` Artisan komutunu kullanın:
 
-	php artisan make:middleware OldMiddleware
+	php artisan make:middleware YasliMiddleware
 
-This command will place a new `OldMiddleware` class within your `app/Http/Middleware` directory. In this middleware, we will only allow access to the route if the supplied `age` is greater than 200. Otherwise, we will redirect the users back to the "home" URI.
+Bu komut `YasliMiddleware` sıfınıfı `app/Http/Middleware` klasörü altına yerleştirecektir. Bu middleware ile sadece `age` parametresi 200'den küçük olduğunda route'a erişebilir durumda olacağız. Ötetürlü, kullanıcıyı "home" URI'sine geri yönlendireceğiz.
 
 	<?php namespace App\Http\Middleware;
 
-	class OldMiddleware {
+	class EskiMiddleware {
 
 		/**
 		 * Run the request filter.
@@ -45,20 +45,21 @@ This command will place a new `OldMiddleware` class within your `app/Http/Middle
 
 	}
 
-As you can see, if the given `age` is less than `200`, the middleware will return an HTTP redirect to the client; otherwise, the request will be passed further into the application. To pass the request deeper into the application (allowing the middleware to "pass"), simply call the `$next` callback with the `$request`.
+Gördüğünüz gibi, Eğer `age` parametremiz küçükse `200` den, the middleware will return an HTTP redirect to the client; otherwise, the request will be passed further into the application. To pass the request deeper into the application (allowing the middleware to "pass"), simply call the `$next` callback with the `$request`.
 
-It's best to envision middleware as a series of "layers" HTTP requests must pass through before they hit your application. Each layer can examine the request and even reject it entirely.
+En iyisi middleware'leri gözünüzde HTTP isteklerinin uygulamanıza ulaşmadan önce içinden geçmek zorunda olduğu bir dizi "katman" olarak düşünebilirsiniz.
+Her bir katman gelen isteği sınayabilir hatta tamamen rededebilir.
 
 <a name="registering-middleware"></a>
-## Registering Middleware
+## Middleware Kaydetme
 
-### Global Middleware
+### Evrensel Middleware
 
-If you want a middleware to be run during every HTTP request to your application, simply list the middleware class in the `$middleware` property of your `app/Http/Kernel.php` class.
+Eğer middleware uygulamanıza gelen her bir HTTP isteği için çalışmasını istiyorsanız, basitçe `app/Http/Kernel.php` dosyasındaki `$middleware` özelliğine middleware sınıfınızı ekleyin.
 
-### Assigning Middleware To Routes
+### Middlewareleri Routelara Atama
 
-If you would like to assign middleware to specific routes, you should first assign the middleware a short-hand key in your `app/Http/Kernel.php` file. By default, the `$middleware` property of this class contains entries for the middleware included with Laravel. To add your own, simply append it to this list and assign it a key of your choosing.
+Eğer middleware'inizi belirli bir route'a atamak isterseniz, `app/Http/Kernel.php` dosyasında bulunan middleware'inize bir anahtar kelime tanımlamalısınız. Standart olarak, bu sınıftaki `$middleware` özelliği Laravel içinde dahili gelen Middlewareleride barındırır. Kendinizinkini eklemek için, basitçe listenin sonuna ekleyin ve bir anahtar kelime tanımlayın.
 
 Once the middleware has been defined in the HTTP kernel, you may use the `middleware` key in the route options array:
 
