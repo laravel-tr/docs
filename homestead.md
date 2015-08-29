@@ -36,15 +36,15 @@ Homestead is currently built and tested using Vagrant 1.6.
 - Fabric + HipChat Extension
 
 <a name="installation-and-setup"></a>
-## Installation & Setup
+## Yükleme & Kurulum
 
-### Installing VirtualBox & Vagrant
+### VirtualBox & Vagrant'ı Yükleme
 
-Before launching your Homestead environment, you must install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) and [Vagrant](http://www.vagrantup.com/downloads.html). Both of these software packages provide easy-to-use visual installers for all popular operating systems.
+Homestead ortamınızı çalıştırmadan önce, [VirtualBox](https://www.virtualbox.org/wiki/Downloads) ve [Vagrant](http://www.vagrantup.com/downloads.html)'ı yüklemelisiniz. Her iki program da tüm popüler işletim sistemleri için kullanımı kolay yükleyiciler sağlamaktadır.
 
-### Adding The Vagrant Box
+### Vagrant Kutusunu Ekleme
 
-Once VirtualBox and Vagrant have been installed, you should add the `laravel/homestead` box to your Vagrant installation using the following command in your terminal. It will take a few minutes to download the box, depending on your Internet connection speed:
+VirtualBox ve Vagrant yüklendikten sonra, `laravel/homestead` kutusunu, aşağıdaki komutu, terminalinizde kullanarak  Vagrant yüklemenize eklemelisiniz. Internet hızınıza bağlı olarak, kutuyu indirmek bir kaç dakika alacaktır:
 
 	vagrant box add laravel/homestead
 
