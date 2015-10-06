@@ -44,7 +44,7 @@ Tüm istek işleme mantığı sadece 'routes.php' dosyasında tanımlamak yerine
 
 #### Denetçiler(Controllers) & Ad Alanları(Namespaces)
 
-It is very important to note that we did not need to specify the full controller namespace, only the portion of the class name that comes after the `App\Http\Controllers` namespace "root". By default, the `RouteServiceProvider` will load the `routes.php` file within a route group containing the root controller namespace.
+Unutlmaması gereken çok önemli nokta tam denetçi ad alanını belirtmeye ihtiyaç duymadığımız, sadece sonra gelen sınıf adının kısmı `App\Http\Controllers`dan sonra ad alanı "root(kök)" gelmesi. Varsayılan olarak, 'RouteServiceProvider' 'routes.php' dosyasının kök denetçisi ad alanı içeren bir rota grubu içinde yüklenecektir.
 
 If you choose to nest or organize your controllers using PHP namespaces deeper into the `App\Http\Controllers` directory, simply use the specify the class name relative to the `App\Http\Controllers` root namespace. So, if your full controller class is `App\Http\Controllers\Photos\AdminController`, you would register a route like so:
 
