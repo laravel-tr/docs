@@ -1,21 +1,21 @@
 # HTTP Controllers
 
-- [Introduction](#introduction)
-- [Basic Controllers](#basic-controllers)
-- [Controller Middleware](#controller-middleware)
-- [RESTful Resource Controllers](#restful-resource-controllers)
-- [Dependency Injection & Controllers](#dependency-injection-and-controllers)
-- [Route Caching](#route-caching)
+- [Giriş](#introduction)
+- [Temel Denetçiler (Controllers)](#basic-controllers)
+- [Denetçi Ara Katmanlar (Middleware)](#controller-middleware)
+- [RESTful Kaynak Denetçiler](#restful-resource-controllers)
+- [Enjeksiyon ve Denetçi Bağımlılığı](#dependency-injection-and-controllers)
+- [Rota Önbellekleme (Route Caching)](#route-caching)
 
 <a name="introduction"></a>
-## Introduction
+## Giriş
 
-Instead of defining all of your request handling logic in a single `routes.php` file, you may wish to organize this behavior using Controller classes. Controllers can group related HTTP request handling logic into a class. Controllers are typically stored in the `app/Http/Controllers` directory.
+Tüm istek işleme mantığı sadece 'routes.php' dosyasında tanımlamak yerine, bu işlemi Denetçi(Controller) sınıfları kullanarak düzenlemek isteyebilirsiniz. Denetçileri(Controllers) ilgili HTTP istek işleme mantığını bir sınıfta gruplandırabilirsiniz. Denetçiler(Controllers) genellikle `app/Http/Controllers` dizininde depolanır.
 
 <a name="basic-controllers"></a>
-## Basic Controllers
+## Temel Denetçiler (Controllers)
 
-Here is an example of a basic controller class:
+ Burada bir temel Denetçi sınıfı örneği verilmiştir.
 
 	<?php namespace App\Http\Controllers;
 
@@ -24,7 +24,7 @@ Here is an example of a basic controller class:
 	class UserController extends Controller {
 
 		/**
-		 * Show the profile for the given user.
+		 * Verilen kullanıcı profilini göster.
 		 *
 		 * @param  int  $id
 		 * @return Response
@@ -36,13 +36,13 @@ Here is an example of a basic controller class:
 
 	}
 
-We can route to the controller action like so:
+ Denetçi hareketini aşağıdaki gibi yönlendirebiliriz.
 
 	Route::get('user/{id}', 'UserController@showProfile');
 
-> **Note:** All controllers should extend the base controller class.
+> **Not:** Tüm Denetçiler ana denetçi sınıfından genişletilmelidir.
 
-#### Controllers & Namespaces
+#### Denetçiler(Controllers) & Ad Alanları(Namespaces)
 
 It is very important to note that we did not need to specify the full controller namespace, only the portion of the class name that comes after the `App\Http\Controllers` namespace "root". By default, the `RouteServiceProvider` will load the `routes.php` file within a route group containing the root controller namespace.
 
@@ -73,7 +73,7 @@ You may access the name of the controller action being run using the `currentRou
 	$action = Route::currentRouteAction();
 
 <a name="controller-middleware"></a>
-## Controller Middleware
+## Denetçi Ara Katmanlar (Middleware)
 
 [Middleware](/docs/master/middleware) may be specified on controller routes like so:
 
@@ -101,7 +101,7 @@ Additionally, you may specify middleware within your controller's constructor:
 	}
 
 <a name="restful-resource-controllers"></a>
-## RESTful Resource Controllers
+## RESTful Kaynak Denetçiler
 
 Resource controllers make it painless to build RESTful controllers around resources. For example, you may wish to create a controller that handles HTTP requests regarding "photos" stored by your application. Using the `make:controller` Artisan command, we can quickly create such a controller:
 
@@ -173,9 +173,9 @@ If it becomes necessary to add additional routes to a resource controller beyond
 	Route::resource('photos', 'PhotoController');
 
 <a name="dependency-injection-and-controllers"></a>
-## Dependency Injection & Controllers
+## Enjeksiyon ve Denetçi Bağımlılığı
 
-#### Constructor Injection
+#### Oluşturucu Enjeksiyon
 
 The Laravel [service container](/docs/master/container) is used to resolve all Laravel controllers. As a result, you are able to type-hint any dependencies your controller may need in its constructor:
 
@@ -258,7 +258,7 @@ If your controller method is also expecting input from a route parameter, simply
 > **Note:** Method injection is fully compatible with [model binding](/docs/master/routing#route-model-binding). The container will intelligently determine which arguments are model bound and which arguments should be injected.
 
 <a name="route-caching"></a>
-## Route Caching
+## Rota Önbellekleme (Route Caching)
 
 If your application is exclusively using controller routes, you may take advantage of Laravel's route cache. Using the route cache will drastically decrease the amount of time it take to register all of your application's routes. In some cases, your route registration may even be up to 100x faster! To generate a route cache, just execute the `route:cache` Artisan command:
 
