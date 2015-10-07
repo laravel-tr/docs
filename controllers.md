@@ -46,48 +46,48 @@ Tüm istek işleme mantığı sadece 'routes.php' dosyasında tanımlamak yerine
 
 Unutlmaması gereken çok önemli nokta tam denetçi ad alanını belirtmeye ihtiyaç duymadığımız, sadece sonra gelen sınıf adının kısmı `App\Http\Controllers`dan sonra ad alanı "root(kök)" gelmesi. Varsayılan olarak, 'RouteServiceProvider' 'routes.php' dosyasının kök denetçisi ad alanı içeren bir rota grubu içinde yüklenecektir.
 
-If you choose to nest or organize your controllers using PHP namespaces deeper into the `App\Http\Controllers` directory, simply use the specify the class name relative to the `App\Http\Controllers` root namespace. So, if your full controller class is `App\Http\Controllers\Photos\AdminController`, you would register a route like so:
+İç içe veya denetçilerinizi PHP ad alanları daha tanımlı 'App\Http\Controllers' içinde kullanarak düzenlemek isterseniz, sadece 'App\Http\Controllers' kök ad alanına göre sınıf adı kullanın. Yani,`App\Http\Controllers\Photos\AdminController` tam denetçi sınıfınız ise rota kaydı aşağıdaki gibi olur.
 
 	Route::get('foo', 'Photos\AdminController@method');
 
-#### Naming Controller Routes
+#### Adlandırma Denetçisi Rotaları
 
-Like Closure routes, you may specify names on controller routes:
+ Kapatma rotaları gibi, denetçi yolları üzerinde adları belirtebilirsiniz:
 
 	Route::get('foo', ['uses' => 'FooController@method', 'as' => 'name']);
 
-#### URLs To Controller Actions
+#### Denetçi eylemleri için URL'ler
 
-To generate a URL to a controller action, use the `action` helper method:
+Bir denetçi eylemi için bir URL oluşturmak için 'action' yardımcı yöntemini(method) kullanın:
 
 	$url = action('App\Http\Controllers\FooController@method');
 
-If you wish to generate a URL to a controller action while using only the portion of the class name relative to your controller namespace, register the root controller namespace with the URL generator:
+Denetçi ad sınıf adı alanınıza göre sadece bir bölümünü kullanırken bir denetçi eylemi için bir URL oluşturmak istiyorsanız, URL oluşturu ile kök(root) denetçisi ad alanları kaydı:
 
 	URL::setRootControllerNamespace('App\Http\Controllers');
 
 	$url = action('FooController@method');
 
-You may access the name of the controller action being run using the `currentRouteAction` method:
+Denetçi eylem adına erişmek için 'CurrentRouteAction' yöntemini kullanarak çalıştırabilirsiniz:
 
 	$action = Route::currentRouteAction();
 
 <a name="controller-middleware"></a>
 ## Denetçi Ara Katmanlar (Middleware)
 
-[Middleware](/docs/master/middleware) may be specified on controller routes like so:
+[Middleware](/docs/master/middleware) denetçi rotaları üzerinde aşağıdaki gibi belirtilebilir:
 
 	Route::get('profile', [
 		'middleware' => 'auth',
 		'uses' => 'UserController@showProfile'
 	]);
 
-Additionally, you may specify middleware within your controller's constructor:
+Ayrıca, denetçinizin(Controller) yapıcısının(constructor) içindeki katmanı belirtebilirsiniz:
 
 	class UserController extends Controller {
 
 		/**
-		 * Instantiate a new UserController instance.
+		 *  Yeni bir UserController örneği örneğini oluşturma
 		 */
 		public function __construct()
 		{
