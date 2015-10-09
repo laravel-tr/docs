@@ -1,16 +1,16 @@
-# Filesystem / Cloud Storage
+# Dosya Sistemi / Bulut Depolama
 
-- [Introduction](#introduction)
-- [Configuration](#configuration)
-- [Basic Usage](#basic-usage)
+- [Giriş](#introduction)
+- [Yapılandırma](#configuration)
+- [Temel Kullanım](#basic-usage)
 
 <a name="introduction"></a>
-## Introduction
+## Giriş
 
 Laravel provides a wonderful filesystem abstraction thanks to the [Flysystem](https://github.com/thephpleague/flysystem) PHP package by Frank de Jonge. The Laravel Flysystem integration provides simple to use drivers for working with local filesystems, Amazon S3, and Rackspace Cloud Storage. Even better, it's amazingly simple to switch between these storage options as the API remains the same for each system!
 
 <a name="configuration"></a>
-## Configuration
+## Yapılandırma
 
 The filesystem configuration file is located at `config/filesystems.php`. Within this file you may configure all of your "disks". Each disk represents a particular storage driver and storage location. Example configurations for each supported driver is included in the configuration file. So, simply modify the configuration to reflect your storage preferences and credentials!
 
@@ -26,32 +26,32 @@ When using the `local` driver, note that all file operations are relative to the
 	Storage::disk('local')->put('file.txt', 'Contents');
 
 <a name="basic-usage"></a>
-## Basic Usage
+## Temel Kullanım
 
 The `Storage` facade may be used to interact with any of your configured disks. Alternatively, you may type-hint the `Illuminate\Contracts\Filesystem\Factory` contract on any class that is resolved via the [IoC container](/docs/master/container).
 
-#### Retrieving A Particular Disk
+#### Belirli bir Diske Alma
 
 	$disk = Storage::disk('s3');
 
 	$disk = Storage::disk('local');
 
-#### Calling Methods On The Default Disk
+#### Varsayılan Diskte Çağırma Yöntemleri
 
 	$exists = Storage::disk('s3')->exists('file.jpg');
 
-#### Determining If A File Exists
+#### Bir Dosya Olup Olmadığını Belirleme
 
 	if (Storage::exists('file.jpg'))
 	{
 		//
 	}
 
-#### Retrieving A File's Contents
+#### Bir Dosyanın İçeriğini Alma
 
 	$contents = Storage::get('file.jpg');
 
-#### Setting A File's Contents
+#### Bir Dosyanın İçeriğini Ayarlama
 
 	Storage::put('file.jpg', $contents);
 
