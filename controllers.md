@@ -1,272 +1,313 @@
-# HTTP Controllers
+# Controllers
 
-- [Giriş](#introduction)
-- [Temel Denetçiler (Controllers)](#basic-controllers)
-- [Denetçi Ara Katmanlar (Middleware)](#controller-middleware)
-- [RESTful Kaynak Denetçiler](#restful-resource-controllers)
-- [Enjeksiyon ve Denetçi Bağımlılığı](#dependency-injection-and-controllers)
-- [Rota Önbellekleme (Route Caching)](#route-caching)
+- [Introduction](#introduction)
+- [Basic Controllers](#basic-controllers)
+    - [Defining Controllers](#defining-controllers)
+    - [Controllers & Namespaces](#controllers-and-namespaces)
+    - [Single Action Controllers](#single-action-controllers)
+- [Controller Middleware](#controller-middleware)
+- [Resource Controllers](#resource-controllers)
+    - [Partial Resource Routes](#restful-partial-resource-routes)
+    - [Naming Resource Routes](#restful-naming-resource-routes)
+    - [Naming Resource Route Parameters](#restful-naming-resource-route-parameters)
+    - [Supplementing Resource Controllers](#restful-supplementing-resource-controllers)
+- [Dependency Injection & Controllers](#dependency-injection-and-controllers)
+- [Route Caching](#route-caching)
 
 <a name="introduction"></a>
-## Giriş
+## Introduction
 
-Tüm istek işleme mantığı sadece 'routes.php' dosyasında tanımlamak yerine, bu işlemi Denetçi(Controller) sınıfları kullanarak düzenlemek isteyebilirsiniz. Denetçileri(Controllers) ilgili HTTP istek işleme mantığını bir sınıfta gruplandırabilirsiniz. Denetçiler(Controllers) genellikle `app/Http/Controllers` dizininde depolanır.
+Instead of defining all of your request handling logic as Closures in route files, you may wish to organize this behavior using Controller classes. Controllers can group related request handling logic into a single class. Controllers are stored in the `app/Http/Controllers` directory.
 
 <a name="basic-controllers"></a>
-## Temel Denetçiler (Controllers)
+## Basic Controllers
 
- Burada bir temel Denetçi sınıfı örneği verilmiştir.
+<a name="defining-controllers"></a>
+### Defining Controllers
 
-	<?php namespace App\Http\Controllers;
+Below is an example of a basic controller class. Note that the controller extends the base controller class included with Laravel. The base class provides a few convenience methods such as the `middleware` method, which may be used to attach middleware to controller actions:
 
-	use App\Http\Controllers\Controller;
+    <?php
 
-	class UserController extends Controller {
+    namespace App\Http\Controllers;
 
-		/**
-		 * Verilen kullanıcı profilini göster.
-		 *
-		 * @param  int  $id
-		 * @return Response
-		 */
-		public function showProfile($id)
-		{
-			return view('user.profile', ['user' => User::findOrFail($id)]);
-		}
+    use App\User;
+    use App\Http\Controllers\Controller;
 
-	}
+    class UserController extends Controller
+    {
+        /**
+         * Show the profile for the given user.
+         *
+         * @param  int  $id
+         * @return Response
+         */
+        public function show($id)
+        {
+            return view('user.profile', ['user' => User::findOrFail($id)]);
+        }
+    }
 
- Denetçi hareketini aşağıdaki gibi yönlendirebiliriz.
+You can define a route to this controller action like so:
 
-	Route::get('user/{id}', 'UserController@showProfile');
+    Route::get('user/{id}', 'UserController@show');
 
-> **Not:** Tüm Denetçiler ana denetçi sınıfından genişletilmelidir.
+Now, when a request matches the specified route URI, the `show` method on the `UserController` class will be executed. Of course, the route parameters will also be passed to the method.
 
-#### Denetçiler(Controllers) & Ad Alanları(Namespaces)
+> {tip} Controllers are not **required** to extend a base class. However, you will not have access to convenience features such as the `middleware`, `validate`, and `dispatch` methods.
 
-Unutlmaması gereken çok önemli nokta tam denetçi ad alanını belirtmeye ihtiyaç duymadığımız, sadece sonra gelen sınıf adının kısmı `App\Http\Controllers`dan sonra ad alanı "root(kök)" gelmesi. Varsayılan olarak, 'RouteServiceProvider' 'routes.php' dosyasının kök denetçisi ad alanı içeren bir rota grubu içinde yüklenecektir.
+<a name="controllers-and-namespaces"></a>
+### Controllers & Namespaces
 
-İç içe veya denetçilerinizi PHP ad alanları daha tanımlı 'App\Http\Controllers' içinde kullanarak düzenlemek isterseniz, sadece 'App\Http\Controllers' kök ad alanına göre sınıf adı kullanın. Yani,`App\Http\Controllers\Photos\AdminController` tam denetçi sınıfınız ise rota kaydı aşağıdaki gibi olur.
+It is very important to note that we did not need to specify the full controller namespace when defining the controller route. Since the `RouteServiceProvider` loads your route files within a route group that contains the namespace, we only specified the portion of the class name that comes after the `App\Http\Controllers` portion of the namespace.
 
-	Route::get('foo', 'Photos\AdminController@method');
+If you choose to nest your controllers deeper into the `App\Http\Controllers` directory, simply use the specific class name relative to the `App\Http\Controllers` root namespace. So, if your full controller class is `App\Http\Controllers\Photos\AdminController`, you should register routes to the controller like so:
 
-#### Adlandırma Denetçisi Rotaları
+    Route::get('foo', 'Photos\AdminController@method');
 
- Kapatma rotaları gibi, denetçi yolları üzerinde adları belirtebilirsiniz:
+<a name="single-action-controllers"></a>
+### Single Action Controllers
 
-	Route::get('foo', ['uses' => 'FooController@method', 'as' => 'name']);
+If you would like to define a controller that only handles a single action, you may place a single `__invoke` method on the controller:
 
-#### Denetçi eylemleri için URL'ler
+    <?php
 
-Bir denetçi eylemi için bir URL oluşturmak için 'action' yardımcı yöntemini(method) kullanın:
+    namespace App\Http\Controllers;
 
-	$url = action('App\Http\Controllers\FooController@method');
+    use App\User;
+    use App\Http\Controllers\Controller;
 
-Denetçi ad sınıf adı alanınıza göre sadece bir bölümünü kullanırken bir denetçi eylemi için bir URL oluşturmak istiyorsanız, URL oluşturu ile kök(root) denetçisi ad alanları kaydı:
+    class ShowProfile extends Controller
+    {
+        /**
+         * Show the profile for the given user.
+         *
+         * @param  int  $id
+         * @return Response
+         */
+        public function __invoke($id)
+        {
+            return view('user.profile', ['user' => User::findOrFail($id)]);
+        }
+    }
 
-	URL::setRootControllerNamespace('App\Http\Controllers');
+When registering routes for single action controllers, you do not need to specify a method:
 
-	$url = action('FooController@method');
-
-Denetçi eylem adına erişmek için 'CurrentRouteAction' yöntemini kullanarak çalıştırabilirsiniz:
-
-	$action = Route::currentRouteAction();
+    Route::get('user/{id}', 'ShowProfile');
 
 <a name="controller-middleware"></a>
-## Denetçi Ara Katmanlar (Middleware)
+## Controller Middleware
 
-[Middleware](/docs/master/middleware) denetçi rotaları üzerinde aşağıdaki gibi belirtilebilir:
+[Middleware](/docs/{{version}}/middleware) may be assigned to the controller's routes in your route files:
 
-	Route::get('profile', [
-		'middleware' => 'auth',
-		'uses' => 'UserController@showProfile'
-	]);
+    Route::get('profile', 'UserController@show')->middleware('auth');
 
-Ayrıca, denetçinizin(Controller) yapıcısının(constructor) içindeki katmanı belirtebilirsiniz:
+However, it is more convenient to specify middleware within your controller's constructor. Using the `middleware` method from your controller's constructor, you may easily assign middleware to the controller's action. You may even restrict the middleware to only certain methods on the controller class:
 
-	class UserController extends Controller {
+    class UserController extends Controller
+    {
+        /**
+         * Instantiate a new controller instance.
+         *
+         * @return void
+         */
+        public function __construct()
+        {
+            $this->middleware('auth');
 
-		/**
-		 *  Yeni bir UserController örneği örneğini oluşturma
-		 */
-		public function __construct()
-		{
-			$this->middleware('auth');
+            $this->middleware('log')->only('index');
 
-			$this->middleware('log', ['only' => ['fooAction', 'barAction']]);
+            $this->middleware('subscribed')->except('store');
+        }
+    }
 
-			$this->middleware('subscribed', ['except' => ['fooAction', 'barAction']]);
-		}
+Controller's also allow you to register middleware using a Closure. This provides a convenient way to define a middleware for a single controller without defining an entire middleware class:
 
-	}
+    $this->middleware(function ($request, $next) {
+        // ...
 
-<a name="restful-resource-controllers"></a>
-## RESTful Kaynak Denetçiler
+        return $next($request);
+    });
 
-Kaynak denetçileri kaynaklar etrafında RESTful denetçilerini hatasız(sancısız) oluşturmak için yapılır. Örneğin, uygulamanız tarafından saklanan(depolanan) "fotoğrafları(photos)" HTTP isteklerinin işleme denetçisini oluşturmak isteyebilirsiniz. `make:controller` Artisan komutu kullanarak, hızlı bir şekilde bu tür bir denetçi oluşturabiliriz:
+> {tip} You may assign middleware to a subset of controller actions; however, it may indicate your controller is growing too large. Instead, consider breaking your controller into multiple, smaller controllers.
 
-	php artisan make:controller PhotoController
+<a name="resource-controllers"></a>
+## Resource Controllers
 
-Ardından, yetenekli bir rota denetçisi kayıt ediyoruz:
+Laravel resource routing assigns the typical "CRUD" routes to a controller with a single line of code. For example, you may wish to create a controller that handles all HTTP requests for "photos" stored by your application. Using the `make:controller` Artisan command, we can quickly create such a controller:
 
-	Route::resource('photo', 'PhotoController');
+    php artisan make:controller PhotoController --resource
 
-Bu tek rota ifadesi fotoğraf kaynaktağında RESTful çeşitli eylemler işlemek için birden fazla rota oluşturur. Aynı şekilde, oluşturulan denetçi zaten bu eylemlerin her biri için temizleyici yöntemler olacaktır, URI'lar ve fiiller hakkında bilgi veren notlar da dahil edilir.
+This command will generate a controller at `app/Http/Controllers/PhotoController.php`. The controller will contain a method for each of the available resource operations.
 
-#### Kaynak Denetçisi Tarafından İşlenen Eylemler
+Next, you may register a resourceful route to the controller:
 
-Verb      | Path                        | Action       | Route Name
-----------|-----------------------------|--------------|---------------------
-GET       | /resource                   | index        | resource.index
-GET       | /resource/create            | create       | resource.create
-POST      | /resource                   | store        | resource.store
-GET       | /resource/{resource}        | show         | resource.show
-GET       | /resource/{resource}/edit   | edit         | resource.edit
-PUT/PATCH | /resource/{resource}        | update       | resource.update
-DELETE    | /resource/{resource}        | destroy      | resource.destroy
+    Route::resource('photos', 'PhotoController');
 
-#### Kaynak Rotaları Özelleştirme
+This single route declaration creates multiple routes to handle a variety of actions on the resource. The generated controller will already have methods stubbed for each of these actions, including notes informing you of the HTTP verbs and URIs they handle.
 
-Ayrıca, sadece bir alt kümesini rota üzerinde işlemek için belirtebilirsiniz.
+#### Actions Handled By Resource Controller
 
-	Route::resource('photo', 'PhotoController',
-					['only' => ['index', 'show']]);
+Verb      | URI                  | Action       | Route Name
+----------|-----------------------|--------------|---------------------
+GET       | `/photos`              | index        | photos.index
+GET       | `/photos/create`       | create       | photos.create
+POST      | `/photos`              | store        | photos.store
+GET       | `/photos/{photo}`      | show         | photos.show
+GET       | `/photos/{photo}/edit` | edit         | photos.edit
+PUT/PATCH | `/photos/{photo}`      | update       | photos.update
+DELETE    | `/photos/{photo}`      | destroy      | photos.destroy
 
-	Route::resource('photo', 'PhotoController',
-					['except' => ['create', 'store', 'update', 'destroy']]);
+#### Spoofing Form Methods
 
-Varsayılan olarak, tüm kaynak denetçi eylemlerinin bir rota adı var; ancak, seçeneklerinizi 'names' dizisiyle geçirerek bu adları geçersiz kılabilirsiniz.
+Since HTML forms can't make `PUT`, `PATCH`, or `DELETE` requests, you will need to add a hidden `_method` field to spoof these HTTP verbs. The `method_field` helper can create this field for you:
 
-	Route::resource('photo', 'PhotoController',
-					['names' => ['create' => 'photo.build']]);
+    {{ method_field('PUT') }}
 
-#### İç içe Kaynak İşleme Denetçileri
+<a name="restful-partial-resource-routes"></a>
+### Partial Resource Routes
 
-"nest" kaynak denetçileri için, rotanızın ifadesi için "dot" gösterimini kullanın:
+When declaring a resource route, you may specify a subset of actions the controller should handle instead of the full set of default actions:
 
-	Route::resource('photos.comments', 'PhotoCommentController');
+    Route::resource('photo', 'PhotoController', ['only' => [
+        'index', 'show'
+    ]]);
 
-Bu rota erişilebilir bir "nested(iç içe)" kaynak URL ile aşağıdaki gibi kaydeder:
-`photos/{photos}/comments/{comments}`.
+    Route::resource('photo', 'PhotoController', ['except' => [
+        'create', 'store', 'update', 'destroy'
+    ]]);
 
-	class PhotoCommentController extends Controller {
+<a name="restful-naming-resource-routes"></a>
+### Naming Resource Routes
 
-		/**
-		 * Belirtilen fotoğraf yorumu göster.
-		 *
-		 * @param  int  $photoId
-		 * @param  int  $commentId
-		 * @return Response
-		 */
-		public function show($photoId, $commentId)
-		{
-			//
-		}
+By default, all resource controller actions have a route name; however, you can override these names by passing a `names` array with your options:
 
-	}
+    Route::resource('photo', 'PhotoController', ['names' => [
+        'create' => 'photo.build'
+    ]]);
 
-#### Kaynak Denetçiler için Ek Rotalar Ekleme
+<a name="restful-naming-resource-route-parameters"></a>
+### Naming Resource Route Parameters
 
-Bir kaynak denetçisi varsayılan kaynak rotaları haricinde ek rotalar eklemek gerekli olursa, `Route::resource` 'ı çağırmadan önce bu rotaları tanımlamanız gerekir:
+By default, `Route::resource` will create the route parameters for your resource routes based on the "singularized" version of the resource name. You can easily override this on a per resource basis by passing `parameters` in the options array. The `parameters` array should be an associative array of resource names and parameter names:
 
-	Route::get('photos/popular');
+    Route::resource('user', 'AdminUserController', ['parameters' => [
+        'user' => 'admin_user'
+    ]]);
 
-	Route::resource('photos', 'PhotoController');
+ The example above generates the following URIs for the resource's `show` route:
+
+    /user/{admin_user}
+
+<a name="restful-supplementing-resource-controllers"></a>
+### Supplementing Resource Controllers
+
+If you need to add additional routes to a resource controller beyond the default set of resource routes, you should define those routes before your call to `Route::resource`; otherwise, the routes defined by the `resource` method may unintentionally take precedence over your supplemental routes:
+
+    Route::get('photos/popular', 'PhotoController@method');
+
+    Route::resource('photos', 'PhotoController');
+
+> {tip} Remember to keep your controllers focused. If you find yourself routinely needing methods outside of the typical set of resource actions, consider splitting your controller into two, smaller controllers.
 
 <a name="dependency-injection-and-controllers"></a>
-## Enjeksiyon ve Denetçi Bağımlılığı
+## Dependency Injection & Controllers
 
-#### Oluşturucu Enjeksiyon
+#### Constructor Injection
 
-Laravel [service container](/docs/master/container) tüm Laravel denetçilerini çözümlemek için kullanılır. Sonuç olarak, tip-ipucu denetçinizin herhangi bir bağımlılığı için kurucu içinde gerekebilir:
+The Laravel [service container](/docs/{{version}}/container) is used to resolve all Laravel controllers. As a result, you are able to type-hint any dependencies your controller may need in its constructor. The declared dependencies will automatically be resolved and injected into the controller instance:
 
-	<?php namespace App\Http\Controllers;
+    <?php
 
-	use Illuminate\Routing\Controller;
-	use App\Repositories\UserRepository;
+    namespace App\Http\Controllers;
 
-	class UserController extends Controller {
+    use App\Repositories\UserRepository;
 
-		/**
-		 * Kullanıcı deposu örneği.
-		 */
-		protected $users;
+    class UserController extends Controller
+    {
+        /**
+         * The user repository instance.
+         */
+        protected $users;
 
-		/**
-		 * Yeni bir denetçi örneği oluşturun.
-		 *
-		 * @param  UserRepository  $users
-		 * @return void
-		 */
-		public function __construct(UserRepository $users)
-		{
-			$this->users = $users;
-		}
+        /**
+         * Create a new controller instance.
+         *
+         * @param  UserRepository  $users
+         * @return void
+         */
+        public function __construct(UserRepository $users)
+        {
+            $this->users = $users;
+        }
+    }
 
-	}
+Of course, you may also type-hint any [Laravel contract](/docs/{{version}}/contracts). If the container can resolve it, you can type-hint it. Depending on your application, injecting your dependencies into your controller may provide better testability.
 
-Tabii ki, aynı zamanda herhangi bir [Laravel contract](/docs/master/contracts) olabilir. Eğer kapsayıcı(container) çözümleyebilirse, bu tip-ipucu olabilir.
+#### Method Injection
 
-#### Metod Injection(Enjeksiyon)
+In addition to constructor injection, you may also type-hint dependencies on your controller's methods. A common use-case for method injection is injecting the `Illuminate\Http\Request` instance into your controller methods:
 
- Oluşturucu enjeksiyon ek olarak, denetçinizin metodlarının tip-ipucu ayrıca bağımlılıkları olabilir. Örneğin, hadi  metodlarımızdan birini `Request` örneğini tip-ipucu alalım:
+    <?php
 
-	<?php namespace App\Http\Controllers;
+    namespace App\Http\Controllers;
 
-	use Illuminate\Http\Request;
-	use Illuminate\Routing\Controller;
+    use Illuminate\Http\Request;
 
-	class UserController extends Controller {
+    class UserController extends Controller
+    {
+        /**
+         * Store a new user.
+         *
+         * @param  Request  $request
+         * @return Response
+         */
+        public function store(Request $request)
+        {
+            $name = $request->name;
 
-		/**
-		 * Yeni bir kullanıcı deposu.
-		 *
-		 * @param  Request  $request
-		 * @return Response
-		 */
-		public function store(Request $request)
-		{
-			$name = $request->input('name');
+            //
+        }
+    }
 
-			//
-		}
+If your controller method is also expecting input from a route parameter, simply list your route arguments after your other dependencies. For example, if your route is defined like so:
 
-	}
+    Route::put('user/{id}', 'UserController@update');
 
-Eğer denetçi metodunuzla da bir rota parametresi girdi bekliyor ise diğer bağımlılıklar sonra, basitçe rota argümanlar listesi:
+You may still type-hint the `Illuminate\Http\Request` and access your `id` parameter by defining your controller method as follows:
 
-	<?php namespace App\Http\Controllers;
+    <?php
 
-	use Illuminate\Http\Request;
-	use Illuminate\Routing\Controller;
+    namespace App\Http\Controllers;
 
-	class UserController extends Controller {
+    use Illuminate\Http\Request;
 
-		/**
-		 * Yeni bir kullanıcı deposu.
-		 *
-		 * @param  Request  $request
-		 * @param  int  $id
-		 * @return Response
-		 */
-		public function update(Request $request, $id)
-		{
-			//
-		}
-
-	}
-
-> **Not:** Metod enjeksiyonu ile [model binding](/docs/master/routing#route-model-binding) tamamen uyumludur. Kapsayıcı bağlı argüman modellerini ve enjekte edilecek argümanları belirleyebilir.
+    class UserController extends Controller
+    {
+        /**
+         * Update the given user.
+         *
+         * @param  Request  $request
+         * @param  string  $id
+         * @return Response
+         */
+        public function update(Request $request, $id)
+        {
+            //
+        }
+    }
 
 <a name="route-caching"></a>
-## Rota Önbellekleme (Route Caching)
+## Route Caching
 
- Uygulamanız sadece denetçi rotalar kullanıyorsa, Laravel'ın rota önbelleğinden yararlanmak avantajlı olabilir. Rota önbelleğini kullanarak uygulamanızın rota kayıt süresi büyük ölçüde azalacaktır. Bazı durumlarda, rotanızın kaydı bile 100x daha hızlı olabilir! Bir rota belleği oluşturmak için, sadece `route:cache` Artisan komutunu çalıştırın:
+> {note} Closure based routes cannot be cached. To use route caching, you must convert any Closure routes to controller classes.
 
-	php artisan route:cache
+If your application is exclusively using controller based routes, you should take advantage of Laravel's route cache. Using the route cache will drastically decrease the amount of time it takes to register all of your application's routes. In some cases, your route registration may even be up to 100x faster. To generate a route cache, just execute the `route:cache` Artisan command:
 
-İşte hepsi bu kadar! Önbelleğe alınmış rotalar artık `app/Http/routes.php` dosyası yerine kullanılacak. Unutmayın, eğer herhangi yeni rota eklerseniz, yeni bir rota önbeleği oluşturmanız gerekir. Bu nedenle, projenizin dağıtımı sırasında sadece `route:cache` komutunu çalıştırabilirsiniz.
+    php artisan route:cache
 
-Yeni bir önbellek oluşturmadan önce önbelleğe alınan rotaları kaldırmak için, `route:clear` komutunu kullanın:
+After running this command, your cached routes file will be loaded on every request. Remember, if you add any new routes you will need to generate a fresh route cache. Because of this, you should only run the `route:cache` command during your project's deployment.
 
-	php artisan route:clear
+You may use the `route:clear` command to clear the route cache:
+
+    php artisan route:clear

@@ -1,206 +1,49 @@
 # Testing
 
-- [Giriş](#introduction)
-- [Testleri Tanımlamak ve Çalıştırmak](#defining-and-running-tests)
-- [Test Ortamı](#test-environment)
-- [Testlerin İçerisinden Rotaları Çağırmak](#calling-routes-from-tests)
-- [Facade'ları Taklit Etmek](#mocking-facades)
-- [Çatının "Assert" Metodları](#framework-assertions)
-- [Yardımcı Metodlar](#helper-methods)
-- [Application'ın Tazelenmesi](#refreshing-the-application)
+- [Introduction](#introduction)
+- [Environment](#environment)
+- [Creating & Running Tests](#creating-and-running-tests)
 
 <a name="introduction"></a>
-## Giriş
+## Introduction
 
-Laravel hazırlanırken birim testler ile hazırlandı. Açıkçası, PHPUnit ile test desteği halihazırda var ve uygulamanız için hazırlanmış `phpunit.xml` dosyası da Laravel ile birlikte geliyor. 
+Laravel is built with testing in mind. In fact, support for testing with PHPUnit is included out of the box and a `phpunit.xml` file is already setup for your application. The framework also ships with convenient helper methods that allow you to expressively test your applications.
 
-Örnek bir test dosyası `tests` dizininde bulunmaktadır. Yeni bir Laravel uygulaması kurulumundan sonra, komut satırında `phpunit` komutuyla testlerinizi çalıştırabilirsiniz.
+An `ExampleTest.php` file is provided in the `tests` directory. After installing a new Laravel application, simply run `phpunit` on the command line to run your tests.
 
-<a name="defining-and-running-tests"></a>
-## Testleri Tanımlamak ve Çalıştırmak
+<a name="environment"></a>
+## Environment
 
-Yeni bir test durumu oluşturmak için, `tests` dizini içerisinde yeni bir test dosyası oluşturmanız yeterli. Test sınıflarınız `TestCase` sınıfını extend ediyor olmalıdır. Bu şekilde normalde PHPUnit ile hazırladığınız test metodlarını aynı şekilde oluşturabilirsiniz.
+When running tests, Laravel will automatically set the configuration environment to `testing`. Laravel automatically configures the session and cache to the `array` driver while testing, meaning no session or cache data will be persisted while testing.
 
-#### Örnek Bir Test Sınıfı
+You are free to define other testing environment configuration values as necessary. The `testing` environment variables may be configured in the `phpunit.xml` file, but make sure to clear your configuration cache using the `config:clear` Artisan command before running your tests!
 
-	class FooTest extends TestCase {
+<a name="creating-and-running-tests"></a>
+## Creating & Running Tests
 
-		public function testSomethingIsTrue()
-		{
-			$this->assertTrue(true);
-		}
+To create a new test case, use the `make:test` Artisan command:
 
-	}
+    php artisan make:test UserTest
 
-Daha sonra komut satırında `phpunit` ile uygulamanızın tüm testlerini çalıştırabilirsiniz.
+This command will place a new `UserTest` class within your `tests` directory. You may then define test methods as you normally would using PHPUnit. To run your tests, simply execute the `phpunit` command from your terminal:
 
-> **Not:** Eğer kendi `setUp` methodunuzu tanımlarsanız, `parent::setUp` kodunu çalıştırdığınızdan emin olun.
+    <?php
 
-<a name="test-environment"></a>
-## Test Ortamı
+    use Illuminate\Foundation\Testing\WithoutMiddleware;
+    use Illuminate\Foundation\Testing\DatabaseMigrations;
+    use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-Testleri çalıştırırken, Laravel otomatik olarak ortam yapılandırmasını `testing`'e alacaktır. Ayrıca, Laravel'de test ortamında `önbellekleme` ve `oturum` için özel ayar dosyaları bulunmaktadır. İki sürücü de bir dizi olacak şekilde ayarlanmış olup, test yaparkenki oturum ve önbellek verilerinin kalıcı olmaması sağlanmıştır. Test ortamı için gerektiğinde başka ayarlar yapmakta özgürsünüz.
-
-<a name="calling-routes-from-tests"></a>
-## Testlerin İçerisinden Rotaları Çağırmak
-
-#### Test Dosyasından Bir Rota Çağırmak
-
-Testleriniz içerisinde `call` metodu ile rahatlıkla rotaları çağırabilirsiniz:
-
-	$response = $this->call('GET', 'user/profile');
-
-	$response = $this->call($method, $uri, $parameters, $files, $server, $content);
-
-Daha sonra `Illuminate\Http\Response` nesnesini inceleyebilirsiniz:
-
-	$this->assertEquals('Hello World', $response->getContent());
-
-#### Test Dosyasından Bir Denetçi Çağırmak
-
-Ayrıca bir test dosyasından denetçileri de çağırabilirsiniz:
-
-	$response = $this->action('GET', 'HomeController@index');
-
-	$response = $this->action('GET', 'UserController@profile', array('user' => 1));
-
-> **Not:** You do not need to specify the full controller namespace when using the `action` method. Only specify the portion of the class name that follows the `App\Http\Controllers` namespace.
-
-`getContent` metodu cevap olarak değerlendirilmiş string içeriğini döndürecektir. Eğer rotanız bir `Görünüm` döndürüyorsa, `original` özelliği ile buna ulaşabilirsiniz:
-
-	$view = $response->original;
-
-	$this->assertEquals('John', $view['name']);
-
-Bir HTTPS rotayı çağırmak için, `callSecure` metodunu kullanabilirsiniz:
-
-	$response = $this->callSecure('GET', 'foo/bar');
-
-<a name="mocking-facades"></a>
-## Facade'ları Taklit Etmek
-
-Test yaparken, sabit Laravel facadelarını taklit etmeniz gerekecektir. Örneğin, şu denetçi aksiyonunu varsayalım:
-
-	public function getIndex()
-	{
-		Event::fire('foo', ['name' => 'Dayle']);
-
-		return 'All done!';
-	}
-
-`Event` sınıfına yapılan çağrıyı taklit edebilmek için Facade üzerinde `shouldReceive` metodunu kullanabilirsiniz, bu metod bir [Mockery](https://github.com/padraic/mockery) olgusu döndürecek.
-
-#### Bir Facade'ı Taklit Etmek
-
-	public function testGetIndex()
-	{
-		Event::shouldReceive('fire')->once()->with('foo', ['name' => 'Dayle']);
-
-		$this->call('GET', '/');
-	}
-
-> **Note:** `Request` metodunu taklit etmemelisiniz. Bunun yerine, testlerinizi çalıştırırken istediğiniz girdileri `call` metodunda belirtin.
-
-<a name="framework-assertions"></a>
-## Çatının Assert Metodları
-
-Laravel test yapımını kolaylaştırmak için halihazırda bazı `assert` metodlarıyla gelir:
-
-#### Yanıtın Başarıyla Geldiği Ispatlamak
-
-	public function testMethod()
-	{
-		$this->call('GET', '/');
-
-		$this->assertResponseOk();
-	}
-
-#### Yanıt Kodlarını Ispatlamak
-
-	$this->assertResponseStatus(403);
-
-#### Yanıtın Bir Yönlendirme Olduğunu Ispatlamak
-
-	$this->assertRedirectedTo('foo');
-
-	$this->assertRedirectedToRoute('route.name');
-
-	$this->assertRedirectedToAction('Controller@method');
-
-#### Bir Görünümde Veri Olduğunu Ispatlamak
-
-	public function testMethod()
-	{
-		$this->call('GET', '/');
-
-		$this->assertViewHas('name');
-		$this->assertViewHas('age', $value);
-	}
-
-#### Oturumda Bir Verinin Kayıtlı Olduğunu Ispatlamak
-
-	public function testMethod()
-	{
-		$this->call('GET', '/');
-
-		$this->assertSessionHas('name');
-		$this->assertSessionHas('age', $value);
-	}
-
-#### Session'da Hatalar Olup Olmadığını Ispatlama
-
-    public function testMethod()
+    class UserTest extends TestCase
     {
-        $this->call('GET', '/');
-
-        $this->assertSessionHasErrors();
-
-        // Verilen bir anahtar için sessionda hata olup olmadığına bakmak...
-        $this->assertSessionHasErrors('name');
-
-        // Birkaç anahtar için sessionda hata olup olmadığına bakmak...
-        $this->assertSessionHasErrors(array('name', 'age'));
+        /**
+         * A basic test example.
+         *
+         * @return void
+         */
+        public function testExample()
+        {
+            $this->assertTrue(true);
+        }
     }
 
-#### Eski Girdide Veri Olduğunu Ispatlamak
-
-	public function testMethod()
-	{
-		$this->call('GET', '/');
-
-		$this->assertHasOldInput();
-	}
-
-<a name="helper-methods"></a>
-## Yardımcı Metodlar
-
-Test yapımını kolaylaştırmak için `TestCase` sınıfı bazı yardımcı metodlarla birlikte gelir.
-
-#### Test İçerisinden Oturum Tanımlamak ve Silmek
-
-	$this->session(['foo' => 'bar']);
-
-	$this->flushSession();
-
-#### Oturum Açmış Kullanıcıyı Belirleme
-
-Mevcut oturum açmış kullanıcıyı `be` metodu ile belirleyebilirsiniz:
-
-	$user = new User(array('name' => 'John'));
-
-	$this->be($user);
-
-Bir test içerisinden `seed` metoduyla veritabanınıza yeniden veri ekebilirsiniz:
-
-#### Test İçerisinden Veritabanına Yeniden Veri Ekmek
-
-	$this->seed();
-
-	$this->seed($connection);
-
-Veri Ekmeyle ilgili daha fazla bilgiyi dökümantasyonun [migrasyon ve veri ekme](/docs/migrations#database-seeding) bölümünde bulabilirsiniz.
-
-<a name="refreshing-the-application"></a>
-## Application'ın Tazelenmesi
-
-Belki de zaten bildiğiniz gibi, Laravel `Application` / IoC Konteynerinize herhangi bir test metodundan `$this->app` aracılığıyla erişebilirsiniz. Bu Application olgusu her test sınıfı için tazelenir. Şayet siz Application'ı verilen bir metod için elle tazelenmeye zorlamak istiyorsanız, test metodunuzdan `refreshApplication` metodunu kullanabilirsiniz. Bu, test durumu çalıştırılmaya başlandıktan itibaren IoC konteynerine konmuş olan herhangi bir ekstra bağlamayı, örneğin mocks (taklit)'ları resetleyecektir.
+> {note} If you define your own `setUp` method within a test class, be sure to call `parent::setUp`.
