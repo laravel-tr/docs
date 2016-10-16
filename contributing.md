@@ -1,3 +1,3 @@
-# Katkıda Bulunma Kuralları
+# Contribution Guidelines
 
-Eğer **geçerli stabil sürüm** için pull-request gönderiyorsanız, ilgili branşa göndermelisiniz. Örneğin, Laravel 4.2 için `4.2` branşına göndermelisiniz. Sonraki sürüm için olan dökümantasyonu `master` branşına göndermelisiniz.
+If you are submitting documentation for the **current stable release**, submit it to the corresponding branch. For example, documentation for Laravel 5.1 would be submitted to the `5.1` branch. Documentation intended for the next release of Laravel should be submitted to the `master` branch.

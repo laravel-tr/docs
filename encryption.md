@@ -1,30 +1,63 @@
-# Şifreleme
+# Encryption
 
-- [Önsöz](#introduction)
-- [Temel Kullanım](#basic-usage)
+- [Introduction](#introduction)
+- [Configuration](#configuration)
+- [Using The Encrypter](#using-the-encrypter)
 
 <a name="introduction"></a>
-## Önsöz
+## Introduction
 
-Laravel Mcrypt PHP eklentisi aracılığı ile güçlü AES şifreleme olanakları sağlar.
+Laravel's encrypter uses OpenSSL to provide AES-256 and AES-128 encryption. You are strongly encouraged to use Laravel's built-in encryption facilities and not attempt to roll your own "home grown" encryption algorithms. All of Laravel's encrypted values are signed using a message authentication code (MAC) so that their underlying value can not be modified once encrypted.
 
-<a name="basic-usage"></a>
-## Temel Kullanım
+<a name="configuration"></a>
+## Configuration
 
-#### Bir Değer Şifreleme
+Before using Laravel's encrypter, you must set a `key` option in your `config/app.php` configuration file. You should use the `php artisan key:generate` command to generate this key since this Artisan command will use PHP's secure random bytes generator to build your key. If this value is not properly set, all values encrypted by Laravel will be insecure.
 
-	$encrypted = Crypt::encrypt('secret');
+<a name="using-the-encrypter"></a>
+## Using The Encrypter
 
-> **Not:** `config/app.php` dosyasındaki `key` alanına 16, 24 ya da 32 karakterli rastgele bir dize değerininin tanımlanmış olduğundan emin olun. Aksi durumda, şifreli değerleriniz güvenli olmayacaktır.
+#### Encrypting A Value
 
-#### Bir Değerin Deşifresi
+You may encrypt a value using the `encrypt` helper. All encrypted values are encrypted using OpenSSL and the `AES-256-CBC` cipher. Furthermore, all encrypted values are signed with a message authentication code (MAC) to detect any modifications to the encrypted string:
 
-	$decrypted = Crypt::decrypt($encryptedValue);
+    <?php
 
-#### Şifre Anahtarı & Mod Ayarı
+    namespace App\Http\Controllers;
 
-Ayrıca şifreleyicinin kullandığı şifre anahtarını ve modununu değiştirebilirsiniz:
+    use App\User;
+    use Illuminate\Http\Request;
+    use App\Http\Controllers\Controller;
 
-	Crypt::setMode('ctr');
+    class UserController extends Controller
+    {
+        /**
+         * Store a secret message for the user.
+         *
+         * @param  Request  $request
+         * @param  int  $id
+         * @return Response
+         */
+        public function storeSecret(Request $request, $id)
+        {
+            $user = User::findOrFail($id);
 
-	Crypt::setCipher($cipher);
+            $user->fill([
+                'secret' => encrypt($request->secret)
+            ])->save();
+        }
+    }
+
+> {note} Encrypted values are passed through `serialize` during encryption, which allows for encryption of objects and arrays. Thus, non-PHP clients receiving encrypted values will need to `unserialize` the data.
+
+#### Decrypting A Value
+
+You may decrypt values using the `decrypt` helper. If the value can not be properly decrypted, such as when the MAC is invalid, an `Illuminate\Contracts\Encryption\DecryptException` will be thrown:
+
+    use Illuminate\Contracts\Encryption\DecryptException;
+
+    try {
+        $decrypted = decrypt($encryptedValue);
+    } catch (DecryptException $e) {
+        //
+    }
