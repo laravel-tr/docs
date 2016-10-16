@@ -1,5 +1,8 @@
-# Laravel Documentation
+# Laravel Dökümantasyonu
 
-## Contribution Guidelines
+## Destek ve Düzenlemeler Hakkında
 
-If you are submitting documentation for the **current stable release**, submit it to the corresponding branch. For example, documentation for Laravel 5.1 would be submitted to the `5.1` branch. Documentation intended for the next release of Laravel should be submitted to the `master` branch.
+Eğer **şuanki stabil sürüm** hakkında bir düzenleme gönderecekseniz, bunu ait olduğu branşa gönderin. Örneğin, eğer Laravel 5.1 için bir düzenleme gönderiyorsanız, bunu `5.1` branşına gönderin. Laravel'in bir dahaki sürümü için yapılacak dökümantasyon düzenlemeleri `master` branşına gönderilmelidir.
+
+## Sabit Tanımlamalar
+{tip} => {tavsiye}

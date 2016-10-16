@@ -1,10 +1,10 @@
 # Console Commands
 
-- [Introduction](#introduction)
-- [Writing Commands](#writing-commands)
-    - [Generating Commands](#generating-commands)
-    - [Command Structure](#command-structure)
-    - [Closure Commands](#closure-commands)
+- [Giriş](#introduction)
+- [Komutlarin Yazılması](#writing-commands)
+    - [Komutları Üretmek](#generating-commands)
+    - [Komut Yapısı](#command-structure)
+    - [Closure(Fonksiyon Görünümlü Objeler) Komutlar](#closure-commands)
 - [Defining Input Expectations](#defining-input-expectations)
     - [Arguments](#arguments)
     - [Options](#options)
@@ -19,36 +19,35 @@
     - [Calling Commands From Other Commands](#calling-commands-from-other-commands)
 
 <a name="introduction"></a>
-## Introduction
-
-Artisan is the command-line interface included with Laravel. It provides a number of helpful commands that can assist you while you build your application. To view a list of all available Artisan commands, you may use the `list` command:
+## Giriş
+Artisan, Laravel'in dahili komut satırı arayüzüdür. Artisan size uygulamanızı geliştirirken birçok yardımcı komut sağlar. Artisan ile kullanıbilen komutların listesini görebilmek için, `list` komutunu kullanabilirsiniz:
 
     php artisan list
 
-Every command also includes a "help" screen which displays and describes the command's available arguments and options. To view a help screen, simply precede the name of the command with `help`:
+Her komut bir "help" ekranı içerir, komut hakkındaki argümanları ve ayarları gösterir. Yardım ekranını görebilmek için, basitçe komut adından önce `help` komutunu kullanabilirsiniz:
 
     php artisan help migrate
 
 <a name="writing-commands"></a>
-## Writing Commands
+## Komutlarin Yazılması
 
-In addition to the commands provided with Artisan, you may also build your own custom commands. Commands are typically stored in the `app/Console/Commands` directory; however, you are free to choose your own storage location as long as your commands can be loaded by Composer.
+Artisan ile verilen komutlara ek olarak, kendinize özel komutlarda inşa edebilirsiniz. Komutlar normalde `app/Console/Commands` dosyası altına kaydedilir; kendinize ait dosya yolu belirtebilir ve bunu Composer ile yükleyebilirsiniz.
 
 <a name="generating-commands"></a>
-### Generating Commands
+### Komutları Üretmek
 
-To create a new command, use the `make:command` Artisan command. This command will create a new command class in the `app/Console/Commands` directory. Don't worry if you this directory does not exist in your application, since it will be created the first time you run the `make:command` Artisan command. The generated command will include the default set of properties and methods that are present on all commands:
+Yeni bir komut oluşturmak için, `make:command` Artisan komutunu kullanabilirsiniz. Bu komut `app/Console/Commands` dosyası altında yeni bir komut sınıfı oluşturmak ister. Merak etmeyin, eğer bu klasör uygulamanızda yoksa, komut, klasörü ilk kullanımızda oluşturulacaktır. Oluşturulan komut varsayılan olarak belirlenen özellikler ve metodlarlı içerecektir:
 
     php artisan make:command SendEmails
 
 <a name="command-structure"></a>
-### Command Structure
+### Komut Yapısı
 
-After generating your command, you should fill in the `signature` and `description` properties of the class, which will be used when displaying your command on the `list` screen. The `handle` method will be called when your command is executed. You may place your command logic in this method.
+Komut oluşturulmasından sonra, oluşturlan komut sınıfının `signature` ve `description` özellikleri doldurulmalıdır,  `list` komutu kullanılmak istenilirse bu özellikler görüntülenecek. `handle` metodu komut cağırıldığında kullanılan metoddur. Bu metod'da komutun mantığını oluşturabilirsiniz.
 
-> {tip} For greater code reuse, it is good practice to keep your console commands light and let them defer to application services to accomplish their tasks. In the example below, note that we inject a service class to do the "heavy lifting" of sending the e-mails.
+> {tavsiye} Sağlam bir tekrar kod kullanımı için, iyi uygulama ilkesi için konsol komutlarınızı açık and let them defer to application services to accomplish their tasks. Aşağıdaki örnekte, unutmayın E-mail gönderime  "heavy lifting" için, biz bir servis sınıfı ekledik.
 
-Let's take a look at an example command. Note that we are able to inject any dependencies we need into the command's constructor. The Laravel [service container](/docs/{{version}}/container) will automatically inject all dependencies type-hinted in the constructor:
+Bunu bir örnekle göz atalım. Komut yapıcı metodunda gerekli olan  bağımlılıkları enjekte etmenin mümkün olduğunu unutmayın. Laravel [service container](/docs/{{version}}/container), otomatik olarak tüm bağımlılıkları enjekte edecektir.:
 
     <?php
 
@@ -61,28 +60,28 @@ Let's take a look at an example command. Note that we are able to inject any dep
     class SendEmails extends Command
     {
         /**
-         * The name and signature of the console command.
+         * Konsol komutuna ait isim ve imza
          *
          * @var string
          */
         protected $signature = 'email:send {user}';
 
         /**
-         * The console command description.
+         * Konsol komutuna ait açıklama
          *
          * @var string
          */
         protected $description = 'Send drip e-mails to a user';
 
         /**
-         * The drip e-mail service.
+         * drip e-mail servisi.
          *
          * @var DripEmailer
          */
         protected $drip;
 
         /**
-         * Create a new command instance.
+         * Yeni komut nesnesi oluştur
          *
          * @param  DripEmailer  $drip
          * @return void
@@ -95,7 +94,7 @@ Let's take a look at an example command. Note that we are able to inject any dep
         }
 
         /**
-         * Execute the console command.
+         * Konsol komutunu calıştır
          *
          * @return mixed
          */
@@ -106,7 +105,7 @@ Let's take a look at an example command. Note that we are able to inject any dep
     }
 
 <a name="closure-commands"></a>
-### Closure Commands
+### Closure(Fonksiyon Görünümlü Objeler) Komutlar
 
 Closure based commands provide an alternative to defining console commands as classes. In the same way that route Closures are an alternative to controllers, think of command Closures as an alternative to command classes. Within the `commands` method of your `app/Console/Kernel.php` file, Laravel loads the `routes/console.php` file:
 
