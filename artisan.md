@@ -107,10 +107,10 @@ Bunu bir örnekle göz atalım. Komut yapıcı metodunda gerekli olan  bağıml�
 <a name="closure-commands"></a>
 ### Closure(Fonksiyon Görünümlü Objeler) Komutlar
 
-Closure based commands provide an alternative to defining console commands as classes. In the same way that route Closures are an alternative to controllers, think of command Closures as an alternative to command classes. Within the `commands` method of your `app/Console/Kernel.php` file, Laravel loads the `routes/console.php` file:
+Closure bazlı komutlar, komutları sınıf üzerinden oluşturmaya bir alternatif sunar. Sizin `app/Console/Kernel.php` dosyasının içindeki `commands` metodu ile, Laravel `routes/console.php` dosyasını yükler:
 
     /**
-     * Register the Closure based commands for the application.
+     * Uygulamaya Closure bazlı komutlarını kaydet.
      *
      * @return void
      */
@@ -119,17 +119,17 @@ Closure based commands provide an alternative to defining console commands as cl
         require base_path('routes/console.php');
     }
 
-Even though this file does not define HTTP routes, it defines console based entry points (routes) into your application. Within this file, you may define all of your Closure based routes using the `Artisan::command` method. The `command` method accepts two arguments: the [command signature](#defining-input-expectations) and a Closure which receives the commands arguments and options:
+Bu dosya ile HTTP rotaları tanımlanmaz, sadece komut satırı bazlı noktalar(rotalar) oluşturulur. Bu dosya ile, size ait tüm Clouse bazlı rotaları `Artisan::command` metoduyla tanımlayabilirsiniz. `command` metodu iki adet arguman kabul eder: [Komut Imzası](#defining-input-expectations) ve Closure'n aldığı özellikler ve metodları:
 
     Artisan::command('build {project}', function ($project) {
         $this->info("Building {$project}!");
     });
 
-The Closure is bound to the underlying command instance, so you have full access to all of the helper methods you would typically be able to access on a full command class.
+Bu Closure, Command nesnesinin altına bağlıdır, ve böylelikle tüm yardımcı metodlara tam erişimi, ve genellikle command sınıfınada tam bir erişme sahip olursunuz.
 
-#### Type-Hinting Dependencies
+#### Tür Dayatma Bağımlılığı
 
-In addition to receiving your command's arguments and options, command Closures may also type-hint additional dependencies that you would like resolved out of the [service container](/docs/{{version}}/container):
+Oluşturduğunuz Clouser bazlı komutlarda kullanabileceğiniz arguman ve ayarların yanı sıra, asağıdakı örnekte olduğu gibi tür dayatmada kullanabilirsiniz. [service container](/docs/{{version}}/container):
 
     use App\User;
     use App\DripEmailer;
@@ -138,13 +138,13 @@ In addition to receiving your command's arguments and options, command Closures 
         $drip->send(User::find($user));
     });
 
-#### Closure Command Descriptions
+#### Closure Komut Açıklamaları
 
-When defining a Closure based command, you may use the `describe` method to add a description to the command. This description will be displayed when you run the `php artisan list` or `php artisan help` commands:
+Eğer bir Closure komutu tanımlarken,  `describe` metodunu kullanarak komutunuza açıklama ekleyebilirsiniz. Bu yatılan açıklama `php artisan list` ve ya `php artisan help` komutlarının kullanımını esnasında görüntülenecektir:
 
     Artisan::command('build {project}', function ($project) {
-        $this->info("Building {$project}!");
-    })->describe('Build the project');
+        $this->info("{$project} İnşa Edidi!");
+    })->describe('Proje İnşa Etme');
 
 <a name="defining-input-expectations"></a>
 ## Defining Input Expectations
